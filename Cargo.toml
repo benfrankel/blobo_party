@@ -1,0 +1,121 @@
+[package]
+name = "bevy_jam_5"
+version = "0.1.0"
+edition = "2021"
+default-run = "run"
+
+[dependencies]
+avian2d = { version = "0.1", default-features = false, features = [
+    "2d",
+    "f32",
+    "parry-f32",
+] }
+bevy = { version = "0.14", default-features = false, features = [
+    # Core functionality
+    "bevy_asset",
+    "bevy_color",
+    "bevy_render",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "multi_threaded",
+    "x11",
+    "wayland",
+    "webgl2",
+
+    # Extra functionality
+    #bevy_gilrs",
+    #serialize",
+    "subpixel_glyph_atlas",
+    "tonemapping_luts",
+
+    # File formats
+    "png",
+] }
+bevy_asset_loader = { version = "0.21", features = ["2d", "progress_tracking"] }
+bevy_common_assets = { version = "0.11", features = ["ron"] }
+bevy_editor_pls = { version = "0.9", optional = true }
+bevy_kira_audio = "0.20"
+bevy_mod_debugdump = { version = "0.11", optional = true }
+bevy_mod_picking = { version = "0.20", default-features = false, features = [
+    "backend_bevy_ui",
+] }
+bevy_state = "0.14"
+iyes_progress = "0.12"
+lazy-regex = { version = "3", features = ["lite"] }
+leafwing-input-manager = "0.14"
+#noise = "0.8"
+pyri_state = "0.2"
+#rand = { version = "0.8", features = ["small_rng"] }
+ron = "0.8"
+serde = "1"
+strum = { version = "0.26", features = ["derive"] }
+tap = "1"
+
+[patch.crates-io]
+# TODO: Workaround for https://github.com/NiklasEi/bevy_asset_loader/issues/219.
+bevy_asset_loader = { git = "https://github.com/benfrankel/bevy_asset_loader.git", branch = "direct-depend" }
+bevy_editor_pls = { git = "https://github.com/zhaop/bevy_editor_pls", branch = "bevy-0.14" }
+
+[features]
+default = ["native_dev"]
+dev = [
+    "dep:bevy_editor_pls",
+    "avian2d/debug-plugin",
+    "bevy/bevy_dev_tools",
+    "bevy/dynamic_linking",
+    "bevy/sysinfo_plugin",
+    "bevy_mod_picking/debug",
+]
+native = ["avian2d/parallel"]
+native_dev = ["native", "dev", "bevy/file_watcher", "bevy/embedded_watcher"]
+web = []
+web_dev = ["web", "dev"]
+trace = ["bevy/trace", "bevy/wgpu_trace", "bevy/trace_tracy"]
+debug_dump = ["dep:bevy_mod_debugdump"]
+
+# Idiomatic Bevy code often triggers these lints, and the CI workflow treats them as errors.
+# In some cases they may still signal poor code quality however, so consider commenting out these lines.
+[lints.clippy]
+# Bevy supplies arguments to systems via dependency injection, so it's natural for systems to
+# request more than 7 arguments -- which triggers this lint.
+too_many_arguments = "allow"
+# Queries that access many components may trigger this lint.
+type_complexity = "allow"
+
+# Enable a small amount of optimization in the dev profile.
+[profile.dev]
+opt-level = 1
+
+# Enable a large amount of optimization in the dev profile for dependencies.
+[profile.dev.package."*"]
+opt-level = 3
+
+# TODO: Workaround for https://github.com/bevyengine/bevy/issues/14291.
+[profile.dev.package.wgpu-types]
+debug-assertions = false
+
+# Enable more optimization in the release profile at the cost of compile time.
+[profile.release]
+# Compile the entire crate as one unit.
+# Slows compile times, marginal improvements.
+codegen-units = 1
+# Do a second optimization pass over the entire program, including dependencies.
+# Slows compile times, marginal improvements.
+lto = "thin"
+
+# Optimize for size in the wasm-release profile to reduce load times and bandwidth usage on web.
+[profile.wasm-release]
+# Default to release profile values.
+inherits = "release"
+# Optimize with size in mind (also try "z", sometimes it is better).
+# Slightly slows compile times, great improvements to file size and runtime performance.
+opt-level = "s"
+# Strip all debugging information from the binary to slightly reduce file size.
+strip = "debuginfo"
+
+[[bin]]
+name = "debug"
+required-features = ["debug_dump"]
