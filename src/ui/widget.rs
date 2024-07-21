@@ -114,6 +114,19 @@ pub fn overlay(mut entity: EntityWorldMut) {
             height: Percent(100.0),
             ..default()
         },
+        z_index: ZIndex::Global(1000),
+        ..default()
+    });
+}
+
+pub fn blocking_overlay(mut entity: EntityWorldMut) {
+    entity.insert(NodeBundle {
+        style: Style {
+            position_type: PositionType::Absolute,
+            width: Percent(100.0),
+            height: Percent(100.0),
+            ..default()
+        },
         focus_policy: FocusPolicy::Block,
         z_index: ZIndex::Global(1000),
         ..default()
