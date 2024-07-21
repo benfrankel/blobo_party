@@ -53,31 +53,29 @@ fn tick_step_timer(time: Res<Time>, mut step_timer: ResMut<StepTimer>) {
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct Step(pub usize);
+pub struct Step {
+    pub total: usize,
+    pub this_tick: usize,
+}
 
 impl Configure for Step {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
         app.add_systems(Update, update_step.in_set(UpdateSet::SyncEarly));
-        app.add_systems(
-            Update,
-            (|step: Res<Step>| println!("Step: {}", step.0))
-                .in_set(UpdateSet::Update)
-                .run_if(on_step(2)),
-        );
     }
 }
 
 fn update_step(step_timer: Res<StepTimer>, mut step: ResMut<Step>) {
-    step.0 += step_timer.0.times_finished_this_tick() as usize;
+    step.this_tick = step_timer.0.times_finished_this_tick() as usize;
+    step.total += step.this_tick;
 }
 
 /// A run condition to run a system every `n` steps.
-pub fn on_step(n: usize) -> impl Fn(Res<StepTimer>, Res<Step>) -> bool {
-    move |step_timer, step| {
-        let hi = step.0;
-        let lo = hi - step_timer.0.times_finished_this_tick() as usize;
+pub fn on_step(n: usize) -> impl Fn(Res<Step>) -> bool {
+    move |step| {
+        let hi = step.total;
+        let lo = hi - step.this_tick;
         hi / n > lo / n
     }
 }

@@ -5,6 +5,7 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -30,6 +31,7 @@ impl Config for ActorConfig {
         for actor in self.actors.values_mut() {
             actor.texture = asset_server.load(&actor.texture_path);
             actor.texture_atlas_layout = layouts.add(&actor.texture_atlas_grid);
+            actor.sprite_animation.calculate_total_steps();
         }
     }
 
@@ -42,13 +44,16 @@ impl Config for ActorConfig {
 
 #[derive(Reflect, Serialize, Deserialize)]
 pub struct Actor {
-    pub name: String,
+    pub display_name: String,
+
     pub texture_path: String,
     #[serde(skip)]
     pub texture: Handle<Image>,
     pub texture_atlas_grid: TextureAtlasGrid,
     #[serde(skip)]
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
+    // TODO: Multiple animations per actor: HashMap<String, SpriteAnimation>?
+    pub sprite_animation: SpriteAnimation,
 }
 
 fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) {
@@ -60,15 +65,16 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) {
     let actor = r!(config.actors.get(key.as_ref().unwrap_or(&config.player)));
 
     entity.insert((
-        Name::new(actor.name.clone()),
+        Name::new(actor.display_name.clone()),
         SpriteBundle {
-            texture: actor.texture.clone_weak(),
+            texture: actor.texture.clone(),
             ..default()
         },
         TextureAtlas {
-            layout: actor.texture_atlas_layout.clone_weak(),
+            layout: actor.texture_atlas_layout.clone(),
             index: 0,
         },
+        actor.sprite_animation.clone(),
     ));
 }
 
