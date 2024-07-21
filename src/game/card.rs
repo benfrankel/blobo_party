@@ -42,8 +42,7 @@ fn enter_playing(world: &mut World) {
                 action: id,
             },
         )]
-        .into_iter()
-        .collect(),
+        .into(),
     ));
 }
 

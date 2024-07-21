@@ -31,7 +31,6 @@ pub struct ThemeConfig {
 
 impl Config for ThemeConfig {
     const PATH: &'static str = "config/theme.ron";
-
     const EXTENSION: &'static str = "theme.ron";
 
     fn on_load(&mut self, world: &mut World) {

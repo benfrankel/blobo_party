@@ -38,7 +38,6 @@ pub struct ActorConfig {
 
 impl Config for ActorConfig {
     const PATH: &'static str = "config/actor.ron";
-
     const EXTENSION: &'static str = "actor.ron";
 
     fn on_load(&mut self, world: &mut World) {

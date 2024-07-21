@@ -12,10 +12,11 @@ use crate::util::prelude::*;
 
 pub trait Config: Asset + Serialize + for<'de> Deserialize<'de> {
     const PATH: &'static str;
-
     const EXTENSION: &'static str;
 
-    fn on_load(&mut self, world: &mut World);
+    fn on_load(&mut self, world: &mut World) {
+        let _ = world;
+    }
 
     fn is_ready(&self, asset_server: &AssetServer) -> bool {
         let _ = asset_server;

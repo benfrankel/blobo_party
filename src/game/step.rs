@@ -18,7 +18,6 @@ struct StepConfig {
 
 impl Config for StepConfig {
     const PATH: &'static str = "config/step.ron";
-
     const EXTENSION: &'static str = "step.ron";
 
     fn on_load(&mut self, world: &mut World) {

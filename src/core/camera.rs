@@ -20,7 +20,6 @@ struct CameraConfig {
 
 impl Config for CameraConfig {
     const PATH: &'static str = "config/camera.ron";
-
     const EXTENSION: &'static str = "camera.ron";
 
     fn on_load(&mut self, world: &mut World) {

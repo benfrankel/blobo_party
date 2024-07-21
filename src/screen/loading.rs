@@ -4,6 +4,7 @@ use bevy_asset_loader::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
+use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
@@ -27,6 +28,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         Screen::Loading.on_update((
             ActorConfig::progress.track_progress(),
+            HealthBarConfig::progress.track_progress(),
             update_loading.after(TrackedProgressSet),
         )),
     );
