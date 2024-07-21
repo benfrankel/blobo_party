@@ -14,7 +14,7 @@ pub trait Config: Asset + Serialize + for<'de> Deserialize<'de> {
 
     const EXTENSION: &'static str;
 
-    fn apply(&self, world: &mut World);
+    fn on_load(&mut self, world: &mut World);
 }
 
 #[derive(Resource, Reflect)]
@@ -51,10 +51,8 @@ fn apply_config<C: Config>(world: &mut World, mut reader: Local<ManualEventReade
         world.resource::<FrameCount>().0,
         type_name::<C>()
     );
-    world.resource_scope(|world, config: Mut<Assets<C>>| {
-        config
-            .get(&world.resource::<ConfigHandle<C>>().0)
-            .unwrap()
-            .apply(world);
+    world.resource_scope(|world, mut config: Mut<Assets<C>>| {
+        let config = r!(config.get_mut(&world.resource::<ConfigHandle<C>>().0));
+        config.on_load(world);
     });
 }

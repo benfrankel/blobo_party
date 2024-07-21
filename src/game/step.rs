@@ -21,7 +21,7 @@ impl Config for StepConfig {
 
     const EXTENSION: &'static str = "step.ron";
 
-    fn apply(&self, world: &mut World) {
+    fn on_load(&mut self, world: &mut World) {
         world
             .resource_mut::<StepTimer>()
             .0

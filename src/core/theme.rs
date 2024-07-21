@@ -34,7 +34,7 @@ impl Config for ThemeConfig {
 
     const EXTENSION: &'static str = "theme.ron";
 
-    fn apply(&self, world: &mut World) {
+    fn on_load(&mut self, world: &mut World) {
         world.resource_mut::<ClearColor>().0 = self.colors[ThemeColor::Body];
     }
 }

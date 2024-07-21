@@ -23,7 +23,31 @@ pub(super) fn plugin(app: &mut App) {
         ..default()
     });
 
-    app.configure::<(WindowRoot, ConfigHandle<WindowConfig>, WindowReady)>();
+    app.configure::<(ConfigHandle<WindowConfig>, WindowRoot, WindowReady)>();
+}
+
+#[derive(Asset, Reflect, Serialize, Deserialize)]
+pub struct WindowConfig {
+    pub title: String,
+    pub window_mode: WindowMode,
+    pub present_mode: PresentMode,
+}
+
+impl Config for WindowConfig {
+    const PATH: &'static str = "config/window.ron";
+
+    const EXTENSION: &'static str = "window.ron";
+
+    fn on_load(&mut self, world: &mut World) {
+        world
+            .resource_mut::<NextStateBuffer<_>>()
+            .enable(WindowReady);
+
+        let mut window = r!(world.get_mut::<Window>(world.resource::<WindowRoot>().primary));
+        window.title.clone_from(&self.title);
+        window.mode = self.window_mode;
+        window.present_mode = self.present_mode;
+    }
 }
 
 #[derive(Resource, Reflect)]
@@ -46,30 +70,6 @@ impl FromWorld for WindowRoot {
                 .query_filtered::<Entity, With<PrimaryWindow>>()
                 .single(world),
         }
-    }
-}
-
-#[derive(Asset, Reflect, Serialize, Deserialize)]
-pub struct WindowConfig {
-    pub title: String,
-    pub window_mode: WindowMode,
-    pub present_mode: PresentMode,
-}
-
-impl Config for WindowConfig {
-    const PATH: &'static str = "config/window.ron";
-
-    const EXTENSION: &'static str = "window.ron";
-
-    fn apply(&self, world: &mut World) {
-        world
-            .resource_mut::<NextStateBuffer<_>>()
-            .enable(WindowReady);
-
-        let mut window = r!(world.get_mut::<Window>(world.resource::<WindowRoot>().primary));
-        window.title.clone_from(&self.title);
-        window.mode = self.window_mode;
-        window.present_mode = self.present_mode;
     }
 }
 
