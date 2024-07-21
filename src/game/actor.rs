@@ -5,6 +5,7 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
@@ -76,6 +77,7 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) {
         },
         actor.sprite_animation.clone(),
     ));
+    entity.add(create_deck);
 }
 
 pub fn actor(key: impl Into<String>) -> impl EntityCommand<World> {
