@@ -11,14 +11,14 @@ pub struct TextureAtlasGrid {
     offset: Option<UVec2>,
 }
 
-impl Into<TextureAtlasLayout> for &TextureAtlasGrid {
-    fn into(self) -> TextureAtlasLayout {
-        TextureAtlasLayout::from_grid(
-            self.tile_size,
-            self.columns,
-            self.rows,
-            self.padding,
-            self.offset,
+impl From<&TextureAtlasGrid> for TextureAtlasLayout {
+    fn from(value: &TextureAtlasGrid) -> Self {
+        Self::from_grid(
+            value.tile_size,
+            value.columns,
+            value.rows,
+            value.padding,
+            value.offset,
         )
     }
 }
