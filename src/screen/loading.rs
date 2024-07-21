@@ -4,6 +4,7 @@ use bevy_asset_loader::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
+use crate::game::actor::facing::FacingAssets;
 use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
 use crate::screen::fade_in;
@@ -15,28 +16,65 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_loading_state(
-        LoadingState::new(Screen::Loading.bevy()).load_collection::<PlayingAssets>(),
+        LoadingState::new(Screen::Loading.bevy())
+            .load_collection::<PlayingAssets>()
+            .load_collection::<FacingAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Loading.bevy()));
-    app.add_systems(
-        StateFlush,
-        Screen::Loading.on_edge(exit_loading, enter_loading),
-    );
-
-    app.register_type::<IsLoadingBarFill>();
     app.add_systems(
         Update,
         Screen::Loading.on_update((
             ActorConfig::progress.track_progress(),
             HealthBarConfig::progress.track_progress(),
-            update_loading.after(TrackedProgressSet),
         )),
     );
+    app.add_systems(
+        StateFlush,
+        Screen::Loading.on_edge(exit_loading, enter_loading),
+    );
+
+    app.configure::<IsLoadingBarFill>();
 }
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 struct IsLoadingBarFill;
+
+impl Configure for IsLoadingBarFill {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            Screen::Loading.on_update(update_loading_bar.after(TrackedProgressSet)),
+        );
+    }
+}
+
+fn update_loading_bar(
+    mut commands: Commands,
+    progress: Res<ProgressCounter>,
+    frame: Res<FrameCount>,
+    mut loading_bar_query: Query<&mut Style, With<IsLoadingBarFill>>,
+    mut last_done: Local<u32>,
+) {
+    let Progress { done, total } = progress.progress();
+    if *last_done == done {
+        return;
+    }
+    *last_done = done;
+
+    // Continue to next screen when ready
+    if done == total {
+        commands.spawn_with(fade_out(Screen::Playing));
+    }
+
+    // Update loading bar
+    for mut style in &mut loading_bar_query {
+        style.width = Percent(100.0 * done as f32 / total as f32);
+    }
+
+    info!("[Frame {}] Loading: {done} / {total}", frame.0);
+}
 
 fn enter_loading(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands.spawn_with(fade_in);
@@ -115,30 +153,4 @@ fn loading_bar_fill(mut entity: EntityWorldMut) {
         ThemeColor::Primary.target::<BackgroundColor>(),
         IsLoadingBarFill,
     ));
-}
-
-fn update_loading(
-    mut commands: Commands,
-    progress: Res<ProgressCounter>,
-    frame: Res<FrameCount>,
-    mut loading_bar_query: Query<&mut Style, With<IsLoadingBarFill>>,
-    mut last_done: Local<u32>,
-) {
-    let Progress { done, total } = progress.progress();
-    if *last_done == done {
-        return;
-    }
-    *last_done = done;
-
-    // Continue to next screen when ready
-    if done == total {
-        commands.spawn_with(fade_out(Screen::Playing));
-    }
-
-    // Update loading bar
-    for mut style in &mut loading_bar_query {
-        style.width = Percent(100.0 * done as f32 / total as f32);
-    }
-
-    info!("[Frame {}] Loading: {done} / {total}", frame.0);
 }

@@ -4,6 +4,7 @@ use bevy_mod_picking::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
+use crate::game::actor::facing::FacingAssets;
 use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
 use crate::screen::fade_in;
@@ -15,12 +16,11 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_loading_state(
-        LoadingState::new(Screen::Title.bevy()).load_collection::<PlayingAssets>(),
+        LoadingState::new(Screen::Title.bevy())
+            .load_collection::<PlayingAssets>()
+            .load_collection::<FacingAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Title.bevy()));
-    app.add_systems(StateFlush, Screen::Title.on_edge(exit_title, enter_title));
-
-    app.configure::<TitleScreenAssets>();
     app.add_systems(
         Update,
         Screen::Title.on_update((
@@ -28,6 +28,9 @@ pub(super) fn plugin(app: &mut App) {
             HealthBarConfig::progress.track_progress(),
         )),
     );
+    app.add_systems(StateFlush, Screen::Title.on_edge(exit_title, enter_title));
+
+    app.configure::<TitleScreenAssets>();
 }
 
 const TITLE: &str = "bevy_jam_5";

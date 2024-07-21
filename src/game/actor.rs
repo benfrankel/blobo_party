@@ -114,7 +114,7 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
 
             children
                 .spawn_with(FacingIndicator {
-                    radius: vec2(5.5, 4.5),
+                    radius: vec2(6.0, 5.0),
                 })
                 .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
         });
