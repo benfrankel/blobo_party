@@ -21,12 +21,21 @@ pub struct Facing(pub Dir2);
 impl Configure for Facing {
     fn configure(app: &mut App) {
         app.register_type::<Facing>();
+        app.add_systems(Update, apply_facing_to_sprite.in_set(UpdateSet::Update));
     }
 }
 
 impl Default for Facing {
     fn default() -> Self {
         Self(Dir2::EAST)
+    }
+}
+
+fn apply_facing_to_sprite(mut facing_query: Query<(&Facing, &mut Sprite)>) {
+    for (facing, mut sprite) in &mut facing_query {
+        if facing.0.x != 0.0 {
+            sprite.flip_x = facing.0.x < 0.0;
+        }
     }
 }
 
