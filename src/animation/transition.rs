@@ -11,6 +11,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct FadeIn {
     duration: f32,
     remaining: f32,
@@ -49,6 +50,7 @@ fn apply_fade_in(
 }
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct FadeOut {
     duration: f32,
     remaining: f32,

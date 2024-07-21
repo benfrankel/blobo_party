@@ -38,6 +38,7 @@ pub const THICK_FONT_HANDLE: Handle<Font> =
     Handle::weak_from_u128(93153499609634570285243616548722721367);
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct DynamicFontSize {
     pub size: Val,
     pub step: f32,

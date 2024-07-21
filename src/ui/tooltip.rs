@@ -74,6 +74,7 @@ pub enum TooltipSide {
 }
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Tooltip {
     pub text: String,
     pub side: TooltipSide,

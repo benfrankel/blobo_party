@@ -79,6 +79,7 @@ impl ThemeColor {
 }
 
 #[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct ThemeColorFor<C: Component + ColorMut>(
     pub ThemeColor,
     #[reflect(ignore)] PhantomData<C>,
@@ -106,6 +107,7 @@ impl<C: Component + ColorMut + TypePath> Configure for ThemeColorFor<C> {
 }
 
 #[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct ThemeColorForText(pub Vec<ThemeColor>);
 
 impl Configure for ThemeColorForText {

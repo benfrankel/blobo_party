@@ -12,6 +12,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct IsDisabled(pub bool);
 
 impl Configure for IsDisabled {
@@ -24,6 +25,7 @@ impl Configure for IsDisabled {
 /// The theme color to use for each Interaction state
 /// Requires Interaction and ThemeColor components to function
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct InteractionPalette {
     pub normal: ThemeColor,
     pub hovered: ThemeColor,

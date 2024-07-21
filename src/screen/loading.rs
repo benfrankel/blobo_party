@@ -33,6 +33,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Reflect)]
+#[reflect(Component)]
 struct IsLoadingBarFill;
 
 fn enter_loading(mut commands: Commands, ui_root: Res<UiRoot>) {
