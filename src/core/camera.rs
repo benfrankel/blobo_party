@@ -1,5 +1,8 @@
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::prelude::*;
+use bevy::render::camera::ScalingMode;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::util::prelude::*;
@@ -7,7 +10,24 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(Msaa::Off);
 
-    app.configure::<(CameraRoot, AbsoluteScale)>();
+    app.configure::<(ConfigHandle<CameraConfig>, CameraRoot, AbsoluteScale)>();
+}
+
+#[derive(Asset, Reflect, Serialize, Deserialize)]
+struct CameraConfig {
+    scaling_mode: ScalingMode,
+}
+
+impl Config for CameraConfig {
+    const PATH: &'static str = "config/camera.ron";
+
+    const EXTENSION: &'static str = "camera.ron";
+
+    fn on_load(&mut self, world: &mut World) {
+        let mut projection =
+            r!(world.get_mut::<OrthographicProjection>(world.resource::<CameraRoot>().primary));
+        projection.scaling_mode = self.scaling_mode;
+    }
 }
 
 #[derive(Resource, Reflect)]
