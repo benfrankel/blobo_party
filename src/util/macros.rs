@@ -18,7 +18,14 @@ impl<T, E> Success<T> for Result<T, E> {
 /// Unwrap or return.
 #[macro_export]
 macro_rules! r {
-    ($expr:expr) => {
+    ($return:expr, $expr:expr $(,)?) => {
+        match $crate::util::macros::Success::success($expr) {
+            Some(x) => x,
+            None => return $return,
+        }
+    };
+
+    ($expr:expr $(,)?) => {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,
             None => return,

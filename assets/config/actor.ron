@@ -12,8 +12,8 @@
                 frames: [
                     SpriteAnimationFrame(index: 2, steps: 2),
                     SpriteAnimationFrame(index: 3, steps: 2),
-                ]
-            )
+                ],
+            ),
         ),
     },
     player: "lucy",

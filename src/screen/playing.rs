@@ -7,7 +7,8 @@ use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
-use crate::game::actor;
+use crate::game::actor::enemy::enemy;
+use crate::game::actor::player::player;
 use crate::screen::fade_in;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -35,9 +36,9 @@ impl Configure for PlayingAssets {
 
 fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
-    commands.spawn_with(actor::player);
+    commands.spawn_with(player);
     commands
-        .spawn_with(actor::actor("lucy"))
+        .spawn_with(enemy("lucy"))
         .insert(TransformBundle::from_transform(
             Transform::from_translation(vec3(10.0, 0.0, 0.0)),
         ));

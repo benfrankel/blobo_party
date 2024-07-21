@@ -1,7 +1,12 @@
+pub mod enemy;
+pub mod facing;
+pub mod player;
+
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use facing::Facing;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -11,6 +16,8 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<ActorConfig>>();
+
+    app.add_plugins((enemy::plugin, facing::plugin, player::plugin));
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
@@ -53,31 +60,39 @@ pub struct Actor {
     pub texture_atlas_grid: TextureAtlasGrid,
     #[serde(skip)]
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
-    // TODO: Multiple animations per actor: HashMap<String, SpriteAnimation>?
     pub sprite_animation: SpriteAnimation,
 }
 
-fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) {
+fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldMut {
     let config_handle = entity.world().resource::<ConfigHandle<ActorConfig>>();
-    let config = r!(entity
-        .world()
-        .resource::<Assets<ActorConfig>>()
-        .get(&config_handle.0));
-    let actor = r!(config.actors.get(key.as_ref().unwrap_or(&config.player)));
+    let config = r!(
+        entity,
+        entity
+            .world()
+            .resource::<Assets<ActorConfig>>()
+            .get(&config_handle.0),
+    );
+    let actor = r!(
+        entity,
+        config.actors.get(key.as_ref().unwrap_or(&config.player)),
+    );
 
-    entity.insert((
-        Name::new(actor.display_name.clone()),
-        SpriteBundle {
-            texture: actor.texture.clone(),
-            ..default()
-        },
-        TextureAtlas {
-            layout: actor.texture_atlas_layout.clone(),
-            index: 0,
-        },
-        actor.sprite_animation.clone(),
-    ));
-    entity.add(create_deck);
+    entity
+        .insert((
+            Name::new(actor.display_name.clone()),
+            SpriteBundle {
+                texture: actor.texture.clone(),
+                ..default()
+            },
+            TextureAtlas {
+                layout: actor.texture_atlas_layout.clone(),
+                index: 0,
+            },
+            actor.sprite_animation.clone(),
+            Facing::default(),
+        ))
+        .add(create_deck);
+    entity
 }
 
 pub fn actor(key: impl Into<String>) -> impl EntityCommand<World> {
@@ -85,8 +100,4 @@ pub fn actor(key: impl Into<String>) -> impl EntityCommand<World> {
     move |entity: EntityWorldMut| {
         actor_helper(entity, Some(key));
     }
-}
-
-pub fn player(entity: EntityWorldMut) {
-    actor_helper(entity, None);
 }
