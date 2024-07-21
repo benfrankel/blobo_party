@@ -1,15 +1,20 @@
 pub mod enemy;
 pub mod facing;
+pub mod health;
 pub mod player;
 
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
+use bevy::math::vec2;
+use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
-use facing::Facing;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::actor::facing::Facing;
+use crate::game::actor::health::Health;
+use crate::game::actor::health::HealthBar;
 use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -17,7 +22,12 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<ActorConfig>>();
 
-    app.add_plugins((enemy::plugin, facing::plugin, player::plugin));
+    app.add_plugins((
+        enemy::plugin,
+        facing::plugin,
+        health::plugin,
+        player::plugin,
+    ));
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
@@ -61,6 +71,8 @@ pub struct Actor {
     #[serde(skip)]
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     pub sprite_animation: SpriteAnimation,
+
+    pub health: f32,
 }
 
 fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldMut {
@@ -90,8 +102,17 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             },
             actor.sprite_animation.clone(),
             Facing::default(),
+            Health::new(actor.health),
         ))
-        .add(create_deck);
+        .add(create_deck)
+        .with_children(|children| {
+            children
+                .spawn_with(HealthBar {
+                    size: vec2(8.0, 1.0),
+                })
+                .insert(Transform::from_translation(vec3(0.0, -4.5, 1.0)));
+        });
+
     entity
 }
 

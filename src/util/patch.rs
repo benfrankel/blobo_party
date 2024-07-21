@@ -11,7 +11,10 @@ pub trait EntityWorldMutExtAdd {
 impl EntityWorldMutExtAdd for EntityWorldMut<'_> {
     fn add<M: 'static>(&mut self, command: impl EntityCommand<M>) -> &mut Self {
         let id = self.id();
-        self.world_scope(|world| world.commands().add(command.with_entity(id)));
+        self.world_scope(|world| {
+            world.commands().add(command.with_entity(id));
+            world.flush_commands();
+        });
         self
     }
 }

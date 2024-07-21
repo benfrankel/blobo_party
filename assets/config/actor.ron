@@ -2,6 +2,7 @@
     actors: {
         "lucy": Actor(
             display_name: "Lucy",
+
             texture_path: "image/lucy.png",
             texture_atlas_grid: TextureAtlasGrid(
                 tile_size: UVec2(8, 8),
@@ -14,6 +15,8 @@
                     SpriteAnimationFrame(index: 3, steps: 2),
                 ],
             ),
+
+            health: 100,
         ),
     },
     player: "lucy",
