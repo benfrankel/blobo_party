@@ -67,12 +67,11 @@ impl Configure for HealthBar {
 }
 
 fn update_health_bar(
-    config_handle: Res<ConfigHandle<HealthBarConfig>>,
-    config: Res<Assets<HealthBarConfig>>,
+    config: ConfigRef<HealthBarConfig>,
     health_query: Query<&Health>,
     mut health_bar_query: Query<(&HealthBar, &Parent, &mut Sprite)>,
 ) {
-    let config = r!(config.get(&config_handle.0));
+    let config = r!(config.get());
 
     for (health_bar, parent, mut sprite) in &mut health_bar_query {
         let health = c!(health_query.get(parent.get()));

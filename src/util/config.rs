@@ -2,6 +2,7 @@ use std::any::type_name;
 
 use bevy::core::FrameCount;
 use bevy::ecs::event::ManualEventReader;
+use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
 use iyes_progress::prelude::*;
@@ -74,4 +75,16 @@ fn apply_config<C: Config>(world: &mut World, mut reader: Local<ManualEventReade
         let config = r!(config.get_mut(&world.resource::<ConfigHandle<C>>().0));
         config.on_load(world);
     });
+}
+
+#[derive(SystemParam)]
+pub struct ConfigRef<'w, C: Config> {
+    handle: Res<'w, ConfigHandle<C>>,
+    assets: Res<'w, Assets<C>>,
+}
+
+impl<C: Config> ConfigRef<'_, C> {
+    pub fn get(&self) -> Option<&C> {
+        self.assets.get(&self.handle.0)
+    }
 }
