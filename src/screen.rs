@@ -8,8 +8,8 @@ use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::animation::FadeIn;
-use crate::animation::FadeOut;
+use crate::animation::transition::FadeIn;
+use crate::animation::transition::FadeOut;
 use crate::core::window::WindowReady;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;

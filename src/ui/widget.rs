@@ -2,6 +2,8 @@ use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
 
+use crate::animation::backup::Backup;
+use crate::animation::offset::Offset;
 use crate::ui::prelude::*;
 
 pub fn column_left(mut entity: EntityWorldMut) {
@@ -150,12 +152,19 @@ pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
                     border_radius: BorderRadius::MAX,
                     ..default()
                 },
-                ThemeColor::Invisible.set::<BackgroundColor>(),
-                InteractionPalette {
-                    normal: ThemeColor::Primary,
-                    hovered: ThemeColor::PrimaryHovered,
-                    pressed: ThemeColor::PrimaryPressed,
-                    disabled: ThemeColor::PrimaryDisabled,
+                ThemeColor::default().set::<BackgroundColor>(),
+                InteractionTable {
+                    normal: ThemeColor::Primary.set::<BackgroundColor>(),
+                    hovered: ThemeColor::PrimaryHovered.set::<BackgroundColor>(),
+                    pressed: ThemeColor::PrimaryPressed.set::<BackgroundColor>(),
+                    disabled: ThemeColor::PrimaryDisabled.set::<BackgroundColor>(),
+                },
+                Offset::default(),
+                Backup::<Transform>::default(),
+                InteractionTable {
+                    hovered: Offset(Vec2::new(0.0, -4.0)),
+                    pressed: Offset(Vec2::new(0.0, 2.0)),
+                    ..default()
                 },
             ))
             .with_children(|parent| {

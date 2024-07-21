@@ -85,7 +85,7 @@ impl Configure for UpdateSet {
 pub enum PostTransformSet {
     /// Save the base transform as a backup.
     Save,
-    /// Blend via transform multplication (add translation, add rotation, multiply scale).
+    /// Blend via transform multiplication (add translation, add rotation, multiply scale).
     Blend,
     /// Apply facing (may multiply translation.x by -1).
     ApplyFacing,
