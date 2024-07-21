@@ -4,6 +4,7 @@ use bevy::core::FrameCount;
 use bevy::ecs::event::ManualEventReader;
 use bevy::prelude::*;
 use bevy_common_assets::ron::RonAssetPlugin;
+use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -15,6 +16,23 @@ pub trait Config: Asset + Serialize + for<'de> Deserialize<'de> {
     const EXTENSION: &'static str;
 
     fn on_load(&mut self, world: &mut World);
+
+    fn is_ready(&self, asset_server: &AssetServer) -> bool {
+        let _ = asset_server;
+        true
+    }
+
+    fn progress(
+        asset_server: Res<AssetServer>,
+        config_handle: Res<ConfigHandle<Self>>,
+        config: Res<Assets<Self>>,
+    ) -> Progress {
+        config
+            .get(&config_handle.0)
+            .map(|x| x.is_ready(&asset_server))
+            .unwrap_or_default()
+            .into()
+    }
 }
 
 #[derive(Resource, Reflect)]

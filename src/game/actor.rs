@@ -11,11 +11,10 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<ActorConfig>>();
 }
 
-// TODO: Require all actor assets loaded before continuing to `Screen::Playing`.
 #[derive(Asset, Reflect, Serialize, Deserialize)]
-struct ActorConfig {
-    actors: HashMap<String, Actor>,
-    player: String,
+pub struct ActorConfig {
+    pub actors: HashMap<String, Actor>,
+    pub player: String,
 }
 
 impl Config for ActorConfig {
@@ -33,17 +32,23 @@ impl Config for ActorConfig {
             actor.texture_atlas_layout = layouts.add(&actor.texture_atlas_grid);
         }
     }
+
+    fn is_ready(&self, asset_server: &AssetServer) -> bool {
+        self.actors
+            .values()
+            .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
+    }
 }
 
 #[derive(Reflect, Serialize, Deserialize)]
-struct Actor {
-    name: String,
-    texture_path: String,
+pub struct Actor {
+    pub name: String,
+    pub texture_path: String,
     #[serde(skip)]
-    texture: Handle<Image>,
-    texture_atlas_grid: TextureAtlasGrid,
+    pub texture: Handle<Image>,
+    pub texture_atlas_grid: TextureAtlasGrid,
     #[serde(skip)]
-    texture_atlas_layout: Handle<TextureAtlasLayout>,
+    pub texture_atlas_layout: Handle<TextureAtlasLayout>,
 }
 
 fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) {

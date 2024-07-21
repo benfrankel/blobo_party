@@ -4,6 +4,7 @@ use bevy_mod_picking::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
+use crate::game::actor::ActorConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
@@ -19,6 +20,10 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(StateFlush, Screen::Title.on_edge(exit_title, enter_title));
 
     app.configure::<TitleScreenAssets>();
+    app.add_systems(
+        Update,
+        Screen::Title.on_update(ActorConfig::progress.track_progress()),
+    );
 }
 
 const TITLE: &str = "bevy_jam_5";
