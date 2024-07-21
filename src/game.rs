@@ -1,5 +1,6 @@
 //! Game mechanics and content
 
+pub mod actor;
 mod step;
 
 use bevy::prelude::*;
@@ -9,7 +10,7 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.configure::<GameRoot>();
 
-    app.add_plugins(step::plugin);
+    app.add_plugins((actor::plugin, step::plugin));
 }
 
 #[derive(Resource, Reflect)]

@@ -1,0 +1,14 @@
+(
+    actors: {
+        "lucy": Actor(
+            name: "Lucy",
+            texture_path: "image/lucy.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(8, 8),
+                columns: 5,
+                rows: 1,
+            ),
+        ),
+    },
+    player: "lucy",
+)

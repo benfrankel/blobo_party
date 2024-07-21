@@ -1,3 +1,4 @@
+use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
@@ -6,6 +7,7 @@ use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
+use crate::game::actor;
 use crate::screen::fade_in;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -33,6 +35,12 @@ impl Configure for PlayingAssets {
 
 fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
+    commands.spawn_with(actor::player);
+    commands
+        .spawn_with(actor::actor("lucy"))
+        .insert(TransformBundle::from_transform(
+            Transform::from_translation(vec3(10.0, 0.0, 0.0)),
+        ));
 }
 
 fn exit_playing(
