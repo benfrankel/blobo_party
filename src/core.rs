@@ -46,10 +46,10 @@ pub(super) fn plugin(app: &mut App) {
 /// Game logic system ordering in the [`Update`] schedule.
 #[derive(SystemSet, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum UpdateSet {
-    /// Synchronize start-of-frame values.
-    SyncEarly,
     /// Tick timers.
     TickTimers,
+    /// Synchronize start-of-frame values.
+    SyncEarly,
     /// Record player and AI input.
     RecordInput,
     /// Step game logic.
@@ -67,8 +67,8 @@ impl Configure for UpdateSet {
         app.configure_sets(
             Update,
             (
-                Self::SyncEarly,
                 Self::TickTimers,
+                Self::SyncEarly,
                 Self::Update,
                 Self::RecordInput,
                 Self::HandleEvents,
