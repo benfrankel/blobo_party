@@ -1,0 +1,8 @@
+(
+    card_width: 20,
+    max_dock_width: 100,
+    max_dock_height: 10,
+    minimum_card_distance: 16,
+    dock_translation: Vec3(10.0, -35.0, 0.0),
+    dock_scale: 0.7,
+)

@@ -66,6 +66,7 @@ fn exit_playing(
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum PlayingAction {
     Restart,
+    RotateDock,
     // TODO: Pause
 }
 
@@ -75,6 +76,7 @@ impl Configure for PlayingAction {
         app.insert_resource(
             InputMap::default()
                 .insert(Self::Restart, KeyCode::KeyR)
+                .insert(Self::RotateDock, KeyCode::BracketLeft)
                 .build(),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());

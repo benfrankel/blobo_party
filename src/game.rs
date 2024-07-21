@@ -3,6 +3,7 @@
 pub mod actor;
 mod card;
 mod deck;
+mod deck_dock;
 pub mod sprite;
 pub mod step;
 
@@ -19,6 +20,7 @@ pub(super) fn plugin(app: &mut App) {
         step::plugin,
         card::plugin,
         deck::plugin,
+        deck_dock::plugin,
     ));
 }
 

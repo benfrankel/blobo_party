@@ -1,7 +1,6 @@
 pub mod enemy;
 pub mod facing;
 pub mod health;
-pub mod movement;
 pub mod player;
 
 use bevy::ecs::system::EntityCommand;
@@ -28,7 +27,6 @@ pub(super) fn plugin(app: &mut App) {
         enemy::plugin,
         facing::plugin,
         health::plugin,
-        movement::plugin,
         player::plugin,
     ));
 }

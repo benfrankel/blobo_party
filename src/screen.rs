@@ -1,6 +1,6 @@
 mod end;
 mod loading;
-mod playing;
+pub mod playing;
 mod splash;
 mod title;
 

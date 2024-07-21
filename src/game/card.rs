@@ -1,3 +1,4 @@
+use bevy::asset::embedded_asset;
 use bevy::ecs::system::SystemId;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
@@ -6,6 +7,9 @@ use pyri_state::prelude::*;
 use crate::screen::Screen;
 
 pub(super) fn plugin(app: &mut App) {
+    // TODO: setup correct asset loading for cards
+    embedded_asset!(app, "cards/sample_card.png");
+
     app.add_systems(
         StateFlush,
         Screen::Playing.on_edge(exit_playing, enter_playing),
