@@ -94,7 +94,7 @@ fn loading_bar(mut entity: EntityWorldMut) {
                 },
                 ..default()
             },
-            ThemeColor::BodyText.set::<BorderColor>(),
+            ThemeColor::BodyText.target::<BorderColor>(),
         ))
         .with_children(|children| {
             children.spawn_with(loading_bar_fill);
@@ -112,7 +112,7 @@ fn loading_bar_fill(mut entity: EntityWorldMut) {
             },
             ..default()
         },
-        ThemeColor::Primary.set::<BackgroundColor>(),
+        ThemeColor::Primary.target::<BackgroundColor>(),
         IsLoadingBarFill,
     ));
 }

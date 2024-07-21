@@ -69,10 +69,11 @@ pub enum ThemeColor {
 
     // Misc UI colors
     Popup,
+    FacingIndicator,
 }
 
 impl ThemeColor {
-    pub const fn set<C: Component + ColorMut>(self) -> ThemeColorFor<C> {
+    pub const fn target<C: Component + ColorMut>(self) -> ThemeColorFor<C> {
         ThemeColorFor(self, PhantomData)
     }
 }

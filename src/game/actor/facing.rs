@@ -1,13 +1,17 @@
+use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 
+use crate::animation::backup::Backup;
 use crate::core::camera::CameraRoot;
+use crate::core::theme::ThemeColor;
 use crate::core::window::WindowRoot;
+use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Facing, FacePlayer, FaceCursor)>();
+    app.configure::<(Facing, FacePlayer, FaceCursor, FacingIndicator)>();
 }
 
 #[derive(Component, Reflect)]
@@ -76,5 +80,45 @@ fn face_cursor(
     for (mut facing, gt) in &mut facing_query {
         let pos = gt.translation().xy();
         facing.0 = c!(Dir2::new(target_pos - pos));
+    }
+}
+
+/// Reads from the `Facing` component on its parent entity.
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct FacingIndicator {
+    pub radius: Vec2,
+}
+
+impl Configure for FacingIndicator {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(
+            PostUpdate,
+            update_facing_indicator.in_set(PostTransformSet::Blend),
+        );
+    }
+}
+
+fn update_facing_indicator(
+    facing_query: Query<&Facing>,
+    mut facing_indicator_query: Query<(&Parent, &FacingIndicator, &mut Transform)>,
+) {
+    for (parent, facing_indicator, mut transform) in &mut facing_indicator_query {
+        let facing = c!(facing_query.get(parent.get()));
+        transform.translation += (facing_indicator.radius * facing.0.as_vec2()).extend(0.0);
+        transform.rotate(Quat::from_rotation_z(facing.0.to_angle()));
+    }
+}
+
+impl EntityCommand for FacingIndicator {
+    fn apply(self, id: Entity, world: &mut World) {
+        world.entity_mut(id).insert((
+            Name::new("FacingIndicator"),
+            SpriteBundle::default(),
+            ThemeColor::FacingIndicator.target::<Sprite>(),
+            Backup::<Transform>::default(),
+            self,
+        ));
     }
 }

@@ -39,7 +39,7 @@ impl FromWorld for TooltipRoot {
                     z_index: ZIndex::Global(999),
                     ..default()
                 },
-                ThemeColor::Popup.set::<BackgroundColor>(),
+                ThemeColor::Popup.target::<BackgroundColor>(),
             ))
             .id();
 

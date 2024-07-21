@@ -152,12 +152,12 @@ pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
                     border_radius: BorderRadius::MAX,
                     ..default()
                 },
-                ThemeColor::default().set::<BackgroundColor>(),
+                ThemeColor::default().target::<BackgroundColor>(),
                 InteractionTable {
-                    normal: ThemeColor::Primary.set::<BackgroundColor>(),
-                    hovered: ThemeColor::PrimaryHovered.set::<BackgroundColor>(),
-                    pressed: ThemeColor::PrimaryPressed.set::<BackgroundColor>(),
-                    disabled: ThemeColor::PrimaryDisabled.set::<BackgroundColor>(),
+                    normal: ThemeColor::Primary.target::<BackgroundColor>(),
+                    hovered: ThemeColor::PrimaryHovered.target::<BackgroundColor>(),
+                    pressed: ThemeColor::PrimaryPressed.target::<BackgroundColor>(),
+                    disabled: ThemeColor::PrimaryDisabled.target::<BackgroundColor>(),
                 },
                 Offset::default(),
                 Backup::<Transform>::default(),

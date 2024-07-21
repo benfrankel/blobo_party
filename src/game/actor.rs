@@ -9,6 +9,7 @@ use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use facing::FacingIndicator;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -110,6 +111,12 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
                     size: vec2(8.0, 1.0),
                 })
                 .insert(Transform::from_translation(vec3(0.0, -4.5, 1.0)));
+
+            children
+                .spawn_with(FacingIndicator {
+                    radius: vec2(5.5, 4.5),
+                })
+                .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
         });
 
     entity

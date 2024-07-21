@@ -23,5 +23,7 @@
 
         // Popup
         Srgba(Srgba(red: 0.106, green: 0.118, blue: 0.122, alpha: 0.850)),
+        // FacingIndicator
+        Srgba(Srgba(red: 0.400, green: 0.800, blue: 1.000, alpha: 1.000)),
     )),
 )

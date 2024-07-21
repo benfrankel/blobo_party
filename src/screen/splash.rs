@@ -76,7 +76,7 @@ fn splash_image(mut entity: EntityWorldMut) {
             )),
             ..default()
         },
-        ThemeColor::BodyText.set::<UiImage>(),
+        ThemeColor::BodyText.target::<UiImage>(),
     ));
 }
 
