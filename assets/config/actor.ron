@@ -18,6 +18,24 @@
 
             health: 100,
         ),
+        "linus": Actor(
+            display_name: "Linus",
+
+            texture_path: "image/linus.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(8, 8),
+                columns: 5,
+                rows: 1,
+            ),
+            sprite_animation: SpriteAnimation(
+                frames: [
+                    SpriteAnimationFrame(index: 2, steps: 2),
+                    SpriteAnimationFrame(index: 3, steps: 2),
+                ],
+            ),
+
+            health: 100,
+        ),
     },
-    player: "lucy",
+    player: "linus",
 )
