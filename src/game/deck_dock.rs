@@ -48,8 +48,6 @@ impl Config for DeckDockConfig {
 
 fn enter_playing() {}
 
-
-
 #[derive(Component)]
 struct MoveToward {
     start: Vec3,
@@ -68,7 +66,8 @@ fn animate_move_towards(
             .start
             .lerp(move_toward.end, move_toward.duration.fraction());
 
-        if let (true, Some(mut e)) = (move_toward.duration.finished(), commands.get_entity(entity)) {
+        if let (true, Some(mut e)) = (move_toward.duration.finished(), commands.get_entity(entity))
+        {
             e.remove::<MoveToward>();
         }
     }
@@ -190,9 +189,7 @@ fn create_dock(
         let number_of_cards = deck.cards.iter().len();
         commands
             .spawn((
-                DeckDock {
-                    number_of_cards,
-                },
+                DeckDock { number_of_cards },
                 SpatialBundle {
                     transform: Transform::from_translation(config.dock_translation)
                         .with_scale(Vec3::splat(config.dock_scale)),
