@@ -123,3 +123,14 @@ impl<E, B: Bundle> TriggerExtGetEntity for Trigger<'_, E, B> {
         Some(self.entity()).filter(|&x| x != Entity::PLACEHOLDER)
     }
 }
+
+// TODO: Workaround for https://github.com/bevyengine/bevy/issues/2548.
+pub trait Dir2ExtToQuat {
+    fn to_quat(self) -> Quat;
+}
+
+impl Dir2ExtToQuat for Dir2 {
+    fn to_quat(self) -> Quat {
+        Quat::from_rotation_z(self.to_angle())
+    }
+}

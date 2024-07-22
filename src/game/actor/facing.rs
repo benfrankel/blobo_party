@@ -137,7 +137,7 @@ fn update_facing_indicator(
     for (parent, facing_indicator, mut transform) in &mut facing_indicator_query {
         let facing = c!(facing_query.get(parent.get()));
         transform.translation += (facing_indicator.radius * facing.0.as_vec2()).extend(0.0);
-        transform.rotate(Quat::from_rotation_z(facing.0.to_angle()));
+        transform.rotate(facing.0.to_quat());
     }
 }
 
