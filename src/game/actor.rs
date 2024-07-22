@@ -1,3 +1,4 @@
+pub mod attack;
 pub mod enemy;
 pub mod facing;
 pub mod health;
@@ -11,14 +12,16 @@ use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
-use movement::Movement;
-use movement::MovementController;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::actor::attack::Attack;
+use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
+use crate::game::actor::movement::Movement;
+use crate::game::actor::movement::MovementController;
 use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -27,6 +30,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<ActorConfig>>();
 
     app.add_plugins((
+        attack::plugin,
         enemy::plugin,
         facing::plugin,
         health::plugin,
@@ -106,7 +110,6 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             },
             actor.sprite_animation.clone(),
             Facing::default(),
-            Health::new(actor.health),
             RigidBody::Dynamic,
             Collider::circle(4.0),
             LockedAxes::ROTATION_LOCKED,
@@ -116,6 +119,9 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
                 brake_decel: 0.01,
                 max_speed: 50.0,
             },
+            Attack { strength: 1.0 },
+            AttackController::default(),
+            Health::new(actor.health),
         ))
         .add(create_deck)
         .with_children(|children| {

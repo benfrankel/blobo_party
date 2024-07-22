@@ -3,10 +3,10 @@ use bevy::math::vec3;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 
-use super::movement::MovementAction;
 use crate::game::actor::actor_helper;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
+use crate::game::actor::movement::input::MovementAction;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
