@@ -1,8 +1,8 @@
 (
-    card_width: 20,
-    max_dock_width: 100,
-    max_dock_height: 10,
+    visible_card_count: 12,
     minimum_card_distance: 16,
-    dock_translation: Vec3(10.0, -35.0, 0.0),
-    dock_scale: 0.7,
+    card_width: 20,
+    dock_height: 20.0,
+    max_card_scale: 5,
+    min_card_scale: 1,
 )

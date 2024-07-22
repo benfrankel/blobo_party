@@ -67,6 +67,7 @@ fn exit_playing(
 pub enum PlayingAction {
     Restart,
     RotateDock,
+    AddCard,
     // TODO: Pause
 }
 
@@ -77,6 +78,7 @@ impl Configure for PlayingAction {
             InputMap::default()
                 .insert(Self::Restart, KeyCode::KeyR)
                 .insert(Self::RotateDock, KeyCode::BracketLeft)
+                .insert(Self::AddCard, KeyCode::KeyL)
                 .build(),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());

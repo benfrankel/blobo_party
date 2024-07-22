@@ -24,8 +24,7 @@ pub enum CardKey {
 // TODO: Remove this `allow` later.
 #[allow(dead_code)]
 pub struct Card {
-    pub name: String,
-    pub description: String,
+    pub path: String,
     pub action: SystemId<Entity>,
 }
 
@@ -33,9 +32,7 @@ pub struct Card {
 pub struct CardStorage(pub HashMap<CardKey, Card>);
 
 // TODO: Move this into a sub-folder of storing different attacks?
-fn basic_attack(In(entity): In<Entity>) {
-    println!("Entity {} Attacked", entity);
-}
+fn basic_attack(In(_): In<Entity>) {}
 
 fn enter_playing(world: &mut World) {
     let id = world.register_system(basic_attack);
@@ -43,8 +40,7 @@ fn enter_playing(world: &mut World) {
         [(
             CardKey::Placeholder,
             Card {
-                name: "Attack".to_string(),
-                description: "Attack Description".to_string(),
+                path: "embedded://bevy_jam_5/game/cards/sample_card.png".to_string(),
                 action: id,
             },
         )]
