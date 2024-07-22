@@ -889,29 +889,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_jam_5"
-version = "0.1.0"
-dependencies = [
- "avian2d",
- "bevy",
- "bevy_asset_loader",
- "bevy_common_assets",
- "bevy_editor_pls",
- "bevy_kira_audio",
- "bevy_mod_debugdump",
- "bevy_mod_picking",
- "bevy_state",
- "iyes_progress",
- "lazy-regex",
- "leafwing-input-manager",
- "pyri_state",
- "ron",
- "serde",
- "strum",
- "tap",
-]
-
-[[package]]
 name = "bevy_kira_audio"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1501,6 +1478,29 @@ dependencies = [
  "cc",
  "cfg-if",
  "constant_time_eq",
+]
+
+[[package]]
+name = "blobo_party"
+version = "0.1.0"
+dependencies = [
+ "avian2d",
+ "bevy",
+ "bevy_asset_loader",
+ "bevy_common_assets",
+ "bevy_editor_pls",
+ "bevy_kira_audio",
+ "bevy_mod_debugdump",
+ "bevy_mod_picking",
+ "bevy_state",
+ "iyes_progress",
+ "lazy-regex",
+ "leafwing-input-manager",
+ "pyri_state",
+ "ron",
+ "serde",
+ "strum",
+ "tap",
 ]
 
 [[package]]

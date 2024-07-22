@@ -40,7 +40,7 @@ fn enter_playing(world: &mut World) {
         [(
             CardKey::Placeholder,
             Card {
-                path: "embedded://bevy_jam_5/game/cards/sample_card.png".to_string(),
+                path: "embedded://blobo_party/game/cards/sample_card.png".to_string(),
                 action: id,
             },
         )]

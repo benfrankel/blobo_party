@@ -20,12 +20,12 @@ env:
   # The base filename of the binary produced by `cargo build`.
   BINARY: run
   # The name to use for the packaged application produced by this workflow.
-  PACKAGE_NAME: bevy_jam_5
+  PACKAGE_NAME: blobo-party
   # The itch.io page to upload to in the format `user-name/project-name`.
   # Comment this out to disable.
-  ITCH_TARGET: pyrious/bevy-jam-5
+  ITCH_TARGET: pyrious/blobo-party
   # The organization or author that owns the rights to the game.
-  OWNER: Pyrious, ramirezmike, Eden
+  OWNER: Pyrious, ramirezmike, Median
   # The path to the assets directory.
   ASSETS_DIR: assets
   # Whether packages produced by this workflow should be uploaded to the Github release.

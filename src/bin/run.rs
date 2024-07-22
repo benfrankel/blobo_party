@@ -4,5 +4,5 @@
 use bevy::prelude::*;
 
 fn main() -> AppExit {
-    App::new().add_plugins(bevy_jam_5::plugin).run()
+    App::new().add_plugins(blobo_party::plugin).run()
 }

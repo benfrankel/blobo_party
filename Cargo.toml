@@ -1,5 +1,5 @@
 [package]
-name = "bevy_jam_5"
+name = "blobo_party"
 version = "0.1.0"
 edition = "2021"
 default-run = "run"

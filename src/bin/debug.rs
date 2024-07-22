@@ -10,7 +10,7 @@ use bevy_mod_debugdump::schedule_graph_dot;
 // Example: `RUST_LOG=off cargo run --release --bin debug_dump | dot -Tsvg | feh -`
 fn main() {
     let mut app = App::new();
-    app.add_plugins(bevy_jam_5::plugin);
+    app.add_plugins(blobo_party::plugin);
 
     let mut labels = app
         .world()

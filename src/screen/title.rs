@@ -33,7 +33,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<TitleScreenAssets>();
 }
 
-const TITLE: &str = "bevy_jam_5";
+const TITLE: &str = "Blobo Party!";
 
 #[derive(AssetCollection, Resource, Reflect, Default)]
 #[reflect(Resource)]

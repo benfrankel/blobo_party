@@ -69,7 +69,7 @@ fn splash_image(mut entity: EntityWorldMut) {
                 ..default()
             },
             image: UiImage::new(asset_server.load_with_settings(
-                "embedded://bevy_jam_5/screen/splash/splash.png",
+                "embedded://blobo_party/screen/splash/splash.png",
                 |settings: &mut ImageLoaderSettings| {
                     settings.sampler = ImageSampler::linear();
                 },
