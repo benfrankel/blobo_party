@@ -10,8 +10,8 @@ use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    // Default to Bevy logo grey instead of Bevy website code block grey.
-    app.insert_resource(ClearColor(Color::srgb(0.157, 0.157, 0.157)));
+    // Default to CSS loading screen color.
+    app.insert_resource(ClearColor(Color::srgb(0.161, 0.157, 0.231)));
 
     app.configure::<(
         ConfigHandle<ThemeConfig>,
