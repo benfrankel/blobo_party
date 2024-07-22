@@ -2,6 +2,8 @@ pub mod input;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::util::prelude::*;
@@ -13,15 +15,15 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 /// Movement parameters.
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
 pub struct Movement {
     /// The acceleration when controller is active (pixels per second^2).
     pub accel: f32,
     /// The deceleration factor when controller is idle (decay per second).
-    pub brake_decel: f32,
+    pub decel: f32,
     /// The maximum speed (pixels per second).
-    pub max_speed: f32,
+    pub speed: f32,
 }
 
 impl Configure for Movement {
@@ -42,9 +44,9 @@ fn apply_movement(
     for (movement, controller, mut velocity) in &mut movement_query {
         if controller.0 != Vec2::ZERO {
             velocity.0 += movement.accel * controller.0 * dt;
-            velocity.0 = velocity.0.clamp_length_max(movement.max_speed);
+            velocity.0 = velocity.0.clamp_length_max(movement.speed);
         } else if velocity.0.length_squared() > EPSILON {
-            velocity.0 *= movement.brake_decel.powf(dt);
+            velocity.0 *= movement.decel.powf(dt);
         } else {
             velocity.0 = Vec2::ZERO;
         }

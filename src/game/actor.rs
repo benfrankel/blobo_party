@@ -41,8 +41,11 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct ActorConfig {
-    pub actors: HashMap<String, Actor>,
     pub player: String,
+    pub player_health_multiplier: f32,
+    pub player_strength_multiplier: f32,
+
+    pub actors: HashMap<String, Actor>,
 }
 
 impl Config for ActorConfig {
@@ -80,7 +83,9 @@ pub struct Actor {
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     pub sprite_animation: SpriteAnimation,
 
+    pub movement: Movement,
     pub health: f32,
+    pub strength: f32,
 }
 
 fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldMut {
@@ -92,10 +97,21 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             .resource::<Assets<ActorConfig>>()
             .get(&config_handle.0),
     );
+
     let actor = r!(
         entity,
         config.actors.get(key.as_ref().unwrap_or(&config.player)),
     );
+    let health = if key.is_some() {
+        actor.health
+    } else {
+        config.player_health_multiplier * actor.health
+    };
+    let strength = if key.is_some() {
+        actor.strength
+    } else {
+        config.player_strength_multiplier * actor.strength
+    };
 
     entity
         .insert((
@@ -114,14 +130,10 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             Collider::circle(4.0),
             LockedAxes::ROTATION_LOCKED,
             MovementController::default(),
-            Movement {
-                accel: 1000.0,
-                brake_decel: 0.01,
-                max_speed: 50.0,
-            },
-            Attack { strength: 1.0 },
+            actor.movement,
+            Attack { strength },
             AttackController::default(),
-            Health::new(actor.health),
+            Health::new(health),
         ))
         .add(create_deck)
         .with_children(|children| {
