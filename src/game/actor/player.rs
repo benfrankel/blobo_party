@@ -1,3 +1,4 @@
+use avian2d::prelude::*;
 use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
@@ -7,6 +8,7 @@ use crate::game::actor::actor_helper;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
 use crate::game::actor::movement::input::MovementAction;
+use crate::game::GameLayer;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -27,6 +29,7 @@ pub fn player(entity: EntityWorldMut) {
     actor_helper(entity, None)
         .insert((
             IsPlayer,
+            CollisionLayers::new(GameLayer::Player, LayerMask::ALL),
             FaceCursor,
             InputManagerBundle::with_map(
                 InputMap::default()
@@ -35,6 +38,9 @@ pub fn player(entity: EntityWorldMut) {
                     .insert(MovementAction::Move, DualAxis::left_stick())
                     .build(),
             ),
+            // TODO: This is for testing hit effects until we get actual projectiles / attacks.
+            crate::game::combat::Hitbox,
+            crate::game::combat::HitDamage(2.0),
         ))
         .with_children(|children| {
             children

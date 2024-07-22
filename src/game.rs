@@ -2,11 +2,13 @@
 
 pub mod actor;
 mod card;
+pub mod combat;
 mod deck;
 mod deck_dock;
 pub mod sprite;
 pub mod step;
 
+use avian2d::prelude::*;
 use bevy::prelude::*;
 
 use crate::util::prelude::*;
@@ -16,11 +18,12 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_plugins((
         actor::plugin,
-        sprite::plugin,
-        step::plugin,
         card::plugin,
+        combat::plugin,
         deck::plugin,
         deck_dock::plugin,
+        sprite::plugin,
+        step::plugin,
     ));
 }
 
@@ -45,4 +48,10 @@ impl FromWorld for GameRoot {
 
         Self { game }
     }
+}
+
+#[derive(PhysicsLayer)]
+pub enum GameLayer {
+    Player,
+    Enemy,
 }

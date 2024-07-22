@@ -22,6 +22,7 @@ use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
+use crate::game::combat::Hurtbox;
 use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -116,24 +117,34 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
     entity
         .insert((
             Name::new(actor.display_name.clone()),
-            SpriteBundle {
-                texture: actor.texture.clone(),
-                ..default()
-            },
-            TextureAtlas {
-                layout: actor.texture_atlas_layout.clone(),
-                index: 0,
-            },
-            actor.sprite_animation.clone(),
-            Facing::default(),
-            RigidBody::Dynamic,
-            Collider::circle(4.0),
-            LockedAxes::ROTATION_LOCKED,
-            MovementController::default(),
-            actor.movement,
-            Attack { strength },
-            AttackController::default(),
-            Health::new(health),
+            // Appearance:
+            (
+                SpriteBundle {
+                    texture: actor.texture.clone(),
+                    ..default()
+                },
+                TextureAtlas {
+                    layout: actor.texture_atlas_layout.clone(),
+                    index: 0,
+                },
+                actor.sprite_animation.clone(),
+                Facing::default(),
+            ),
+            // Physics:
+            (
+                RigidBody::Dynamic,
+                Collider::circle(4.0),
+                LockedAxes::ROTATION_LOCKED,
+                actor.movement,
+                MovementController::default(),
+            ),
+            // Combat:
+            (
+                Attack { strength },
+                AttackController::default(),
+                Hurtbox,
+                Health::new(health),
+            ),
         ))
         .add(create_deck)
         .with_children(|children| {
