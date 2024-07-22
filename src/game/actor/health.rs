@@ -4,8 +4,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
-use crate::game::actor::death::IsDead;
-use crate::game::actor::death::OnDeath;
+use crate::game::combat::damage::OnDamage;
+use crate::game::combat::death::IsDead;
+use crate::game::combat::death::OnDeath;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -22,6 +23,7 @@ pub struct Health {
 impl Configure for Health {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
+        app.observe(lose_health_on_damage);
         app.add_systems(Update, detect_out_of_health.in_set(UpdateSet::Detect));
     }
 }
@@ -30,6 +32,12 @@ impl Health {
     pub fn new(max: f32) -> Self {
         Self { max, current: max }
     }
+}
+
+fn lose_health_on_damage(trigger: Trigger<OnDamage>, mut health_query: Query<&mut Health>) {
+    let entity = r!(trigger.get_entity());
+    let mut health = r!(health_query.get_mut(entity));
+    health.current -= trigger.event().0;
 }
 
 fn detect_out_of_health(

@@ -34,11 +34,11 @@ pub struct OnHit(pub Entity, pub Entity);
 
 impl Configure for OnHit {
     fn configure(app: &mut App) {
-        app.add_systems(Update, trigger_hit_event.in_set(UpdateSet::Update));
+        app.add_systems(Update, trigger_hit.in_set(UpdateSet::Update));
     }
 }
 
-fn trigger_hit_event(
+fn trigger_hit(
     mut commands: Commands,
     mut collision_events: EventReader<CollisionStarted>,
     hitbox_query: Query<(), With<Hitbox>>,

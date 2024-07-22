@@ -1,5 +1,4 @@
 pub mod attack;
-pub mod death;
 pub mod enemy;
 pub mod facing;
 pub mod health;
@@ -18,13 +17,13 @@ use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
-use crate::game::actor::death::DespawnOnDeath;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
-use crate::game::combat::collision::Hurtbox;
+use crate::game::combat::death::DespawnOnDeath;
+use crate::game::combat::hit::Hurtbox;
 use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -34,7 +33,6 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_plugins((
         attack::plugin,
-        death::plugin,
         enemy::plugin,
         facing::plugin,
         health::plugin,

@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 
-use crate::game::actor::health::Health;
-use crate::game::combat::collision::OnHit;
+use crate::game::combat::hit::OnHit;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<HitboxDamage>();
 }
+
+#[derive(Event)]
+pub struct OnDamage(pub f32);
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
@@ -21,12 +23,10 @@ impl Configure for HitboxDamage {
 
 fn apply_hitbox_damage(
     trigger: Trigger<OnHit>,
+    mut commands: Commands,
     damage_query: Query<&HitboxDamage>,
-    mut health_query: Query<&mut Health>,
 ) {
     let &OnHit(hitbox, hurtbox) = trigger.event();
     let damage = r!(damage_query.get(hitbox));
-    let mut health = r!(health_query.get_mut(hurtbox));
-
-    health.current -= damage.0;
+    commands.entity(hurtbox).trigger(OnDamage(damage.0));
 }
