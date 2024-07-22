@@ -39,8 +39,8 @@ pub fn player(entity: EntityWorldMut) {
                     .build(),
             ),
             // TODO: This is for testing hit effects until we get actual projectiles / attacks.
-            crate::game::combat::Hitbox,
-            crate::game::combat::HitDamage(2.0),
+            crate::game::combat::collision::Hitbox,
+            crate::game::combat::damage::HitboxDamage(2.0),
         ))
         .with_children(|children| {
             children

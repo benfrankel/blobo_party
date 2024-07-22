@@ -1,4 +1,5 @@
 pub mod attack;
+pub mod death;
 pub mod enemy;
 pub mod facing;
 pub mod health;
@@ -17,12 +18,13 @@ use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
+use crate::game::actor::death::DespawnOnDeath;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
-use crate::game::combat::Hurtbox;
+use crate::game::combat::collision::Hurtbox;
 use crate::game::deck::create_deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -32,6 +34,7 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_plugins((
         attack::plugin,
+        death::plugin,
         enemy::plugin,
         facing::plugin,
         health::plugin,
@@ -144,6 +147,8 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
                 AttackController::default(),
                 Hurtbox,
                 Health::new(health),
+                // TODO: Death animation instead, despawn when it's finished.
+                DespawnOnDeath,
             ),
         ))
         .add(create_deck)
