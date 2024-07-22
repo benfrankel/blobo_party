@@ -38,9 +38,9 @@ fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
     commands.spawn_with(player);
     commands
-        .spawn_with(enemy("lucy"))
+        .spawn_with(enemy("aqua"))
         .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(10.0, 0.0, 0.0)),
+            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
         ));
 }
 
