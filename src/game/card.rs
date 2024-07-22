@@ -21,6 +21,8 @@ pub enum CardKey {
     Placeholder,
 }
 
+// TODO: Remove this `allow` later.
+#[allow(dead_code)]
 pub struct Card {
     pub name: String,
     pub description: String,
