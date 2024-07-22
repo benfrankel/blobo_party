@@ -1,14 +1,18 @@
 pub mod enemy;
 pub mod facing;
 pub mod health;
+pub mod movement;
 pub mod player;
 
+use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use movement::Movement;
+use movement::MovementController;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -26,6 +30,7 @@ pub(super) fn plugin(app: &mut App) {
         enemy::plugin,
         facing::plugin,
         health::plugin,
+        movement::plugin,
         player::plugin,
     ));
 }
@@ -102,6 +107,15 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             actor.sprite_animation.clone(),
             Facing::default(),
             Health::new(actor.health),
+            RigidBody::Dynamic,
+            Collider::circle(4.0),
+            LockedAxes::ROTATION_LOCKED,
+            MovementController::default(),
+            Movement {
+                accel: 1000.0,
+                brake_decel: 0.01,
+                max_speed: 50.0,
+            },
         ))
         .add(create_deck)
         .with_children(|children| {

@@ -151,10 +151,10 @@ impl Default for DebugConfig {
 
             debug_picking: true,
             debug_physics: true,
-            editor: false,
+            editor: true,
 
             extend_loading_screen: 0.0,
-            start_screen: None,
+            start_screen: Some(Screen::Playing),
         }
     }
 }
