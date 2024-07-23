@@ -5,7 +5,7 @@
 
     actors: {
         "lucy": Actor(
-            display_name: "Lucy",
+            name: "Lucy",
 
             texture_path: "image/actor/red.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -30,7 +30,7 @@
         ),
 
         "linus": Actor(
-            display_name: "Linus",
+            name: "Linus",
 
             texture_path: "image/actor/pink.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -55,7 +55,7 @@
         ),
 
         "jade": Actor(
-            display_name: "Jade",
+            name: "Jade",
 
             texture_path: "image/actor/green.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -80,7 +80,7 @@
         ),
 
         "aqua": Actor(
-            display_name: "Aqua",
+            name: "Aqua",
 
             texture_path: "image/actor/blue.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -105,7 +105,7 @@
         ),
 
         "lily": Actor(
-            display_name: "Lily",
+            name: "Lily",
 
             texture_path: "image/actor/purple.png",
             texture_atlas_grid: TextureAtlasGrid(

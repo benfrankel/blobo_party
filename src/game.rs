@@ -5,6 +5,7 @@ mod card;
 pub mod combat;
 mod deck;
 mod deck_dock;
+pub mod projectile;
 pub mod sprite;
 pub mod step;
 
@@ -22,6 +23,7 @@ pub(super) fn plugin(app: &mut App) {
         combat::plugin,
         deck::plugin,
         deck_dock::plugin,
+        projectile::plugin,
         sprite::plugin,
         step::plugin,
     ));
@@ -54,4 +56,5 @@ impl FromWorld for GameRoot {
 pub enum GameLayer {
     Player,
     Enemy,
+    Projectile,
 }

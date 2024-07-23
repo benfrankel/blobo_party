@@ -60,5 +60,15 @@ pub struct MovementController(pub Vec2);
 impl Configure for MovementController {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            reset_movement_controller.in_set(UpdateSet::SyncEarly),
+        );
+    }
+}
+
+fn reset_movement_controller(mut controller_query: Query<&mut MovementController>) {
+    for mut controller in &mut controller_query {
+        controller.0 = Vec2::ZERO;
     }
 }

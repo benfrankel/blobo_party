@@ -69,8 +69,8 @@ impl Configure for UpdateSet {
             (
                 Self::TickTimers,
                 Self::SyncEarly,
-                Self::Update,
                 Self::RecordInput,
+                Self::Update,
                 Self::Detect,
                 Self::SpawnDespawn,
                 Self::SyncLate,

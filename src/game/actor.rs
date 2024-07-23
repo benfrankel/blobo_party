@@ -75,7 +75,7 @@ impl Config for ActorConfig {
 
 #[derive(Reflect, Serialize, Deserialize)]
 pub struct Actor {
-    pub display_name: String,
+    pub name: String,
 
     pub texture_path: String,
     #[serde(skip)]
@@ -99,7 +99,6 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             .resource::<Assets<ActorConfig>>()
             .get(&config_handle.0),
     );
-
     let actor = r!(
         entity,
         config.actors.get(key.as_ref().unwrap_or(&config.player)),
@@ -117,7 +116,7 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
 
     entity
         .insert((
-            Name::new(actor.display_name.clone()),
+            Name::new(actor.name.clone()),
             // Appearance:
             (
                 SpriteBundle {
@@ -141,7 +140,12 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             ),
             // Combat:
             (
-                Attack { strength },
+                Attack {
+                    strength,
+                    distance: 7.0,
+                    // TODO: This should be set to `None` instead.
+                    projectile: Some("quarter_note".to_string()),
+                },
                 AttackController::default(),
                 Hurtbox,
                 Health::new(health),
