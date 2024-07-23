@@ -73,7 +73,7 @@ impl Config for ActorConfig {
     }
 }
 
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Actor {
     pub name: String,
 
@@ -90,27 +90,23 @@ pub struct Actor {
     pub health: f32,
 }
 
-pub fn actor(actor: &Actor) -> impl EntityCommand<World> {
-    let name = actor.name.replace(' ', "");
-    let texture = actor.texture.clone();
-    let layout = actor.texture_atlas_layout.clone();
-    let sprite_animation = actor.sprite_animation.clone();
-    let attack = actor.attack.clone();
-    let movement = actor.movement;
-    let health = actor.health;
-
-    move |mut entity: EntityWorldMut| {
-        entity
+impl EntityCommand for Actor {
+    fn apply(self, id: Entity, world: &mut World) {
+        world
+            .entity_mut(id)
             .insert((
-                Name::new(name),
+                Name::new(self.name.replace(' ', "")),
                 // Appearance:
                 (
                     SpriteBundle {
-                        texture,
+                        texture: self.texture,
                         ..default()
                     },
-                    TextureAtlas { layout, index: 0 },
-                    sprite_animation,
+                    TextureAtlas {
+                        layout: self.texture_atlas_layout,
+                        index: 0,
+                    },
+                    self.sprite_animation,
                     Facing::default(),
                 ),
                 // Physics:
@@ -118,14 +114,14 @@ pub fn actor(actor: &Actor) -> impl EntityCommand<World> {
                     RigidBody::Dynamic,
                     Collider::circle(4.0),
                     LockedAxes::ROTATION_LOCKED,
-                    movement,
+                    self.movement,
                     MovementController::default(),
                 ),
                 // Combat:
                 (
-                    attack,
+                    self.attack,
                     AttackController::default(),
-                    Health::new(health),
+                    Health::new(self.health),
                     Hurtbox,
                     // TODO: Death animation instead, despawn when it's finished.
                     DespawnOnDeath,

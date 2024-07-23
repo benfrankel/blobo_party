@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct TextureAtlasGrid {
     tile_size: UVec2,
     columns: u32,

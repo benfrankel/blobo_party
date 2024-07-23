@@ -2,7 +2,6 @@ use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 
-use crate::game::actor::actor;
 use crate::game::actor::facing::FacePlayer;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::ActorConfig;
@@ -33,9 +32,10 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand<World> {
             .world()
             .resource::<Assets<ActorConfig>>()
             .get(&config_handle.0),);
+        let actor = r!(config.enemies.get(&key)).clone();
 
         entity
-            .add(actor(r!(config.enemies.get(&key))))
+            .add(actor)
             .insert((
                 IsEnemy,
                 Faction::Enemy,

@@ -4,7 +4,6 @@ use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 
-use crate::game::actor::actor;
 use crate::game::actor::attack::input::attack_action;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
@@ -39,9 +38,10 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand<World> {
             .world()
             .resource::<Assets<ActorConfig>>()
             .get(&config_handle.0),);
+        let actor = r!(config.players.get(&key)).clone();
 
         entity
-            .add(actor(r!(config.players.get(&key))))
+            .add(actor)
             .insert((
                 IsPlayer,
                 Faction::Player,
