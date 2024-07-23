@@ -38,6 +38,17 @@ impl Configure for Attack {
     }
 }
 
+impl Default for Attack {
+    fn default() -> Self {
+        Self {
+            power: 1.0,
+            force: 1.0,
+            distance: 7.0,
+            projectile: None,
+        }
+    }
+}
+
 fn apply_attack(
     mut commands: Commands,
     attack_query: Query<(&Attack, &AttackController, &GlobalTransform, &Faction)>,

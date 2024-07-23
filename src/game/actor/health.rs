@@ -13,7 +13,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(Health, ConfigHandle<HealthBarConfig>, HealthBar)>();
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
 pub struct Health {
     pub max: f32,
@@ -28,6 +28,12 @@ impl Configure for Health {
             Update,
             trigger_death_from_health.in_set(UpdateSet::TriggerDeath),
         );
+    }
+}
+
+impl Default for Health {
+    fn default() -> Self {
+        Self::new(10.0)
     }
 }
 

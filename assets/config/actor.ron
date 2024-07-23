@@ -28,7 +28,10 @@
                 // TODO: For testing purposes. This should actually be None.
                 projectile: Some("quarter_note"),
             ),
-            health: 100,
+            health: Health(
+                max: 100,
+                current: 100,
+            ),
         ),
     },
 
@@ -48,19 +51,6 @@
                     SpriteAnimationFrame(index: 1, steps: 2),
                 ],
             ),
-
-            movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
-            ),
-            attack: Attack(
-                power: 1,
-                force: 1,
-                distance: 7,
-                projectile: None,
-            ),
-            health: 10,
         ),
 
         "linus": Actor(
@@ -78,20 +68,6 @@
                     SpriteAnimationFrame(index: 1, steps: 2),
                 ],
             ),
-
-            movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
-            ),
-            attack: Attack(
-                power: 1,
-                force: 1,
-                distance: 7,
-                // TODO: For testing purposes. This should actually be None.
-                projectile: Some("quarter_note"),
-            ),
-            health: 10,
         ),
 
         "jade": Actor(
@@ -109,19 +85,6 @@
                     SpriteAnimationFrame(index: 1, steps: 2),
                 ],
             ),
-
-            movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
-            ),
-            attack: Attack(
-                power: 1,
-                force: 1,
-                distance: 7,
-                projectile: None,
-            ),
-            health: 10,
         ),
 
         "aqua": Actor(
@@ -139,19 +102,6 @@
                     SpriteAnimationFrame(index: 1, steps: 2),
                 ],
             ),
-
-            movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
-            ),
-            attack: Attack(
-                power: 1,
-                force: 1,
-                distance: 7,
-                projectile: None,
-            ),
-            health: 10,
         ),
 
         "lily": Actor(
@@ -169,19 +119,6 @@
                     SpriteAnimationFrame(index: 1, steps: 2),
                 ],
             ),
-
-            movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
-            ),
-            attack: Attack(
-                power: 1,
-                force: 1,
-                distance: 7,
-                projectile: None,
-            ),
-            health: 10,
         ),
     },
 )

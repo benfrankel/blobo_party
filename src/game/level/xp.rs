@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::game::actor::faction::Faction;
 use crate::game::combat::death::OnDeath;
@@ -37,14 +39,21 @@ fn receive_xp(trigger: Trigger<OnReceiveXp>, mut xp: ResMut<PlayerXp>) {
 }
 
 /// Experience rewarded to the player on death.
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
+#[serde(transparent)]
 pub struct XpReward(pub f32);
 
 impl Configure for XpReward {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.observe(apply_xp_reward);
+    }
+}
+
+impl Default for XpReward {
+    fn default() -> Self {
+        Self(10.0)
     }
 }
 

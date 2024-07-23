@@ -26,6 +26,7 @@ use crate::game::actor::movement::MovementController;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
 use crate::game::deck::Deck;
+use crate::game::level::xp::XpReward;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
@@ -85,9 +86,14 @@ pub struct Actor {
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     pub sprite_animation: SpriteAnimation,
 
+    #[serde(default)]
     pub movement: Movement,
+    #[serde(default)]
     pub attack: Attack,
-    pub health: f32,
+    #[serde(default)]
+    pub health: Health,
+    #[serde(default)]
+    pub xp_reward: XpReward,
 }
 
 impl EntityCommand for Actor {
@@ -121,11 +127,12 @@ impl EntityCommand for Actor {
                 (
                     self.attack,
                     AttackController::default(),
-                    Health::new(self.health),
+                    self.health,
                     Hurtbox,
                     // TODO: Death animation instead, despawn when it's finished.
                     DespawnOnDeath,
                 ),
+                self.xp_reward,
                 // TODO: Deck should be pre-defined per actor.
                 Deck::default(),
             ))

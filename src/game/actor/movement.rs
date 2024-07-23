@@ -35,6 +35,16 @@ impl Configure for Movement {
     }
 }
 
+impl Default for Movement {
+    fn default() -> Self {
+        Self {
+            accel: 1000.0,
+            decel: 0.0001,
+            speed: 80.0,
+        }
+    }
+}
+
 fn apply_movement(
     time: Res<Time>,
     mut movement_query: Query<(&Movement, &MovementController, &mut LinearVelocity)>,
