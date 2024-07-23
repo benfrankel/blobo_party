@@ -39,7 +39,7 @@ pub fn player(entity: EntityWorldMut) {
             // TODO: This is for testing hit effects until we get actual projectiles / attacks.
             crate::game::combat::hit::Hitbox,
             crate::game::combat::damage::HitboxDamage(2.0),
-            crate::game::combat::knockback::HitboxKnockback { force: 150.0 },
+            crate::game::combat::knockback::HitboxKnockback(150.0),
         ))
         // TODO: This is for testing movement until it's card-controlled.
         .add(movement_action)

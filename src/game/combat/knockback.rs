@@ -10,9 +10,7 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct HitboxKnockback {
-    pub force: f32,
-}
+pub struct HitboxKnockback(pub f32);
 
 impl Configure for HitboxKnockback {
     fn configure(app: &mut App) {
@@ -33,5 +31,5 @@ fn apply_hitbox_knockback(
     let hitbox_pos = hitbox_gt.translation().xy();
     let hurtbox_pos = hurtbox_gt.translation().xy();
     let direction = Dir2::new(hurtbox_pos - hitbox_pos).unwrap_or(Dir2::EAST);
-    velocity.0 += knockback.force * direction;
+    velocity.0 += knockback.0 * direction;
 }

@@ -47,7 +47,8 @@ pub(super) fn plugin(app: &mut App) {
 pub struct ActorConfig {
     pub player: String,
     pub player_health_multiplier: f32,
-    pub player_strength_multiplier: f32,
+    pub player_attack_power_multiplier: f32,
+    pub player_attack_force_multiplier: f32,
 
     pub actors: HashMap<String, Actor>,
 }
@@ -88,8 +89,8 @@ pub struct Actor {
     pub sprite_animation: SpriteAnimation,
 
     pub movement: Movement,
+    pub attack: Attack,
     pub health: f32,
-    pub strength: f32,
 }
 
 fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldMut {
@@ -105,16 +106,13 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
         entity,
         config.actors.get(key.as_ref().unwrap_or(&config.player)),
     );
-    let health = if key.is_some() {
-        actor.health
-    } else {
-        config.player_health_multiplier * actor.health
-    };
-    let strength = if key.is_some() {
-        actor.strength
-    } else {
-        config.player_strength_multiplier * actor.strength
-    };
+    let mut attack = actor.attack.clone();
+    let mut health = actor.health;
+    if key.is_none() {
+        attack.power *= config.player_attack_power_multiplier;
+        attack.force *= config.player_attack_force_multiplier;
+        health *= config.player_health_multiplier;
+    }
 
     entity
         .insert((
@@ -142,15 +140,10 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
             ),
             // Combat:
             (
-                Attack {
-                    strength,
-                    distance: 7.0,
-                    // TODO: This should be set to `None` instead.
-                    projectile: Some("quarter_note".to_string()),
-                },
+                attack,
                 AttackController::default(),
-                Hurtbox,
                 Health::new(health),
+                Hurtbox,
                 // TODO: Death animation instead, despawn when it's finished.
                 DespawnOnDeath,
             ),

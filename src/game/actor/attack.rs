@@ -2,6 +2,8 @@ pub mod input;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
@@ -16,11 +18,13 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 /// Attack parameters.
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Serialize, Deserialize, Clone)]
 #[reflect(Component)]
 pub struct Attack {
     /// A multiplier for effects like damage and knockback.
-    pub strength: f32,
+    pub power: f32,
+    /// A multiplier for initial projectile speed.
+    pub force: f32,
     /// The relative distance to spawn projectiles from.
     pub distance: f32,
     /// The key of the projectile to attack with.
@@ -57,7 +61,11 @@ fn apply_attack(
         target_layers.remove(faction.layer());
 
         commands
-            .spawn_with(projectile(projectile_key, attack.strength, controller.0))
+            .spawn_with(projectile(
+                projectile_key,
+                attack.power,
+                attack.force * controller.0,
+            ))
             .insert((
                 Transform::from_translation(translation),
                 CollisionLayers::new(GameLayer::Projectile, target_layers),

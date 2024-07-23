@@ -53,11 +53,7 @@ pub struct Projectile {
     pub knockback: f32,
 }
 
-pub fn projectile(
-    key: impl Into<String>,
-    strength: f32,
-    direction: Vec2,
-) -> impl EntityCommand<World> {
+pub fn projectile(key: impl Into<String>, power: f32, force: Vec2) -> impl EntityCommand<World> {
     let key = key.into();
 
     move |mut entity: EntityWorldMut| {
@@ -83,15 +79,13 @@ pub fn projectile(
                     RigidBody::Kinematic,
                     Collider::circle(projectile.radius),
                     LockedAxes::ROTATION_LOCKED,
-                    LinearVelocity(projectile.speed * direction),
+                    LinearVelocity(projectile.speed * force),
                 ),
                 // Combat:
                 (
                     Hitbox,
-                    HitboxDamage(strength * projectile.damage),
-                    HitboxKnockback {
-                        force: strength * projectile.knockback,
-                    },
+                    HitboxDamage(power * projectile.damage),
+                    HitboxKnockback(power * projectile.knockback),
                 ),
             ))
             .set_parent(parent);

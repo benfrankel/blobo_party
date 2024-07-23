@@ -1,7 +1,8 @@
 (
     player: "linus",
     player_health_multiplier: 10,
-    player_strength_multiplier: 2,
+    player_attack_power_multiplier: 2,
+    player_attack_force_multiplier: 4,
 
     actors: {
         "lucy": Actor(
@@ -25,8 +26,13 @@
                 decel: 0.0001,
                 speed: 50.0,
             ),
+            attack: Attack(
+                power: 1,
+                force: 1,
+                distance: 7,
+                projectile: None,
+            ),
             health: 10,
-            strength: 1,
         ),
 
         "linus": Actor(
@@ -50,8 +56,14 @@
                 decel: 0.0001,
                 speed: 50.0,
             ),
+            attack: Attack(
+                power: 1,
+                force: 1,
+                distance: 7,
+                // TODO: For testing purposes. This should actually be None.
+                projectile: Some("quarter_note"),
+            ),
             health: 10,
-            strength: 1,
         ),
 
         "jade": Actor(
@@ -75,8 +87,13 @@
                 decel: 0.0001,
                 speed: 50.0,
             ),
+            attack: Attack(
+                power: 1,
+                force: 1,
+                distance: 7,
+                projectile: None,
+            ),
             health: 10,
-            strength: 1,
         ),
 
         "aqua": Actor(
@@ -100,8 +117,13 @@
                 decel: 0.0001,
                 speed: 50.0,
             ),
+            attack: Attack(
+                power: 1,
+                force: 1,
+                distance: 7,
+                projectile: None,
+            ),
             health: 10,
-            strength: 1,
         ),
 
         "lily": Actor(
@@ -125,8 +147,13 @@
                 decel: 0.0001,
                 speed: 50.0,
             ),
+            attack: Attack(
+                power: 1,
+                force: 1,
+                distance: 7,
+                projectile: None,
+            ),
             health: 10,
-            strength: 1,
         ),
     },
 )
