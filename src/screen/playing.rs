@@ -39,7 +39,7 @@ impl Configure for PlayingAssets {
 
 fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
-    commands.spawn_with(player);
+    commands.spawn_with(player("linus"));
     commands
         .spawn_with(enemy("aqua"))
         .insert(TransformBundle::from_transform(

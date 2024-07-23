@@ -1,10 +1,38 @@
 (
-    player: "linus",
-    player_health_multiplier: 10,
-    player_attack_power_multiplier: 2,
-    player_attack_force_multiplier: 4,
+    players: {
+        "linus": Actor(
+            name: "Linus",
 
-    actors: {
+            texture_path: "image/actor/pink.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(9, 8),
+                columns: 2,
+                rows: 1,
+            ),
+            sprite_animation: SpriteAnimation(
+                frames: [
+                    SpriteAnimationFrame(index: 0, steps: 2),
+                    SpriteAnimationFrame(index: 1, steps: 2),
+                ],
+            ),
+
+            movement: Movement(
+                accel: 1000,
+                decel: 0.0001,
+                speed: 50.0,
+            ),
+            attack: Attack(
+                power: 2,
+                force: 4,
+                distance: 7,
+                // TODO: For testing purposes. This should actually be None.
+                projectile: Some("quarter_note"),
+            ),
+            health: 100,
+        ),
+    },
+
+    enemies: {
         "lucy": Actor(
             name: "Lucy",
 

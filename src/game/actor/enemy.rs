@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use crate::game::actor::actor;
 use crate::game::actor::facing::FacePlayer;
 use crate::game::actor::faction::Faction;
+use crate::game::actor::ActorConfig;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
@@ -27,9 +28,14 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand<World> {
     let key = key.into();
     move |mut entity: EntityWorldMut| {
         let parent = entity.world().resource::<GameRoot>().enemies;
+        let config_handle = entity.world().resource::<ConfigHandle<ActorConfig>>();
+        let config = r!(entity
+            .world()
+            .resource::<Assets<ActorConfig>>()
+            .get(&config_handle.0),);
 
         entity
-            .add(actor(key))
+            .add(actor(r!(config.enemies.get(&key))))
             .insert((
                 IsEnemy,
                 Faction::Enemy,

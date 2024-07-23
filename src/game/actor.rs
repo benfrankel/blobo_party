@@ -25,7 +25,7 @@ use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
-use crate::game::deck::create_deck;
+use crate::game::deck::Deck;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
@@ -45,12 +45,8 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct ActorConfig {
-    pub player: String,
-    pub player_health_multiplier: f32,
-    pub player_attack_power_multiplier: f32,
-    pub player_attack_force_multiplier: f32,
-
-    pub actors: HashMap<String, Actor>,
+    pub players: HashMap<String, Actor>,
+    pub enemies: HashMap<String, Actor>,
 }
 
 impl Config for ActorConfig {
@@ -62,7 +58,7 @@ impl Config for ActorConfig {
             SystemState::<(Res<AssetServer>, ResMut<Assets<TextureAtlasLayout>>)>::new(world);
         let (asset_server, mut layouts) = system_state.get_mut(world);
 
-        for actor in self.actors.values_mut() {
+        for actor in self.players.values_mut().chain(self.enemies.values_mut()) {
             actor.texture = asset_server.load(&actor.texture_path);
             actor.texture_atlas_layout = layouts.add(&actor.texture_atlas_grid);
             actor.sprite_animation.calculate_total_steps();
@@ -70,8 +66,9 @@ impl Config for ActorConfig {
     }
 
     fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        self.actors
+        self.players
             .values()
+            .chain(self.enemies.values())
             .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
     }
 }
@@ -93,76 +90,55 @@ pub struct Actor {
     pub health: f32,
 }
 
-fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldMut {
-    let config_handle = entity.world().resource::<ConfigHandle<ActorConfig>>();
-    let config = r!(
-        entity,
+pub fn actor(actor: &Actor) -> impl EntityCommand<World> {
+    let name = actor.name.replace(' ', "");
+    let texture = actor.texture.clone();
+    let layout = actor.texture_atlas_layout.clone();
+    let sprite_animation = actor.sprite_animation.clone();
+    let attack = actor.attack.clone();
+    let movement = actor.movement;
+    let health = actor.health;
+
+    move |mut entity: EntityWorldMut| {
         entity
-            .world()
-            .resource::<Assets<ActorConfig>>()
-            .get(&config_handle.0),
-    );
-    let actor = r!(
-        entity,
-        config.actors.get(key.as_ref().unwrap_or(&config.player)),
-    );
-    let mut attack = actor.attack.clone();
-    let mut health = actor.health;
-    if key.is_none() {
-        attack.power *= config.player_attack_power_multiplier;
-        attack.force *= config.player_attack_force_multiplier;
-        health *= config.player_health_multiplier;
-    }
-
-    entity
-        .insert((
-            Name::new(actor.name.replace(' ', "")),
-            // Appearance:
-            (
-                SpriteBundle {
-                    texture: actor.texture.clone(),
-                    ..default()
-                },
-                TextureAtlas {
-                    layout: actor.texture_atlas_layout.clone(),
-                    index: 0,
-                },
-                actor.sprite_animation.clone(),
-                Facing::default(),
-            ),
-            // Physics:
-            (
-                RigidBody::Dynamic,
-                Collider::circle(4.0),
-                LockedAxes::ROTATION_LOCKED,
-                actor.movement,
-                MovementController::default(),
-            ),
-            // Combat:
-            (
-                attack,
-                AttackController::default(),
-                Health::new(health),
-                Hurtbox,
-                // TODO: Death animation instead, despawn when it's finished.
-                DespawnOnDeath,
-            ),
-        ))
-        .add(create_deck)
-        .with_children(|children| {
-            children
-                .spawn_with(HealthBar {
-                    size: vec2(8.0, 1.0),
-                })
-                .insert(Transform::from_translation(vec3(0.0, -4.5, 1.0)));
-        });
-
-    entity
-}
-
-pub fn actor(key: impl Into<String>) -> impl EntityCommand<World> {
-    let key = key.into();
-    move |entity: EntityWorldMut| {
-        actor_helper(entity, Some(key));
+            .insert((
+                Name::new(name),
+                // Appearance:
+                (
+                    SpriteBundle {
+                        texture,
+                        ..default()
+                    },
+                    TextureAtlas { layout, index: 0 },
+                    sprite_animation,
+                    Facing::default(),
+                ),
+                // Physics:
+                (
+                    RigidBody::Dynamic,
+                    Collider::circle(4.0),
+                    LockedAxes::ROTATION_LOCKED,
+                    movement,
+                    MovementController::default(),
+                ),
+                // Combat:
+                (
+                    attack,
+                    AttackController::default(),
+                    Health::new(health),
+                    Hurtbox,
+                    // TODO: Death animation instead, despawn when it's finished.
+                    DespawnOnDeath,
+                ),
+                // TODO: Deck should be pre-defined per actor.
+                Deck::default(),
+            ))
+            .with_children(|children| {
+                children
+                    .spawn_with(HealthBar {
+                        size: vec2(8.0, 1.0),
+                    })
+                    .insert(Transform::from_translation(vec3(0.0, -4.5, 1.0)));
+            });
     }
 }

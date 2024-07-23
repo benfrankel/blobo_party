@@ -23,7 +23,8 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Deck {
     pub cards: Vec<CardKey>,
     next_card: usize,
@@ -50,13 +51,6 @@ fn handle_player_added_cards(
             deck.cards.insert(event.index, event.card);
         }
     }
-}
-
-pub fn create_deck(mut entity: EntityWorldMut) {
-    entity.insert(Deck {
-        cards: vec![],
-        next_card: 0,
-    });
 }
 
 pub fn execute_queued_cards(world: &mut World) {
