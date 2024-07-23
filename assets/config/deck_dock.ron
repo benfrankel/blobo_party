@@ -3,6 +3,6 @@
     minimum_card_distance: 16,
     card_width: 20,
     dock_height: 20.0,
-    max_card_scale: 5,
-    min_card_scale: 1,
+    max_card_scale: 1,
+    min_card_scale: 0.1,
 )

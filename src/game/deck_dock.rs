@@ -1,12 +1,11 @@
 use bevy::prelude::*;
-use bevy::render::texture::ImageLoaderSettings;
-use bevy::render::texture::ImageSampler;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
+use crate::game::card::CardConfig;
 use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
 use crate::game::step::on_step;
@@ -97,7 +96,7 @@ struct CardPosition(usize);
 
 fn add_card(mut added_card_event_writer: EventWriter<AddCardEvent>) {
     added_card_event_writer.send(AddCardEvent {
-        card: CardKey::Placeholder,
+        card: CardKey::BasicStep,
         index: 0,
     });
 }
@@ -126,22 +125,37 @@ fn handle_added_cards(
 }
 
 fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
-    let asset_server = entity.world().resource::<AssetServer>();
+    let config_handle = entity.world().resource::<ConfigHandle<CardConfig>>();
+    let config = r!(entity
+        .world()
+        .resource::<Assets<CardConfig>>()
+        .get(&config_handle.0),);
+
+    entity
+        .insert((ImageBundle {
+            style: Style {
+                position_type: PositionType::Absolute,
+                ..default()
+            },
+            transform: Transform::from_scale(Vec3::splat(0.1)),
+            image: UiImage::new(config.card_texture.clone()),
+            ..default()
+        },))
+        .with_children(|children| {
+            children.spawn_with(move |e: EntityWorldMut| add_icon(e, card_key));
+        });
+}
+
+fn add_icon(mut entity: EntityWorldMut, card_key: CardKey) {
     let card_storage = entity.world().resource::<CardStorage>();
-    let card_path = card_storage[&card_key].path.clone();
+    let card = &card_storage[&card_key];
 
     entity.insert((ImageBundle {
         style: Style {
-            position_type: PositionType::Absolute,
+            position_type: PositionType::Relative,
             ..default()
         },
-        transform: Transform::from_scale(Vec3::splat(5.0)),
-        image: UiImage::new(asset_server.load_with_settings(
-            card_path,
-            |settings: &mut ImageLoaderSettings| {
-                settings.sampler = ImageSampler::linear();
-            },
-        )),
+        image: UiImage::new(card.texture.clone()),
         ..default()
     },));
 }

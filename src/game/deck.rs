@@ -11,9 +11,11 @@ use crate::screen::Screen;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        Screen::Playing.on_update((execute_queued_cards
-            .in_set(UpdateSet::Update)
-            .run_if(on_step(4)),)),
+        Screen::Playing.on_update(
+            execute_queued_cards
+                .in_set(UpdateSet::Update)
+                .run_if(resource_added::<CardStorage>.and_then(on_step(4))),
+        ),
     );
 }
 
@@ -37,11 +39,7 @@ impl Deck {
 
 pub fn create_deck(mut entity: EntityWorldMut) {
     entity.insert(Deck {
-        cards: vec![
-            CardKey::Placeholder,
-            CardKey::Placeholder,
-            CardKey::Placeholder,
-        ],
+        cards: vec![],
         next_card: 0,
     });
 }
