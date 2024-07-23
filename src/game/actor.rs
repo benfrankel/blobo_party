@@ -62,7 +62,7 @@ impl Config for ActorConfig {
         for actor in self.players.values_mut().chain(self.enemies.values_mut()) {
             actor.texture = asset_server.load(&actor.texture_path);
             actor.texture_atlas_layout = layouts.add(&actor.texture_atlas_grid);
-            actor.sprite_animation.calculate_total_steps();
+            actor.sprite_animation.calculate_total_beats();
         }
     }
 

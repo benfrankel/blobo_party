@@ -3,8 +3,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
-use crate::game::step::on_step;
-use crate::game::step::Step;
+use crate::game::music::beat::on_beat;
+use crate::game::music::beat::Beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -14,7 +14,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Reflect, Serialize, Deserialize, Copy, Clone)]
 pub struct SpriteAnimationFrame {
     pub index: usize,
-    pub steps: usize,
+    pub beats: usize,
 }
 
 #[derive(Component, Reflect, Serialize, Deserialize, Clone)]
@@ -22,7 +22,7 @@ pub struct SpriteAnimationFrame {
 pub struct SpriteAnimation {
     pub frames: Vec<SpriteAnimationFrame>,
     #[serde(skip)]
-    pub total_steps: usize,
+    pub total_beats: usize,
 }
 
 impl Configure for SpriteAnimation {
@@ -32,23 +32,23 @@ impl Configure for SpriteAnimation {
             Update,
             update_sprite_animation
                 .in_set(UpdateSet::Update)
-                .run_if(on_step(1)),
+                .run_if(on_beat(1)),
         );
     }
 }
 
 impl SpriteAnimation {
     // TODO: Does serde support syncing a value after deserialization?
-    pub fn calculate_total_steps(&mut self) {
-        self.total_steps = self.frames.iter().map(|x| x.steps).sum();
+    pub fn calculate_total_beats(&mut self) {
+        self.total_beats = self.frames.iter().map(|x| x.beats).sum();
     }
 
-    /// Calculate the texture atlas index of the animation after `steps` steps.
-    fn index(&self, steps: usize) -> usize {
-        let mut steps = steps % self.total_steps;
+    /// Calculate the texture atlas index of the animation after `beats` beats.
+    fn index(&self, beats: usize) -> usize {
+        let mut beats = beats % self.total_beats;
         let mut i = 0;
-        while steps >= self.frames[i].steps {
-            steps -= self.frames[i].steps;
+        while beats >= self.frames[i].beats {
+            beats -= self.frames[i].beats;
             i += 1;
         }
 
@@ -57,10 +57,10 @@ impl SpriteAnimation {
 }
 
 fn update_sprite_animation(
-    step: Res<Step>,
+    beat: Res<Beat>,
     mut anim_query: Query<(&SpriteAnimation, &mut TextureAtlas)>,
 ) {
     for (anim, mut atlas) in &mut anim_query {
-        atlas.index = anim.index(step.total);
+        atlas.index = anim.index(beat.total);
     }
 }

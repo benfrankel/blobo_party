@@ -6,8 +6,8 @@ pub mod combat;
 mod deck;
 mod deck_dock;
 pub mod level;
+pub mod music;
 pub mod sprite;
-pub mod step;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -24,8 +24,8 @@ pub(super) fn plugin(app: &mut App) {
         deck::plugin,
         deck_dock::plugin,
         level::plugin,
+        music::plugin,
         sprite::plugin,
-        step::plugin,
     ));
 }
 

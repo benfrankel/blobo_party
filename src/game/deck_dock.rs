@@ -13,7 +13,7 @@ use crate::game::card::CardConfig;
 use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
 use crate::game::deck::Deck;
-use crate::game::step::on_step;
+use crate::game::music::beat::on_beat;
 use crate::screen::playing::PlayingAction;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -34,7 +34,7 @@ pub(super) fn plugin(app: &mut App) {
             handle_added_cards,
             rotate_dock_left
                 .in_set(UpdateSet::Update)
-                .run_if(on_step(4)),
+                .run_if(on_beat(2)),
             rotate_dock_left.run_if(action_just_pressed(PlayingAction::RotateDock)),
             add_card.run_if(action_just_pressed(PlayingAction::AddCard)),
         )),

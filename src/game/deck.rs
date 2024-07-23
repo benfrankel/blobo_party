@@ -7,7 +7,7 @@ use crate::game::actor::player::IsPlayer;
 use crate::game::card::AddCardEvent;
 use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
-use crate::game::step::on_step;
+use crate::game::music::beat::on_beat;
 use crate::screen::Screen;
 
 pub(super) fn plugin(app: &mut App) {
@@ -18,7 +18,7 @@ pub(super) fn plugin(app: &mut App) {
             handle_player_added_cards,
             execute_queued_cards
                 .in_set(UpdateSet::Update)
-                .run_if(resource_exists::<CardStorage>.and_then(on_step(4))),
+                .run_if(resource_exists::<CardStorage>.and_then(on_beat(2))),
         )),
     );
 }
