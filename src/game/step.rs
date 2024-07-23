@@ -13,7 +13,7 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 struct StepConfig {
-    duration_millis: u64,
+    duration_nanos: u64,
 }
 
 impl Config for StepConfig {
@@ -24,7 +24,7 @@ impl Config for StepConfig {
         world
             .resource_mut::<StepTimer>()
             .0
-            .set_duration(Duration::from_millis(self.duration_millis));
+            .set_duration(Duration::from_nanos(self.duration_nanos));
     }
 }
 
@@ -42,7 +42,7 @@ impl Configure for StepTimer {
 
 impl Default for StepTimer {
     fn default() -> Self {
-        Self(Timer::new(Duration::from_millis(125), TimerMode::Repeating))
+        Self(Timer::new(Duration::from_millis(250), TimerMode::Repeating))
     }
 }
 
