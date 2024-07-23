@@ -11,18 +11,19 @@ use crate::game::step::on_step;
 use crate::screen::Screen;
 
 pub(super) fn plugin(app: &mut App) {
+    app.register_type::<Deck>();
     app.add_systems(
         Update,
         Screen::Playing.on_update((
             handle_player_added_cards,
             execute_queued_cards
                 .in_set(UpdateSet::Update)
-                .run_if(resource_added::<CardStorage>.and_then(on_step(4))),
+                .run_if(resource_exists::<CardStorage>.and_then(on_step(4))),
         )),
     );
 }
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct Deck {
     pub cards: Vec<CardKey>,
     next_card: usize,

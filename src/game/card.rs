@@ -10,6 +10,7 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<CardConfig>>()
+        .register_type::<CardKey>()
         .add_event::<AddCardEvent>();
 }
 
@@ -41,7 +42,6 @@ impl Config for CardConfig {
     const EXTENSION: &'static str = "card.ron";
 
     fn on_load(&mut self, world: &mut World) {
-        let id = world.register_system(basic_attack);
         let mut system_state = SystemState::<Res<AssetServer>>::new(world);
         let asset_server = system_state.get_mut(world);
 
@@ -56,13 +56,14 @@ impl Config for CardConfig {
                 Card {
                     display_name: value.name.clone(),
                     description: value.description.clone(),
-                    action: id,
+                    action: get_system_id(world, key),
                     texture: value.texture.clone(),
                 },
             )
         });
 
-        world.insert_resource(CardStorage(cards.collect()));
+        let card_storage = CardStorage(cards.collect());
+        world.insert_resource(card_storage);
     }
 
     fn is_ready(&self, asset_server: &AssetServer) -> bool {
@@ -73,6 +74,22 @@ impl Config for CardConfig {
                 .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
     }
 }
+
+// TODO: This works for mapping Cards to their Actions but it might
+// be better in another file and maybe as a resource?
+fn get_system_id(world: &mut World, card: &CardKey) -> SystemId<Entity> {
+    let action = match card {
+        CardKey::BasicStep => basic_step,
+        _ => basic_attack,
+    };
+
+    world.register_system(action)
+}
+
+fn basic_step(In(entity): In<Entity>) {
+    println!("Moved {}", entity)
+}
+fn basic_attack(In(_): In<Entity>) {}
 
 #[allow(dead_code)]
 pub struct Card {
@@ -92,6 +109,3 @@ pub enum CardKey {
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct CardStorage(pub HashMap<CardKey, Card>);
-
-// TODO: Move this into a sub-folder of storing different attacks?
-fn basic_attack(In(_): In<Entity>) {}
