@@ -3,6 +3,8 @@ use bevy::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::core::UpdateSet;
+use crate::game::actor::player::IsPlayer;
+use crate::game::card::AddCardEvent;
 use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
 use crate::game::step::on_step;
@@ -11,11 +13,12 @@ use crate::screen::Screen;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        Screen::Playing.on_update(
+        Screen::Playing.on_update((
+            handle_player_added_cards,
             execute_queued_cards
                 .in_set(UpdateSet::Update)
                 .run_if(resource_added::<CardStorage>.and_then(on_step(4))),
-        ),
+        )),
     );
 }
 
@@ -33,6 +36,17 @@ impl Deck {
     fn rotate(&mut self) {
         if !self.cards.is_empty() {
             self.next_card = (self.next_card + 1) % self.cards.len();
+        }
+    }
+}
+
+fn handle_player_added_cards(
+    mut added_card_event_reader: EventReader<AddCardEvent>,
+    mut player_deck: Query<&mut Deck, With<IsPlayer>>,
+) {
+    for event in added_card_event_reader.read() {
+        for mut deck in &mut player_deck {
+            deck.cards.insert(event.index, event.card);
         }
     }
 }

@@ -4,11 +4,19 @@ use bevy::prelude::*;
 use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
+use strum::EnumIter;
 
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<ConfigHandle<CardConfig>>();
+    app.configure::<ConfigHandle<CardConfig>>()
+        .add_event::<AddCardEvent>();
+}
+
+#[derive(Event)]
+pub struct AddCardEvent {
+    pub card: CardKey,
+    pub index: usize,
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
@@ -74,7 +82,7 @@ pub struct Card {
     pub action: SystemId<Entity>,
 }
 
-#[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, EnumIter)]
 pub enum CardKey {
     BasicStep,
     DoubleBeat,

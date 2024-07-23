@@ -1,13 +1,18 @@
 use bevy::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use pyri_state::prelude::*;
+use rand::seq::SliceRandom;
 use serde::Deserialize;
 use serde::Serialize;
+use strum::IntoEnumIterator;
 
 use crate::core::UpdateSet;
+use crate::game::actor::player::IsPlayer;
+use crate::game::card::AddCardEvent;
 use crate::game::card::CardConfig;
 use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
+use crate::game::deck::Deck;
 use crate::game::step::on_step;
 use crate::screen::playing::PlayingAction;
 use crate::screen::Screen;
@@ -15,8 +20,7 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<ConfigHandle<DeckDockConfig>>()
-        .add_event::<AddCardEvent>();
+    app.configure::<ConfigHandle<DeckDockConfig>>();
 
     app.add_systems(
         StateFlush,
@@ -82,23 +86,27 @@ fn deck_dock(mut entity: EntityWorldMut) {
     ));
 }
 
-#[derive(Event)]
-pub struct AddCardEvent {
-    pub card: CardKey,
-    pub index: usize,
-}
-
 #[derive(Component)]
 struct DeckDockMarker;
 
 #[derive(Component, Deref, DerefMut)]
 struct CardPosition(usize);
 
-fn add_card(mut added_card_event_writer: EventWriter<AddCardEvent>) {
-    added_card_event_writer.send(AddCardEvent {
-        card: CardKey::BasicStep,
-        index: 0,
-    });
+fn add_card(
+    mut added_card_event_writer: EventWriter<AddCardEvent>,
+    player_deck: Query<&Deck, With<IsPlayer>>,
+) {
+    for deck in &player_deck {
+        let count = deck.cards.len();
+        let card_keys = CardKey::iter().collect::<Vec<_>>();
+        let random_card = card_keys.choose(&mut rand::thread_rng());
+        if let Some(random_card) = random_card {
+            added_card_event_writer.send(AddCardEvent {
+                card: *random_card,
+                index: count,
+            });
+        }
+    }
 }
 
 fn handle_added_cards(
