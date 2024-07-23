@@ -3,7 +3,6 @@ pub mod enemy;
 pub mod facing;
 pub mod faction;
 pub mod health;
-pub mod level;
 pub mod movement;
 pub mod player;
 
@@ -41,7 +40,6 @@ pub(super) fn plugin(app: &mut App) {
         health::plugin,
         movement::plugin,
         player::plugin,
-        level::plugin,
     ));
 }
 

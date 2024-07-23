@@ -6,9 +6,9 @@ use pyri_state::prelude::*;
 
 use crate::game::actor::facing::FacingAssets;
 use crate::game::actor::health::HealthBarConfig;
-use crate::game::actor::level::LevelConfig;
 use crate::game::actor::ActorConfig;
 use crate::game::combat::projectile::ProjectileConfig;
+use crate::game::level::LevelConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;

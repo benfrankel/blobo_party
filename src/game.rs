@@ -5,6 +5,7 @@ mod card;
 pub mod combat;
 mod deck;
 mod deck_dock;
+pub mod level;
 pub mod sprite;
 pub mod step;
 
@@ -22,6 +23,7 @@ pub(super) fn plugin(app: &mut App) {
         combat::plugin,
         deck::plugin,
         deck_dock::plugin,
+        level::plugin,
         sprite::plugin,
         step::plugin,
     ));

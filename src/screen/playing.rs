@@ -8,9 +8,9 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::game::actor::enemy::enemy;
-use crate::game::actor::level::PlayerLevel;
-use crate::game::actor::level::PlayerXp;
 use crate::game::actor::player::player;
+use crate::game::level::PlayerLevel;
+use crate::game::level::PlayerXp;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::Screen;
