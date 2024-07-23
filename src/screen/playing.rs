@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
+use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
@@ -36,12 +37,13 @@ impl Configure for PlayingAssets {
 
 fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
-    commands.spawn_with(player);
     commands
-        .spawn_with(enemy("aqua"))
-        .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ));
+        .spawn_with(player)
+        .insert(StateScope::<Screen>::default());
+    commands.spawn_with(enemy("aqua")).insert((
+        StateScope::<Screen>::default(),
+        TransformBundle::from_transform(Transform::from_translation(vec3(20.0, 0.0, 0.0))),
+    ));
 }
 
 fn exit_playing(

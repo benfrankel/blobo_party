@@ -27,7 +27,7 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(State, Copy, Clone, Eq, PartialEq, Hash, Debug, Reflect, Default)]
-#[state(after(WindowReady), bevy_state, log_flush)]
+#[state(after(WindowReady), entity_scope, bevy_state, log_flush)]
 pub enum Screen {
     #[default]
     Splash,
