@@ -29,7 +29,13 @@ pub struct Movement {
 impl Configure for Movement {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_movement.in_set(UpdateSet::Update));
+        app.add_systems(
+            Update,
+            (
+                apply_movement.in_set(UpdateSet::Update),
+                clamp_movement_speed.in_set(UpdateSet::SyncLate),
+            ),
+        );
     }
 }
 
@@ -44,12 +50,17 @@ fn apply_movement(
     for (movement, controller, mut velocity) in &mut movement_query {
         if controller.0 != Vec2::ZERO {
             velocity.0 += movement.accel * controller.0 * dt;
-            velocity.0 = velocity.0.clamp_length_max(movement.speed);
         } else if velocity.0.length_squared() > EPSILON {
             velocity.0 *= movement.decel.powf(dt);
         } else {
             velocity.0 = Vec2::ZERO;
         }
+    }
+}
+
+fn clamp_movement_speed(mut movement_query: Query<(&Movement, &mut LinearVelocity)>) {
+    for (movement, mut velocity) in &mut movement_query {
+        velocity.0 = velocity.0.clamp_length_max(movement.speed);
     }
 }
 
