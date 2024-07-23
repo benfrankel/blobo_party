@@ -7,6 +7,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 /// An observable event on an actor's death.
+/// Remember to filter out `IsDead` entities before triggering this event.
 #[derive(Event)]
 pub struct OnDeath;
 

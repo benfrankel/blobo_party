@@ -18,28 +18,22 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
 pub struct Movement {
-    /// The acceleration when controller is active (pixels per second^2).
+    /// The acceleration rate (pixels per second^2).
+    /// Applies when the controller is active and speed is under control.
     pub accel: f32,
-    /// The deceleration factor when controller is idle (decay per second).
+    /// The deceleration factor (multiplier per second).
+    /// Applies when the controller is inactive or speed is out of control.
     pub decel: f32,
-    /// The maximum speed (pixels per second).
+    /// The max "under control" speed (pixels per second).
     pub speed: f32,
 }
 
 impl Configure for Movement {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(
-            Update,
-            (
-                apply_movement.in_set(UpdateSet::Update),
-                clamp_movement_speed.in_set(UpdateSet::SyncLate),
-            ),
-        );
+        app.add_systems(Update, apply_movement.in_set(UpdateSet::Update));
     }
 }
-
-const EPSILON: f32 = 0.01;
 
 fn apply_movement(
     time: Res<Time>,
@@ -48,19 +42,14 @@ fn apply_movement(
     let dt = time.delta_seconds();
 
     for (movement, controller, mut velocity) in &mut movement_query {
-        if controller.0 != Vec2::ZERO {
-            velocity.0 += movement.accel * controller.0 * dt;
-        } else if velocity.0.length_squared() > EPSILON {
+        if controller.0 == Vec2::ZERO || velocity.0.length_squared() >= movement.speed.powi(2) {
+            // Apply deceleration.
             velocity.0 *= movement.decel.powf(dt);
         } else {
-            velocity.0 = Vec2::ZERO;
+            // Apply acceleration.
+            velocity.0 += movement.accel * controller.0 * dt;
+            velocity.0 = velocity.0.clamp_length_max(movement.speed);
         }
-    }
-}
-
-fn clamp_movement_speed(mut movement_query: Query<(&Movement, &mut LinearVelocity)>) {
-    for (movement, mut velocity) in &mut movement_query {
-        velocity.0 = velocity.0.clamp_length_max(movement.speed);
     }
 }
 

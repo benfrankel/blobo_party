@@ -24,9 +24,9 @@ impl Configure for HitboxDamage {
 fn apply_hitbox_damage(
     trigger: Trigger<OnHit>,
     mut commands: Commands,
-    damage_query: Query<&HitboxDamage>,
+    hitbox_query: Query<&HitboxDamage>,
 ) {
     let &OnHit(hitbox, hurtbox) = trigger.event();
-    let damage = r!(damage_query.get(hitbox));
+    let damage = r!(hitbox_query.get(hitbox));
     commands.entity(hurtbox).trigger(OnDamage(damage.0));
 }
