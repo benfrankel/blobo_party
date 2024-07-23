@@ -7,6 +7,7 @@ use crate::game::actor::actor_helper;
 use crate::game::actor::attack::input::attack_action;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
+use crate::game::actor::faction::Faction;
 use crate::game::actor::movement::input::movement_action;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
@@ -32,6 +33,7 @@ pub fn player(entity: EntityWorldMut) {
     actor_helper(entity, None)
         .insert((
             IsPlayer,
+            Faction::Player,
             CollisionLayers::new(GameLayer::Player, LayerMask::ALL),
             FaceCursor,
             // TODO: This is for testing hit effects until we get actual projectiles / attacks.

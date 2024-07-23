@@ -70,6 +70,8 @@ pub enum ThemeColor {
     // Misc UI colors
     Popup,
     FacingIndicator,
+    PlayerProjectile,
+    EnemyProjectile,
 }
 
 impl ThemeColor {

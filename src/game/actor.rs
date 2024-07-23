@@ -1,6 +1,7 @@
 pub mod attack;
 pub mod enemy;
 pub mod facing;
+pub mod faction;
 pub mod health;
 pub mod movement;
 pub mod player;
@@ -35,6 +36,7 @@ pub(super) fn plugin(app: &mut App) {
         attack::plugin,
         enemy::plugin,
         facing::plugin,
+        faction::plugin,
         health::plugin,
         movement::plugin,
         player::plugin,

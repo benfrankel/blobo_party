@@ -4,6 +4,7 @@ use bevy::prelude::*;
 
 use crate::game::actor::actor;
 use crate::game::actor::facing::FacePlayer;
+use crate::game::actor::faction::Faction;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
@@ -31,6 +32,7 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand<World> {
             .add(actor(key))
             .insert((
                 IsEnemy,
+                Faction::Enemy,
                 CollisionLayers::new(GameLayer::Enemy, LayerMask::ALL),
                 FacePlayer,
             ))

@@ -4,7 +4,9 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 
 use crate::core::UpdateSet;
+use crate::game::actor::faction::Faction;
 use crate::game::projectile::projectile;
+use crate::game::GameLayer;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -34,14 +36,9 @@ impl Configure for Attack {
 
 fn apply_attack(
     mut commands: Commands,
-    attack_query: Query<(
-        &Attack,
-        &AttackController,
-        &GlobalTransform,
-        &CollisionLayers,
-    )>,
+    attack_query: Query<(&Attack, &AttackController, &GlobalTransform, &Faction)>,
 ) {
-    for (attack, controller, gt, layers) in &attack_query {
+    for (attack, controller, gt, faction) in &attack_query {
         if controller.0 == Vec2::ZERO {
             continue;
         }
@@ -53,14 +50,19 @@ fn apply_attack(
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
 
+        let mut target_layers = LayerMask::ALL;
+        // Projectiles cannot collide with each other.
+        target_layers.remove(GameLayer::Projectile);
+        // Projectiles cannot collide with their owner's layer.
+        target_layers.remove(faction.layer());
+
         commands
-            .spawn_with(projectile(
-                projectile_key,
-                attack.strength,
-                controller.0,
-                layers.memberships,
-            ))
-            .insert(Transform::from_translation(translation));
+            .spawn_with(projectile(projectile_key, attack.strength, controller.0))
+            .insert((
+                Transform::from_translation(translation),
+                CollisionLayers::new(GameLayer::Projectile, target_layers),
+                faction.projectile_color().target::<Sprite>(),
+            ));
     }
 }
 

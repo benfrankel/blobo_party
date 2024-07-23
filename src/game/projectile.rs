@@ -8,7 +8,6 @@ use serde::Serialize;
 use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::knockback::HitboxKnockback;
-use crate::game::GameLayer;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
 
@@ -58,14 +57,8 @@ pub fn projectile(
     key: impl Into<String>,
     strength: f32,
     direction: Vec2,
-    source_layer: impl Into<LayerMask>,
 ) -> impl EntityCommand<World> {
     let key = key.into();
-    let mut target_layer = LayerMask::ALL;
-    // Projectiles cannot collide with each other.
-    target_layer.remove(GameLayer::Projectile);
-    // Projectiles cannot collide with their owner's layer.
-    target_layer.remove(source_layer);
 
     move |mut entity: EntityWorldMut| {
         let config_handle = entity.world().resource::<ConfigHandle<ProjectileConfig>>();
@@ -89,7 +82,6 @@ pub fn projectile(
                 (
                     RigidBody::Kinematic,
                     Collider::circle(projectile.radius),
-                    CollisionLayers::new(GameLayer::Projectile, target_layer),
                     LockedAxes::ROTATION_LOCKED,
                     LinearVelocity(projectile.speed * direction),
                 ),
