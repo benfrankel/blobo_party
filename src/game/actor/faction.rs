@@ -23,6 +23,7 @@ impl Configure for Faction {
 }
 
 impl Faction {
+    #[allow(dead_code)]
     pub fn is_player(&self) -> bool {
         matches!(self, Self::Player)
     }
