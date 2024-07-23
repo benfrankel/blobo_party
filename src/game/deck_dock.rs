@@ -163,6 +163,7 @@ fn add_icon(mut entity: EntityWorldMut, card_key: CardKey) {
             position_type: PositionType::Relative,
             ..default()
         },
+        transform: Transform::from_scale(Vec3::splat(0.5)),
         image: UiImage::new(card.texture.clone()),
         ..default()
     },));
