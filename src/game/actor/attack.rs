@@ -7,7 +7,7 @@ use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
-use crate::game::projectile::projectile;
+use crate::game::combat::projectile::projectile;
 use crate::game::GameLayer;
 use crate::util::prelude::*;
 
