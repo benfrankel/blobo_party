@@ -9,6 +9,7 @@ use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameLayer;
+use crate::game::GameRoot;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -73,31 +74,34 @@ pub fn projectile(
             .resource::<Assets<ProjectileConfig>>()
             .get(&config_handle.0));
         let projectile = r!(config.projectiles.get(&key));
+        let parent = entity.world().resource::<GameRoot>().projectiles;
 
         // TODO: Missing despawn conditions: screen, hit, lifetime, distance, entity cap.
-        entity.insert((
-            Name::new(projectile.name.clone()),
-            // Appearance:
-            SpriteBundle {
-                texture: projectile.texture.clone(),
-                ..default()
-            },
-            // Physics:
-            (
-                RigidBody::Kinematic,
-                Collider::circle(projectile.radius),
-                CollisionLayers::new(GameLayer::Projectile, target_layer),
-                LockedAxes::ROTATION_LOCKED,
-                LinearVelocity(projectile.speed * direction),
-            ),
-            // Combat:
-            (
-                Hitbox,
-                HitboxDamage(strength * projectile.damage),
-                HitboxKnockback {
-                    force: strength * projectile.knockback,
+        entity
+            .insert((
+                Name::new(projectile.name.replace(' ', "")),
+                // Appearance:
+                SpriteBundle {
+                    texture: projectile.texture.clone(),
+                    ..default()
                 },
-            ),
-        ));
+                // Physics:
+                (
+                    RigidBody::Kinematic,
+                    Collider::circle(projectile.radius),
+                    CollisionLayers::new(GameLayer::Projectile, target_layer),
+                    LockedAxes::ROTATION_LOCKED,
+                    LinearVelocity(projectile.speed * direction),
+                ),
+                // Combat:
+                (
+                    Hitbox,
+                    HitboxDamage(strength * projectile.damage),
+                    HitboxKnockback {
+                        force: strength * projectile.knockback,
+                    },
+                ),
+            ))
+            .set_parent(parent);
     }
 }

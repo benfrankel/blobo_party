@@ -3,13 +3,13 @@ use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
-use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::game::actor::enemy::enemy;
 use crate::game::actor::player::player;
+use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -37,18 +37,18 @@ impl Configure for PlayingAssets {
 
 fn enter_playing(mut commands: Commands) {
     commands.spawn_with(fade_in);
+    commands.spawn_with(player);
     commands
-        .spawn_with(player)
-        .insert(StateScope::<Screen>::default());
-    commands.spawn_with(enemy("aqua")).insert((
-        StateScope::<Screen>::default(),
-        TransformBundle::from_transform(Transform::from_translation(vec3(20.0, 0.0, 0.0))),
-    ));
+        .spawn_with(enemy("aqua"))
+        .insert((TransformBundle::from_transform(
+            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
+        ),));
 }
 
 fn exit_playing(
     mut commands: Commands,
     ui_root: Res<UiRoot>,
+    game_root: Res<GameRoot>,
     camera_root: Res<CameraRoot>,
     mut camera_query: Query<&mut Transform>,
 ) {
@@ -58,6 +58,9 @@ fn exit_playing(
 
     // Despawn entities
     commands.entity(ui_root.body).despawn_descendants();
+    commands.entity(game_root.players).despawn_descendants();
+    commands.entity(game_root.enemies).despawn_descendants();
+    commands.entity(game_root.projectiles).despawn_descendants();
 
     // Reset camera
     if let Ok(mut transform) = camera_query.get_mut(camera_root.primary) {

@@ -1,7 +1,7 @@
 (
     player: "linus",
     player_health_multiplier: 10,
-    player_strength_multiplier: 5,
+    player_strength_multiplier: 2,
 
     actors: {
         "lucy": Actor(

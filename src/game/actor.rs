@@ -116,7 +116,7 @@ fn actor_helper(mut entity: EntityWorldMut, key: Option<String>) -> EntityWorldM
 
     entity
         .insert((
-            Name::new(actor.name.clone()),
+            Name::new(actor.name.replace(' ', "")),
             // Appearance:
             (
                 SpriteBundle {

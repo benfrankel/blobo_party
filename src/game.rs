@@ -32,7 +32,9 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Resource, Reflect)]
 #[reflect(Resource)]
 pub struct GameRoot {
-    pub game: Entity,
+    pub players: Entity,
+    pub enemies: Entity,
+    pub projectiles: Entity,
 }
 
 impl Configure for GameRoot {
@@ -44,11 +46,21 @@ impl Configure for GameRoot {
 
 impl FromWorld for GameRoot {
     fn from_world(world: &mut World) -> Self {
-        let game = world
-            .spawn((Name::new("Game"), SpatialBundle::default()))
+        let players = world
+            .spawn((Name::new("Players"), SpatialBundle::default()))
+            .id();
+        let enemies = world
+            .spawn((Name::new("Enemies"), SpatialBundle::default()))
+            .id();
+        let projectiles = world
+            .spawn((Name::new("Projectiles"), SpatialBundle::default()))
             .id();
 
-        Self { game }
+        Self {
+            players,
+            enemies,
+            projectiles,
+        }
     }
 }
 

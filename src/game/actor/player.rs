@@ -9,6 +9,7 @@ use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
 use crate::game::actor::movement::input::movement_action;
 use crate::game::GameLayer;
+use crate::game::GameRoot;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -26,6 +27,8 @@ impl Configure for IsPlayer {
 }
 
 pub fn player(entity: EntityWorldMut) {
+    let parent = entity.world().resource::<GameRoot>().players;
+
     actor_helper(entity, None)
         .insert((
             IsPlayer,
@@ -40,6 +43,7 @@ pub fn player(entity: EntityWorldMut) {
         .add(movement_action)
         // TODO: This is for testing attack until it's card-controlled.
         .add(attack_action)
+        .set_parent(parent)
         .with_children(|children| {
             children
                 .spawn_with(FacingIndicator {
