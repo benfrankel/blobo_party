@@ -6,6 +6,7 @@ use pyri_state::prelude::*;
 
 use crate::game::actor::facing::FacingAssets;
 use crate::game::actor::health::HealthBarConfig;
+use crate::game::actor::level::LevelConfig;
 use crate::game::actor::ActorConfig;
 use crate::game::combat::projectile::ProjectileConfig;
 use crate::screen::fade_in;
@@ -27,6 +28,7 @@ pub(super) fn plugin(app: &mut App) {
         Screen::Title.on_update((
             ActorConfig::progress.track_progress(),
             HealthBarConfig::progress.track_progress(),
+            LevelConfig::progress.track_progress(),
             ProjectileConfig::progress.track_progress(),
         )),
     );

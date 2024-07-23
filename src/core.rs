@@ -54,8 +54,10 @@ pub enum UpdateSet {
     RecordInput,
     /// Step game logic.
     Update,
-    /// Detect final game state (e.g. health <= 0).
-    Detect,
+    /// Detect health and trigger death.
+    TriggerDeath,
+    /// Detect XP and trigger level up.
+    TriggerLevelUp,
     /// Spawn and despawn entities.
     SpawnDespawn,
     /// Synchronize end-of-frame values.
@@ -71,7 +73,8 @@ impl Configure for UpdateSet {
                 Self::SyncEarly,
                 Self::RecordInput,
                 Self::Update,
-                Self::Detect,
+                Self::TriggerDeath,
+                Self::TriggerLevelUp,
                 Self::SpawnDespawn,
                 Self::SyncLate,
             )

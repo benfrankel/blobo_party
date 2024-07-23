@@ -24,7 +24,10 @@ impl Configure for Health {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.observe(lose_health_on_damage);
-        app.add_systems(Update, detect_out_of_health.in_set(UpdateSet::Detect));
+        app.add_systems(
+            Update,
+            trigger_death_from_health.in_set(UpdateSet::TriggerDeath),
+        );
     }
 }
 
@@ -40,7 +43,7 @@ fn lose_health_on_damage(trigger: Trigger<OnDamage>, mut health_query: Query<&mu
     health.current -= trigger.event().0;
 }
 
-fn detect_out_of_health(
+fn trigger_death_from_health(
     mut commands: Commands,
     health_query: Query<(Entity, &Health), (Changed<Health>, Without<IsDead>)>,
 ) {

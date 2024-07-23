@@ -8,6 +8,8 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::game::actor::enemy::enemy;
+use crate::game::actor::level::PlayerLevel;
+use crate::game::actor::level::PlayerXp;
 use crate::game::actor::player::player;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
@@ -40,9 +42,9 @@ fn enter_playing(mut commands: Commands) {
     commands.spawn_with(player);
     commands
         .spawn_with(enemy("aqua"))
-        .insert((TransformBundle::from_transform(
+        .insert(TransformBundle::from_transform(
             Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ),));
+        ));
 }
 
 fn exit_playing(
@@ -53,6 +55,8 @@ fn exit_playing(
     mut camera_query: Query<&mut Transform>,
 ) {
     // Reset resources
+    commands.insert_resource(PlayerLevel::default());
+    commands.insert_resource(PlayerXp::default());
 
     // Clear events
 

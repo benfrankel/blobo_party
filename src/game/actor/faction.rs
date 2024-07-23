@@ -23,6 +23,14 @@ impl Configure for Faction {
 }
 
 impl Faction {
+    pub fn is_player(&self) -> bool {
+        matches!(self, Self::Player)
+    }
+
+    pub fn is_enemy(&self) -> bool {
+        matches!(self, Self::Enemy)
+    }
+
     pub fn layer(&self) -> LayerMask {
         match self {
             Self::Player => GameLayer::Player,
