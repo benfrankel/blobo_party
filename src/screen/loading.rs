@@ -11,6 +11,7 @@ use crate::game::combat::projectile::ProjectileConfig;
 use crate::game::deck_dock::DeckDockConfig;
 use crate::game::level::LevelConfig;
 use crate::game::music::MusicConfig;
+use crate::game::wave::WaveConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
@@ -34,6 +35,7 @@ pub(super) fn plugin(app: &mut App) {
             LevelConfig::progress.track_progress(),
             MusicConfig::progress.track_progress(),
             ProjectileConfig::progress.track_progress(),
+            WaveConfig::progress.track_progress(),
         )),
     );
     app.add_systems(

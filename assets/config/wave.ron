@@ -5,7 +5,7 @@
     max_distance: 200.0,
     spawn_count_scale: 5,
     max_spawn_count: 20,
-    actors: {
+    enemies: {
         "red": [
             SpawnInfo()
         ],

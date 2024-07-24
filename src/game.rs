@@ -9,6 +9,7 @@ pub mod deck_dock;
 pub mod level;
 pub mod music;
 pub mod sprite;
+pub mod wave;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -28,6 +29,7 @@ pub(super) fn plugin(app: &mut App) {
         level::plugin,
         music::plugin,
         sprite::plugin,
+        wave::plugin,
     ));
 }
 
