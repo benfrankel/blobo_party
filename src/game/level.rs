@@ -76,7 +76,7 @@ fn update_player_level_indicator(
 
     for mut text in &mut indicator_query {
         for section in &mut text.sections {
-            section.value = level.clone();
+            section.value.clone_from(&level);
         }
     }
 }
