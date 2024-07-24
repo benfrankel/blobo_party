@@ -5,11 +5,11 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::camera::CameraRoot;
-use crate::core::UpdateSet;
+use crate::game::cleanup::DespawnOnDistanceSq;
+use crate::game::cleanup::DespawnOnHit;
+use crate::game::cleanup::DespawnOnTimer;
 use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
-use crate::game::combat::hit::OnHit;
 use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
@@ -54,6 +54,8 @@ pub struct Projectile {
     #[serde(skip)]
     pub texture: Handle<Image>,
 
+    /// In seconds, not beats.
+    pub lifetime: f32,
     pub radius: f32,
     pub speed: f32,
     pub damage: f32,
@@ -100,59 +102,14 @@ pub fn projectile(
                     HitboxDamage(power * projectile.damage),
                     HitboxKnockback(power * projectile.knockback),
                 ),
-                // TODO: Additional cleanup conditions that could be added: lifetime, entity cap.
+                // TODO: Additional cleanup conditions that could be added: entity cap.
                 // Cleanup:
-                (DespawnOnHit, DespawnOnDistanceSq(200.0 * 200.0)),
+                (
+                    DespawnOnHit,
+                    DespawnOnDistanceSq::new(200.0),
+                    DespawnOnTimer(Timer::from_seconds(projectile.lifetime, TimerMode::Once)),
+                ),
             ))
             .set_parent(parent);
-    }
-}
-
-#[derive(Component, Reflect)]
-#[reflect(Component)]
-struct DespawnOnHit;
-
-impl Configure for DespawnOnHit {
-    fn configure(app: &mut App) {
-        app.register_type::<Self>();
-        app.observe(despawn_on_hit);
-    }
-}
-
-fn despawn_on_hit(
-    trigger: Trigger<OnHit>,
-    mut despawn: ResMut<DespawnSet>,
-    despawn_query: Query<(), With<DespawnOnHit>>,
-) {
-    let hitbox = trigger.event().0;
-    if despawn_query.contains(hitbox) {
-        despawn.recursive(hitbox);
-    }
-}
-
-#[derive(Component, Reflect)]
-#[reflect(Component)]
-struct DespawnOnDistanceSq(f32);
-
-impl Configure for DespawnOnDistanceSq {
-    fn configure(app: &mut App) {
-        app.register_type::<Self>();
-        app.add_systems(Update, despawn_on_distance_sq.in_set(UpdateSet::Update));
-    }
-}
-
-fn despawn_on_distance_sq(
-    camera_root: Res<CameraRoot>,
-    camera_query: Query<&GlobalTransform>,
-    mut despawn: ResMut<DespawnSet>,
-    despawn_query: Query<(Entity, &GlobalTransform, &DespawnOnDistanceSq)>,
-) {
-    let camera_gt = r!(camera_query.get(camera_root.primary));
-    let camera_pos = camera_gt.translation().xy();
-
-    for (entity, gt, limit) in &despawn_query {
-        if gt.translation().xy().distance_squared(camera_pos) >= limit.0 {
-            despawn.recursive(entity);
-        }
     }
 }

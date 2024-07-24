@@ -2,6 +2,7 @@
 
 pub mod actor;
 pub mod card;
+pub mod cleanup;
 pub mod combat;
 pub mod deck;
 pub mod deck_dock;
@@ -20,6 +21,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_plugins((
         actor::plugin,
         card::plugin,
+        cleanup::plugin,
         combat::plugin,
         deck::plugin,
         deck_dock::plugin,
@@ -35,6 +37,7 @@ pub struct GameRoot {
     pub players: Entity,
     pub enemies: Entity,
     pub projectiles: Entity,
+    pub vfx: Entity,
 }
 
 impl Configure for GameRoot {
@@ -55,12 +58,25 @@ impl FromWorld for GameRoot {
         let projectiles = world
             .spawn((Name::new("Projectiles"), SpatialBundle::default()))
             .id();
+        let vfx = world
+            .spawn((Name::new("Vfx"), SpatialBundle::default()))
+            .id();
 
         Self {
             players,
             enemies,
             projectiles,
+            vfx,
         }
+    }
+}
+
+impl GameRoot {
+    pub fn despawn_descendants(&self, commands: &mut Commands) {
+        commands.entity(self.players).despawn_descendants();
+        commands.entity(self.enemies).despawn_descendants();
+        commands.entity(self.projectiles).despawn_descendants();
+        commands.entity(self.vfx).despawn_descendants();
     }
 }
 

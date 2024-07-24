@@ -5,6 +5,7 @@
 
             texture_path: "image/projectile/quarter_note.png",
 
+            lifetime: 1,
             radius: 3.0,
             speed: 20.0,
             damage: 2.0,

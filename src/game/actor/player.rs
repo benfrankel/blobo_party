@@ -60,7 +60,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand<World> {
             .with_children(|children| {
                 children
                     .spawn_with(FacingIndicator {
-                        distance: vec2(6.0, 5.0),
+                        offset: vec2(6.0, 5.0),
                     })
                     .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
             });

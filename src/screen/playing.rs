@@ -38,6 +38,10 @@ pub struct PlayingAssets {
     pub arrow: Handle<Image>,
     #[asset(path = "image/ui/simple_border.png")]
     pub simple_border: Handle<Image>,
+    #[asset(path = "image/vfx/horizontal_smoke.png")]
+    pub horizontal_smoke: Handle<Image>,
+    #[asset(path = "image/vfx/spotlight.png")]
+    pub spotlight: Handle<Image>,
 }
 
 impl Configure for PlayingAssets {
@@ -45,6 +49,61 @@ impl Configure for PlayingAssets {
         app.register_type::<Self>();
         app.init_collection::<Self>();
     }
+}
+
+#[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
+pub enum PlayingAction {
+    Restart,
+    RotateDock,
+    AddCard,
+    // TODO: Pause
+}
+
+impl Configure for PlayingAction {
+    fn configure(app: &mut App) {
+        app.init_resource::<ActionState<Self>>();
+        app.insert_resource(
+            InputMap::default()
+                .insert(Self::Restart, KeyCode::KeyR)
+                .insert(Self::RotateDock, KeyCode::BracketLeft)
+                .insert(Self::AddCard, KeyCode::KeyL)
+                .build(),
+        );
+        app.add_plugins(InputManagerPlugin::<Self>::default());
+        app.add_systems(
+            StateFlush,
+            Screen::refresh
+                .in_set(ResolveStateSet::<Screen>::Compute)
+                .run_if(
+                    Screen::Playing
+                        .will_exit()
+                        .and_then(action_just_pressed(Self::Restart)),
+                ),
+        );
+    }
+}
+
+fn exit_playing(
+    mut commands: Commands,
+    ui_root: Res<UiRoot>,
+    game_root: Res<GameRoot>,
+    camera_root: Res<CameraRoot>,
+    mut camera_query: Query<&mut Transform>,
+) {
+    // Reset resources
+    commands.insert_resource(Level::default());
+    commands.insert_resource(Xp::default());
+
+    // Clear events
+
+    // Despawn entities
+    commands.entity(ui_root.body).despawn_descendants();
+    game_root.despawn_descendants(&mut commands);
+
+    // Reset camera
+    if let Ok(mut transform) = camera_query.get_mut(camera_root.primary) {
+        transform.translation = Vec2::ZERO.extend(transform.translation.z);
+    };
 }
 
 fn enter_playing(mut commands: Commands, ui_root: Res<UiRoot>) {
@@ -74,31 +133,6 @@ fn enter_playing(mut commands: Commands, ui_root: Res<UiRoot>) {
         ));
 
     commands.spawn_with(playing_hud).set_parent(ui_root.body);
-}
-
-fn exit_playing(
-    mut commands: Commands,
-    ui_root: Res<UiRoot>,
-    game_root: Res<GameRoot>,
-    camera_root: Res<CameraRoot>,
-    mut camera_query: Query<&mut Transform>,
-) {
-    // Reset resources
-    commands.insert_resource(Level::default());
-    commands.insert_resource(Xp::default());
-
-    // Clear events
-
-    // Despawn entities
-    commands.entity(ui_root.body).despawn_descendants();
-    commands.entity(game_root.players).despawn_descendants();
-    commands.entity(game_root.enemies).despawn_descendants();
-    commands.entity(game_root.projectiles).despawn_descendants();
-
-    // Reset camera
-    if let Ok(mut transform) = camera_query.get_mut(camera_root.primary) {
-        transform.translation = Vec2::ZERO.extend(transform.translation.z);
-    };
 }
 
 fn playing_hud(mut entity: EntityWorldMut) {
@@ -248,36 +282,4 @@ fn lower_hud(mut entity: EntityWorldMut) {
         .with_children(|children| {
             children.spawn_with(deck_dock);
         });
-}
-
-#[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
-pub enum PlayingAction {
-    Restart,
-    RotateDock,
-    AddCard,
-    // TODO: Pause
-}
-
-impl Configure for PlayingAction {
-    fn configure(app: &mut App) {
-        app.init_resource::<ActionState<Self>>();
-        app.insert_resource(
-            InputMap::default()
-                .insert(Self::Restart, KeyCode::KeyR)
-                .insert(Self::RotateDock, KeyCode::BracketLeft)
-                .insert(Self::AddCard, KeyCode::KeyL)
-                .build(),
-        );
-        app.add_plugins(InputManagerPlugin::<Self>::default());
-        app.add_systems(
-            StateFlush,
-            Screen::refresh
-                .in_set(ResolveStateSet::<Screen>::Compute)
-                .run_if(
-                    Screen::Playing
-                        .will_exit()
-                        .and_then(action_just_pressed(Self::Restart)),
-                ),
-        );
-    }
 }

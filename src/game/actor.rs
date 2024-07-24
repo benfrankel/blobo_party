@@ -23,6 +23,7 @@ use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
+use crate::game::actor::movement::OldMovementController;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
 use crate::game::deck::Deck;
@@ -122,6 +123,7 @@ impl EntityCommand for Actor {
                     LockedAxes::ROTATION_LOCKED,
                     self.movement,
                     MovementController::default(),
+                    OldMovementController::default(),
                 ),
                 // Combat:
                 (

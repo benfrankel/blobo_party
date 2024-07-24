@@ -29,7 +29,7 @@ pub struct Attack {
     /// The color of the projectile.
     pub color: Color,
     /// The relative distance to spawn projectiles from.
-    pub distance: f32,
+    pub offset: f32,
     /// The key of the projectile to attack with.
     pub projectile: Option<String>,
 }
@@ -47,7 +47,7 @@ impl Default for Attack {
             power: 1.0,
             force: 1.0,
             color: Color::WHITE,
-            distance: 7.0,
+            offset: 7.0,
             projectile: None,
         }
     }
@@ -65,7 +65,7 @@ fn apply_attack(
 
         let translation = gt.translation();
         // Spawn projectile at an initial distance away from attacker.
-        let pos = translation.xy() + attack.distance * controller.0;
+        let pos = translation.xy() + attack.offset * controller.0;
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
 

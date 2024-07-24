@@ -1,4 +1,5 @@
 pub mod input;
+pub mod smoke;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -9,9 +10,14 @@ use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Movement, MovementController)>();
+    app.configure::<(
+        Movement,
+        MovementController,
+        OldMovementController,
+        MovementEvent,
+    )>();
 
-    app.add_plugins(input::plugin);
+    app.add_plugins((input::plugin, smoke::plugin));
 }
 
 /// Movement parameters.
@@ -81,5 +87,57 @@ impl Configure for MovementController {
 fn reset_movement_controller(mut controller_query: Query<&mut MovementController>) {
     for mut controller in &mut controller_query {
         controller.0 = Vec2::ZERO;
+    }
+}
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct OldMovementController(pub Vec2);
+
+impl Configure for OldMovementController {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            sync_old_movement_controller.in_set(UpdateSet::SyncLate),
+        );
+    }
+}
+
+fn sync_old_movement_controller(
+    mut controller_query: Query<(&mut OldMovementController, &MovementController)>,
+) {
+    for (mut old, new) in &mut controller_query {
+        old.0 = new.0;
+    }
+}
+
+/// A buffered event sent when an actor's movement changes significantly.
+#[allow(dead_code)]
+#[derive(Event)]
+pub enum MovementEvent {
+    Start(Entity),
+    Stop(Entity),
+    Reverse(Entity),
+}
+
+impl Configure for MovementEvent {
+    fn configure(app: &mut App) {
+        app.add_event::<Self>();
+        app.add_systems(Update, detect_movement_event.in_set(UpdateSet::Update));
+    }
+}
+
+fn detect_movement_event(
+    mut movement_events: EventWriter<MovementEvent>,
+    controller_query: Query<(Entity, &OldMovementController, &MovementController)>,
+) {
+    for (entity, old, new) in &controller_query {
+        movement_events.send(match (old.0, new.0) {
+            (Vec2::ZERO, y) if y != Vec2::ZERO => MovementEvent::Start(entity),
+            (x, Vec2::ZERO) if x != Vec2::ZERO => MovementEvent::Stop(entity),
+            (x, y) if x.dot(y) < 0.0 => MovementEvent::Reverse(entity),
+            _ => continue,
+        });
     }
 }
