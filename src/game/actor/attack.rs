@@ -55,9 +55,15 @@ impl Default for Attack {
 
 fn apply_attack(
     mut commands: Commands,
-    attack_query: Query<(&Attack, &AttackController, &GlobalTransform, &Faction)>,
+    attack_query: Query<(
+        &Attack,
+        &AttackController,
+        &GlobalTransform,
+        Option<&LinearVelocity>,
+        &Faction,
+    )>,
 ) {
-    for (attack, controller, gt, faction) in &attack_query {
+    for (attack, controller, gt, velocity, faction) in &attack_query {
         if controller.0 == Vec2::ZERO {
             continue;
         }
@@ -75,11 +81,20 @@ fn apply_attack(
         // Projectiles cannot collide with their owner's layer.
         target_layers.remove(faction.layer());
 
+        // Projectiles get a boost if the actor is moving in the same direction.
+        let aligned_speed = velocity
+            .filter(|v| v.0 != Vec2::ZERO)
+            .map(|v| v.dot(controller.0) / controller.0.length())
+            .unwrap_or(0.0)
+            .clamp(0.0, 100.0);
+        let speed_force_boost = 0.8;
+        let speed_force = aligned_speed / 100.0 * speed_force_boost + 1.0;
+
         commands
             .spawn_with(projectile(
                 projectile_key,
                 attack.power,
-                attack.force * controller.0,
+                attack.force * controller.0 * speed_force,
                 attack.color,
             ))
             .insert((
