@@ -1,6 +1,5 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
 
 use crate::animation::backup::Backup;
 use crate::core::camera::CameraRoot;
@@ -9,30 +8,11 @@ use crate::core::window::WindowRoot;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(
-        FacingAssets,
-        Facing,
-        FacePlayer,
-        FaceCursor,
-        FacingIndicator,
-    )>();
-}
-
-#[derive(AssetCollection, Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct FacingAssets {
-    #[asset(path = "image/arrow.png")]
-    pub arrow: Handle<Image>,
-}
-
-impl Configure for FacingAssets {
-    fn configure(app: &mut App) {
-        app.register_type::<Self>();
-        app.init_collection::<Self>();
-    }
+    app.configure::<(Facing, FacePlayer, FaceCursor, FacingIndicator)>();
 }
 
 #[derive(Component, Reflect)]
@@ -143,7 +123,7 @@ fn update_facing_indicator(
 
 impl EntityCommand for FacingIndicator {
     fn apply(self, id: Entity, world: &mut World) {
-        let texture = world.resource::<FacingAssets>().arrow.clone();
+        let texture = world.resource::<PlayingAssets>().mini_arrow.clone();
 
         world.entity_mut(id).insert((
             Name::new("FacingIndicator"),

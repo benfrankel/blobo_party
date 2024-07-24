@@ -9,7 +9,7 @@ use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(ConfigHandle<LevelConfig>, PlayerLevel, PlayerLevelIndicator)>();
+    app.configure::<(ConfigHandle<LevelConfig>, Level, IsLevelIndicator)>();
 
     app.add_plugins((up::plugin, xp::plugin));
 }
@@ -17,7 +17,7 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct LevelConfig {
     /// The level sequence (final level repeats forever).
-    pub levels: Vec<Level>,
+    pub levels: Vec<LevelData>,
 }
 
 impl Config for LevelConfig {
@@ -26,27 +26,27 @@ impl Config for LevelConfig {
 }
 
 impl LevelConfig {
-    pub fn level(&self, idx: usize) -> &Level {
+    pub fn level(&self, idx: usize) -> &LevelData {
         &self.levels[idx.min(self.levels.len() - 1)]
     }
 }
 
 #[derive(Reflect, Serialize, Deserialize)]
-pub struct Level {
+pub struct LevelData {
     /// The XP cost to level up from this level.
     pub xp_cost: f32,
 }
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct PlayerLevel {
+pub struct Level {
     /// The current level.
     pub current: usize,
     /// The number of pending level-ups.
     pub up: usize,
 }
 
-impl Configure for PlayerLevel {
+impl Configure for Level {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
@@ -55,23 +55,20 @@ impl Configure for PlayerLevel {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct PlayerLevelIndicator;
+pub struct IsLevelIndicator;
 
-impl Configure for PlayerLevelIndicator {
+impl Configure for IsLevelIndicator {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(
-            Update,
-            update_player_level_indicator.in_set(UpdateSet::SyncLate),
-        );
+        app.add_systems(Update, update_level_indicator.in_set(UpdateSet::SyncLate));
     }
 }
 
-fn update_player_level_indicator(
-    player_level: Res<PlayerLevel>,
-    mut indicator_query: Query<&mut Text, With<PlayerLevelIndicator>>,
+fn update_level_indicator(
+    level: Res<Level>,
+    mut indicator_query: Query<&mut Text, With<IsLevelIndicator>>,
 ) {
-    let level = player_level.current + player_level.up;
+    let level = level.current + level.up;
     let level = level.to_string();
 
     for mut text in &mut indicator_query {

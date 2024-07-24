@@ -10,9 +10,10 @@ use crate::core::camera::CameraRoot;
 use crate::game::actor::enemy::enemy;
 use crate::game::actor::player::player;
 use crate::game::deck_dock::deck_dock;
-use crate::game::level::xp::PlayerXp;
-use crate::game::level::PlayerLevel;
-use crate::game::level::PlayerLevelIndicator;
+use crate::game::level::xp::IsXpBarFill;
+use crate::game::level::xp::Xp;
+use crate::game::level::IsLevelIndicator;
+use crate::game::level::Level;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::Screen;
@@ -30,7 +31,14 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(AssetCollection, Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct PlayingAssets {}
+pub struct PlayingAssets {
+    #[asset(path = "image/ui/mini_arrow.png")]
+    pub mini_arrow: Handle<Image>,
+    #[asset(path = "image/ui/arrow.png")]
+    pub arrow: Handle<Image>,
+    #[asset(path = "image/ui/simple_border.png")]
+    pub simple_border: Handle<Image>,
+}
 
 impl Configure for PlayingAssets {
     fn configure(app: &mut App) {
@@ -76,8 +84,8 @@ fn exit_playing(
     mut camera_query: Query<&mut Transform>,
 ) {
     // Reset resources
-    commands.insert_resource(PlayerLevel::default());
-    commands.insert_resource(PlayerXp::default());
+    commands.insert_resource(Level::default());
+    commands.insert_resource(Xp::default());
 
     // Clear events
 
@@ -123,8 +131,9 @@ fn upper_hud(mut entity: EntityWorldMut) {
             NodeBundle {
                 style: Style {
                     width: Percent(100.0),
-                    align_items: default(),
+                    align_items: AlignItems::Center,
                     justify_content: default(),
+                    column_gap: Px(16.0),
                     ..default()
                 },
                 ..default()
@@ -146,23 +155,75 @@ fn level_indicator(mut entity: EntityWorldMut) {
                 font_size: 32.0,
                 ..default()
             },
-        ),
+        )
+        .with_style(Style {
+            margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-4.0), Val::ZERO),
+            ..default()
+        }),
         ThemeColorForText(vec![ThemeColor::Indicator]),
-        PlayerLevelIndicator,
+        IsLevelIndicator,
     ));
 }
 
-// TODO
 fn xp_bar(mut entity: EntityWorldMut) {
+    let texture = entity
+        .world()
+        .resource::<PlayingAssets>()
+        .simple_border
+        .clone();
+
+    entity
+        .insert((
+            Name::new("XpBar"),
+            ImageBundle {
+                style: Style {
+                    width: Percent(100.0),
+                    height: Px(20.0),
+                    //padding: UiRect::all(Px(8.0)),
+                    ..default()
+                },
+                image: UiImage::new(texture),
+                ..default()
+            },
+            ImageScaleMode::Sliced(TextureSlicer {
+                border: BorderRect::square(8.0),
+                ..default()
+            }),
+            ThemeColor::Indicator.target::<UiImage>(),
+        ))
+        .with_children(|children| {
+            // TODO: Workaround for padding not working in UI images.
+            children
+                .spawn((
+                    Name::new("XpBarPaddingWorkaround"),
+                    NodeBundle {
+                        style: Style {
+                            width: Percent(100.0),
+                            height: Percent(100.0),
+                            padding: UiRect::all(Px(8.0)),
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|children| {
+                    children.spawn_with(xp_bar_fill);
+                });
+        });
+}
+
+fn xp_bar_fill(mut entity: EntityWorldMut) {
     entity.insert((
-        Name::new("XpBar"),
+        Name::new("XpBarFill"),
         NodeBundle {
             style: Style {
-                width: Percent(100.0),
+                height: Percent(100.0),
                 ..default()
             },
             ..default()
         },
+        ThemeColor::Indicator.target::<BackgroundColor>(),
+        IsXpBarFill,
     ));
 }
 

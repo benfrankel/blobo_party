@@ -16,8 +16,8 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
-struct MusicConfig {
-    bpm: f32,
+pub struct MusicConfig {
+    pub bpm: f32,
 }
 
 impl Config for MusicConfig {

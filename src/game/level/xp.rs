@@ -2,21 +2,24 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
 use crate::game::combat::death::OnDeath;
+use crate::game::level::Level;
+use crate::game::level::LevelConfig;
+use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
-// TODO: XpBar that updates based on (xp, xp_cost)
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(PlayerXp, OnReceiveXp, XpReward)>();
+    app.configure::<(Xp, OnReceiveXp, XpReward, IsXpBarFill)>();
 }
 
 /// The player's XP relative to the current level.
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct PlayerXp(pub f32);
+pub struct Xp(pub f32);
 
-impl Configure for PlayerXp {
+impl Configure for Xp {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
@@ -34,7 +37,7 @@ impl Configure for OnReceiveXp {
     }
 }
 
-fn receive_xp(trigger: Trigger<OnReceiveXp>, mut xp: ResMut<PlayerXp>) {
+fn receive_xp(trigger: Trigger<OnReceiveXp>, mut xp: ResMut<Xp>) {
     xp.0 += trigger.event().0;
 }
 
@@ -67,5 +70,34 @@ fn apply_xp_reward(
 
     if faction.is_enemy() {
         commands.trigger(OnReceiveXp(reward.0));
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct IsXpBarFill;
+
+impl Configure for IsXpBarFill {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(Update, update_xp_bar_fill.in_set(UpdateSet::SyncLate));
+    }
+}
+
+fn update_xp_bar_fill(
+    config: ConfigRef<LevelConfig>,
+    level: Res<Level>,
+    xp: Res<Xp>,
+    mut xp_bar_fill_query: Query<&mut Style, With<IsXpBarFill>>,
+) {
+    let config = r!(config.get());
+    if config.levels.is_empty() {
+        return;
+    }
+    let xp_cost = config.level(level.current + level.up).xp_cost;
+    let width = Percent(xp.0 / xp_cost * 100.0);
+
+    for mut style in &mut xp_bar_fill_query {
+        style.width = width;
     }
 }

@@ -1,21 +1,21 @@
 use bevy::prelude::*;
 
 use crate::core::UpdateSet;
-use crate::game::level::xp::PlayerXp;
+use crate::game::level::xp::Xp;
+use crate::game::level::Level;
 use crate::game::level::LevelConfig;
-use crate::game::level::PlayerLevel;
 use crate::util::prelude::*;
 
-// TODO: System that enters level up menu on PlayerLevelUp event.
+// TODO: System that enters level up menu on LevelUp event.
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<PlayerLevelUp>();
+    app.configure::<LevelUp>();
 }
 
 /// A buffered event sent when the player levels up.
 #[derive(Event)]
-pub struct PlayerLevelUp;
+pub struct LevelUp;
 
-impl Configure for PlayerLevelUp {
+impl Configure for LevelUp {
     fn configure(app: &mut App) {
         app.add_event::<Self>();
         app.add_systems(
@@ -32,8 +32,8 @@ impl Configure for PlayerLevelUp {
 
 fn update_level_up_from_xp(
     config: ConfigRef<LevelConfig>,
-    mut player_level: ResMut<PlayerLevel>,
-    mut player_xp: ResMut<PlayerXp>,
+    mut level: ResMut<Level>,
+    mut xp: ResMut<Xp>,
 ) {
     let config = r!(config.get());
     if config.levels.is_empty() {
@@ -41,23 +41,20 @@ fn update_level_up_from_xp(
     }
 
     loop {
-        let level = config.level(player_level.current + player_level.up);
-        if player_xp.0 < level.xp_cost {
+        let xp_cost = config.level(level.current + level.up).xp_cost;
+        if xp.0 < xp_cost {
             break;
         }
 
-        player_xp.0 -= level.xp_cost;
-        player_level.up += 1;
+        xp.0 -= xp_cost;
+        level.up += 1;
     }
 }
 
-fn trigger_level_up(
-    mut level_up_events: EventWriter<PlayerLevelUp>,
-    mut level: ResMut<PlayerLevel>,
-) {
+fn trigger_level_up(mut level_up_events: EventWriter<LevelUp>, mut level: ResMut<Level>) {
     if level.up > 0 {
         level.up -= 1;
         level.current += 1;
-        level_up_events.send(PlayerLevelUp);
+        level_up_events.send(LevelUp);
     }
 }

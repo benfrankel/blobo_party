@@ -4,11 +4,13 @@ use bevy_asset_loader::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::game::actor::facing::FacingAssets;
 use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
+use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
+use crate::game::deck_dock::DeckDockConfig;
 use crate::game::level::LevelConfig;
+use crate::game::music::MusicConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
@@ -18,17 +20,19 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_loading_state(
-        LoadingState::new(Screen::Loading.bevy())
-            .load_collection::<PlayingAssets>()
-            .load_collection::<FacingAssets>(),
+        LoadingState::new(Screen::Loading.bevy()).load_collection::<PlayingAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Loading.bevy()));
     app.add_systems(
         Update,
+        // TODO: This is kinda silly. Find a better way later.
         Screen::Loading.on_update((
             ActorConfig::progress.track_progress(),
+            CardConfig::progress.track_progress(),
+            DeckDockConfig::progress.track_progress(),
             HealthBarConfig::progress.track_progress(),
             LevelConfig::progress.track_progress(),
+            MusicConfig::progress.track_progress(),
             ProjectileConfig::progress.track_progress(),
         )),
     );

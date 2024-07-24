@@ -117,7 +117,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, debug_end);
 }
 
-pub(super) struct DebugConfig {
+pub struct DebugConfig {
     // Diagnostics
     pub frame_time_diagnostics: bool,
     pub system_information_diagnostics: bool,
