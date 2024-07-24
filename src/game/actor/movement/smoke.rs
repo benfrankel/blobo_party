@@ -36,19 +36,36 @@ fn spawn_movement_smoke(
 fn smoke(movement: Vec2) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
         let parent = entity.world().resource::<GameRoot>().vfx;
-        // TODO: Vertical smoke.
-        let texture = entity
-            .world()
-            .resource::<PlayingAssets>()
-            .horizontal_smoke
-            .clone();
+        let vertical = movement.x.abs() / movement.length() < 0.7;
+        let (texture, flip_x, flip_y) = if vertical {
+            (
+                entity
+                    .world()
+                    .resource::<PlayingAssets>()
+                    .vertical_smoke
+                    .clone(),
+                false,
+                movement.y < 0.0,
+            )
+        } else {
+            (
+                entity
+                    .world()
+                    .resource::<PlayingAssets>()
+                    .horizontal_smoke
+                    .clone(),
+                movement.x < 0.0,
+                false,
+            )
+        };
 
         entity
             .insert((
                 Name::new("SmokeVfx"),
                 SpriteBundle {
                     sprite: Sprite {
-                        flip_x: movement.x < 0.0,
+                        flip_x,
+                        flip_y,
                         ..default()
                     },
                     texture,

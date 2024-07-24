@@ -38,6 +38,8 @@ pub struct PlayingAssets {
     pub simple_border: Handle<Image>,
     #[asset(path = "image/vfx/horizontal_smoke.png")]
     pub horizontal_smoke: Handle<Image>,
+    #[asset(path = "image/vfx/vertical_smoke.png")]
+    pub vertical_smoke: Handle<Image>,
     #[asset(path = "image/vfx/spotlight.png")]
     pub spotlight: Handle<Image>,
 }
