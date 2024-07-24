@@ -20,7 +20,7 @@ fn spawn_movement_smoke(
     movement_query: Query<(&MovementController, &GlobalTransform)>,
 ) {
     for event in movement_events.read() {
-        let &MovementEvent::Start(entity) = event else {
+        let &(MovementEvent::Start(entity) | MovementEvent::Reverse(entity)) = event else {
             continue;
         };
         let (controller, gt) = c!(movement_query.get(entity));
