@@ -9,6 +9,7 @@ use pyri_state::schedule::ResolveStateSet;
 use crate::core::camera::CameraRoot;
 use crate::game::actor::enemy::enemy;
 use crate::game::actor::player::player;
+use crate::game::deck_dock::deck_dock;
 use crate::game::level::xp::PlayerXp;
 use crate::game::level::PlayerLevel;
 use crate::game::level::PlayerLevelIndicator;
@@ -94,23 +95,36 @@ fn exit_playing(
 
 fn playing_hud(mut entity: EntityWorldMut) {
     entity
-        .add(widget::column_left)
-        .insert(Name::new("PlayingScreen"))
+        .insert((
+            Name::new("PlayingScreen"),
+            NodeBundle {
+                style: Style {
+                    width: Percent(100.0),
+                    height: Percent(100.0),
+                    justify_content: JustifyContent::SpaceBetween,
+                    padding: UiRect::all(Px(16.0)),
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                ..default()
+            },
+        ))
         .with_children(|children| {
-            children.spawn_with(level_hud);
+            children.spawn_with(upper_hud);
+            children.spawn_with(middle_hud);
+            children.spawn_with(lower_hud);
         });
 }
 
-fn level_hud(mut entity: EntityWorldMut) {
+fn upper_hud(mut entity: EntityWorldMut) {
     entity
         .insert((
-            Name::new("LevelHud"),
+            Name::new("UpperHud"),
             NodeBundle {
                 style: Style {
                     width: Percent(100.0),
                     align_items: default(),
                     justify_content: default(),
-                    padding: UiRect::all(Px(8.0)),
                     ..default()
                 },
                 ..default()
@@ -150,6 +164,29 @@ fn xp_bar(mut entity: EntityWorldMut) {
             ..default()
         },
     ));
+}
+
+fn middle_hud(mut entity: EntityWorldMut) {
+    entity.add(widget::row_top).insert(Name::new("MiddleHud"));
+}
+
+fn lower_hud(mut entity: EntityWorldMut) {
+    entity
+        .insert((
+            Name::new("LowerHud"),
+            NodeBundle {
+                style: Style {
+                    width: Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    ..default()
+                },
+                ..default()
+            },
+        ))
+        .with_children(|children| {
+            children.spawn_with(deck_dock);
+        });
 }
 
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]

@@ -1,10 +1,10 @@
 //! Game mechanics and content
 
 pub mod actor;
-mod card;
+pub mod card;
 pub mod combat;
-mod deck;
-mod deck_dock;
+pub mod deck;
+pub mod deck_dock;
 pub mod level;
 pub mod music;
 pub mod sprite;

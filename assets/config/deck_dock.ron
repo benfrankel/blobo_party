@@ -1,7 +1,6 @@
 (
     max_card_count: 18,
-    px_between_cards: 1.0,
-    card_highlight_offset: -32.0,
-    dock_bottom_padding: 16.0,
-    dock_height: 10.0,
+    gap_between_cards: Px(1.0),
+    card_highlight_offset: Px(-32.0),
+    height: Px(64.0),
 )
