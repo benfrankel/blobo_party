@@ -53,7 +53,7 @@ fn enter_playing(mut commands: Commands) {
     commands
         .spawn_with(enemy("green"))
         .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0))
+            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
         ));
     commands
         .spawn_with(enemy("purple"))
