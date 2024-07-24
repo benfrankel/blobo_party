@@ -42,7 +42,15 @@ impl Config for DeckDockConfig {
     const PATH: &'static str = "config/deck_dock.ron";
     const EXTENSION: &'static str = "deck_dock.ron";
 
-    fn on_load(&mut self, _: &mut World) {}
+    fn on_load(&mut self, world: &mut World) {
+        for mut style in world
+            .query_filtered::<&mut Style, With<IsDeckDock>>()
+            .iter_mut(world)
+        {
+            style.height = self.height;
+            style.column_gap = self.gap_between_cards;
+        }
+    }
 }
 
 pub fn deck_dock(mut entity: EntityWorldMut) {
