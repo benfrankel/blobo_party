@@ -19,16 +19,28 @@ use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<DeckDockConfig>>();
+    app.init_resource::<SelectedIndex>();
 
     app.add_systems(
         Update,
         Screen::Playing.on_update((
             handle_added_cards,
             highlight_selected,
+            set_selected_from_player_deck,
             add_card.run_if(action_just_pressed(PlayingAction::AddCard)),
+            // TODO: Run these on level up screen
+            swap_card_left.run_if(action_just_pressed(PlayingAction::SwapCardLeft)),
+            swap_card_right.run_if(action_just_pressed(PlayingAction::SwapCardRight)),
+            select_left.run_if(action_just_pressed(PlayingAction::SelectCardLeft)),
+            select_right.run_if(action_just_pressed(PlayingAction::SelectCardRight)),
+            // TODO: Run this when exiting level up screen
+            sync_to_player_deck.run_if(action_just_pressed(PlayingAction::AcceptDeckChanges)),
         )),
     );
 }
+
+#[derive(Default, Resource, Deref, DerefMut)]
+struct SelectedIndex(usize);
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct DeckDockConfig {
@@ -80,7 +92,7 @@ pub fn deck_dock(mut entity: EntityWorldMut) {
 struct IsDeckDock;
 
 #[derive(Component)]
-struct IsVisualCard;
+struct VisualCard(CardKey);
 
 fn add_card(mut add_card_events: EventWriter<AddCardEvent>) {
     let card_keys = CardKey::iter().collect::<Vec<_>>();
@@ -90,18 +102,27 @@ fn add_card(mut add_card_events: EventWriter<AddCardEvent>) {
     }
 }
 
+fn set_selected_from_player_deck(
+    player_deck: Query<&Deck, With<IsPlayer>>,
+    mut selected_index: ResMut<SelectedIndex>,
+) {
+    if let Some(deck) = player_deck.iter().last() {
+        **selected_index = deck.selected();
+    }
+}
+
 fn highlight_selected(
     deck_dock: Query<&Children, With<IsDeckDock>>,
-    player_deck: Query<&Deck, With<IsPlayer>>,
+    selected_index: Res<SelectedIndex>,
     config_handle: Res<ConfigHandle<DeckDockConfig>>,
     config: Res<Assets<DeckDockConfig>>,
-    mut visual_cards: Query<&mut Style, With<IsVisualCard>>,
+    mut visual_cards: Query<&mut Style, With<VisualCard>>,
 ) {
-    if let (Ok(deck), Ok(children)) = (player_deck.get_single(), deck_dock.get_single()) {
+    if let Some(children) = deck_dock.iter().last() {
         let config = r!(config.get(&config_handle.0));
         for (i, child) in children.iter().enumerate() {
             if let Ok(mut style) = visual_cards.get_mut(*child) {
-                if i == deck.selected() {
+                if i == **selected_index {
                     style.top = config.card_highlight_offset;
                 } else {
                     style.top = Px(0.0);
@@ -145,7 +166,7 @@ fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
                 image: UiImage::new(config.card_backgrounds[&card.color].texture.clone()),
                 ..default()
             },
-            IsVisualCard,
+            VisualCard(card_key),
         ))
         .with_children(|children| {
             children.spawn_with(move |e: EntityWorldMut| add_icon(e, card_key));
@@ -165,4 +186,71 @@ fn add_icon(mut entity: EntityWorldMut, card_key: CardKey) {
         image: UiImage::new(card.texture.clone()),
         ..default()
     });
+}
+
+fn swap_card_left(
+    mut selected_index: ResMut<SelectedIndex>,
+    mut deck_dock: Query<&mut Children, With<IsDeckDock>>,
+) {
+    if **selected_index == 0 {
+        // TODO: play a bad sound
+        return;
+    }
+
+    let Some(mut children) = deck_dock.iter_mut().last() else {
+        return;
+    };
+
+    children.swap(**selected_index, **selected_index - 1);
+    **selected_index = selected_index.saturating_sub(1);
+}
+
+fn swap_card_right(
+    mut selected_index: ResMut<SelectedIndex>,
+    mut deck_dock: Query<&mut Children, With<IsDeckDock>>,
+) {
+    let Some(mut children) = deck_dock.iter_mut().last() else {
+        return;
+    };
+    if **selected_index >= children.len() - 1 {
+        // TODO: play a bad sound
+        return;
+    }
+
+    children.swap(**selected_index, **selected_index + 1);
+    **selected_index = selected_index.saturating_add(1);
+}
+
+fn select_left(mut selected_index: ResMut<SelectedIndex>) {
+    **selected_index = selected_index.saturating_sub(1);
+}
+fn select_right(
+    mut selected_index: ResMut<SelectedIndex>,
+    deck_dock: Query<&Children, With<IsDeckDock>>,
+) {
+    let Some(children) = deck_dock.iter().last() else {
+        return;
+    };
+
+    **selected_index = selected_index.saturating_add(1).min(children.len() - 1);
+}
+
+fn sync_to_player_deck(
+    mut player_deck: Query<&mut Deck, With<IsPlayer>>,
+    deck_dock: Query<&Children, With<IsDeckDock>>,
+    visual_cards: Query<&VisualCard>,
+) {
+    let Some(children) = deck_dock.iter().last() else {
+        return;
+    };
+
+    let cards = children
+        .iter()
+        .filter_map(|child| visual_cards.get(*child).ok())
+        .map(|card| card.0)
+        .collect::<Vec<_>>();
+
+    for mut deck in &mut player_deck {
+        *deck = Deck::new(cards.clone())
+    }
 }

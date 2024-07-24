@@ -52,8 +52,12 @@ impl Configure for PlayingAssets {
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum PlayingAction {
     Restart,
-    RotateDock,
     AddCard,
+    SelectCardRight,
+    SelectCardLeft,
+    SwapCardLeft,
+    SwapCardRight,
+    AcceptDeckChanges,
     // TODO: Pause
 }
 
@@ -63,7 +67,11 @@ impl Configure for PlayingAction {
         app.insert_resource(
             InputMap::default()
                 .insert(Self::Restart, KeyCode::KeyR)
-                .insert(Self::RotateDock, KeyCode::BracketLeft)
+                .insert(Self::SelectCardLeft, KeyCode::BracketLeft)
+                .insert(Self::SelectCardRight, KeyCode::BracketRight)
+                .insert(Self::SwapCardLeft, KeyCode::Comma)
+                .insert(Self::SwapCardRight, KeyCode::Period)
+                .insert(Self::AcceptDeckChanges, KeyCode::Space)
                 .insert(Self::AddCard, KeyCode::KeyL)
                 .build(),
         );

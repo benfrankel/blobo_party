@@ -31,6 +31,10 @@ pub struct Deck {
 }
 
 impl Deck {
+    pub fn new(cards: Vec<CardKey>) -> Self {
+        Self { cards, selected: 0 }
+    }
+
     fn peak_next(&self) -> Option<&CardKey> {
         self.cards.get(self.next())
     }
