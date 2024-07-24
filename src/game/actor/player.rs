@@ -10,6 +10,9 @@ use crate::game::actor::facing::FacingIndicator;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::movement::input::movement_action;
 use crate::game::actor::ActorConfig;
+use crate::game::combat::damage::HitboxDamage;
+use crate::game::combat::hit::Hitbox;
+use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
@@ -47,10 +50,10 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand<World> {
                 Faction::Player,
                 CollisionLayers::new(GameLayer::Player, LayerMask::ALL),
                 FaceCursor,
-                // TODO: This is for testing hit effects until we get actual projectiles / attacks.
-                crate::game::combat::hit::Hitbox,
-                crate::game::combat::damage::HitboxDamage(2.0),
-                crate::game::combat::knockback::HitboxKnockback(150.0),
+                // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
+                Hitbox,
+                HitboxDamage(2.0),
+                HitboxKnockback(3.0),
             ))
             // TODO: This is for testing movement until it's card-controlled.
             .add(movement_action)
