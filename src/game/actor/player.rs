@@ -1,9 +1,12 @@
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
+use bevy::ecs::system::SystemState;
 use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 
+use crate::core::camera::CameraRoot;
+use crate::core::camera::SmoothFollow;
 use crate::game::actor::attack::input::attack_action;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
@@ -31,19 +34,21 @@ impl Configure for IsPlayer {
     }
 }
 
-pub fn player(key: impl Into<String>) -> impl EntityCommand<World> {
+pub fn player(key: impl Into<String>) -> impl EntityCommand {
     let key = key.into();
 
-    move |mut entity: EntityWorldMut| {
-        let parent = entity.world().resource::<GameRoot>().players;
-        let config_handle = entity.world().resource::<ConfigHandle<ActorConfig>>();
-        let config = r!(entity
-            .world()
-            .resource::<Assets<ActorConfig>>()
-            .get(&config_handle.0),);
-        let actor = r!(config.players.get(&key)).clone();
+    move |entity: Entity, world: &mut World| {
+        let (actor, parent, camera) = {
+            let (config, game_root, camera_root) =
+                SystemState::<(ConfigRef<ActorConfig>, Res<GameRoot>, Res<CameraRoot>)>::new(world)
+                    .get(world);
+            let config = r!(config.get());
+            let actor = r!(config.players.get(&key)).clone();
 
-        entity
+            (actor, game_root.players, camera_root.primary)
+        };
+
+        world.entity_mut(entity)
             .add(actor)
             .insert((
                 IsPlayer,
@@ -67,5 +72,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand<World> {
                     })
                     .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
             });
+
+        r!(world.entity_mut(camera).get_mut::<SmoothFollow>()).target = entity;
     }
 }

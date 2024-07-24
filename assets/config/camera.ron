@@ -1,3 +1,4 @@
 (
     scaling_mode: WindowSize(8),
+    follow_rate: Vec2(5, 10),
 )

@@ -10,12 +10,18 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.insert_resource(Msaa::Off);
 
-    app.configure::<(ConfigHandle<CameraConfig>, CameraRoot, AbsoluteScale)>();
+    app.configure::<(
+        ConfigHandle<CameraConfig>,
+        CameraRoot,
+        SmoothFollow,
+        AbsoluteScale,
+    )>();
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 struct CameraConfig {
     scaling_mode: ScalingMode,
+    follow_rate: Vec2,
 }
 
 impl Config for CameraConfig {
@@ -23,9 +29,12 @@ impl Config for CameraConfig {
     const EXTENSION: &'static str = "camera.ron";
 
     fn on_load(&mut self, world: &mut World) {
-        let mut projection =
-            r!(world.get_mut::<OrthographicProjection>(world.resource::<CameraRoot>().primary));
+        let (mut projection, mut follow) = r!(world
+            .query::<(&mut OrthographicProjection, &mut SmoothFollow)>()
+            .get_mut(world, world.resource::<CameraRoot>().primary));
+
         projection.scaling_mode = self.scaling_mode;
+        follow.rate = self.follow_rate;
     }
 }
 
@@ -56,10 +65,49 @@ impl FromWorld for CameraRoot {
                         tonemapping: Tonemapping::None,
                         ..default()
                     },
+                    SmoothFollow {
+                        target: Entity::PLACEHOLDER,
+                        rate: Vec2::splat(100.0),
+                    },
                     IsDefaultUiCamera,
                 ))
                 .id(),
         }
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct SmoothFollow {
+    pub target: Entity,
+    pub rate: Vec2,
+}
+
+impl Configure for SmoothFollow {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(Update, apply_smooth_follow);
+    }
+}
+
+fn apply_smooth_follow(
+    time: Res<Time>,
+    mut follow_query: Query<(&mut Transform, &mut GlobalTransform, &SmoothFollow)>,
+    target_query: Query<&GlobalTransform, Without<SmoothFollow>>,
+) {
+    let dt = time.delta_seconds();
+    for (mut transform, mut gt, follow) in &mut follow_query {
+        let Ok(target) = target_query.get(follow.target) else {
+            continue;
+        };
+
+        let target_pos = target.translation().xy();
+        let mut pos = transform.translation.xy();
+        pos += (target_pos - pos) * (follow.rate * dt).clamp(Vec2::ZERO, Vec2::ONE);
+
+        transform.translation = pos.extend(transform.translation.z);
+        // TODO: This is a bit of a hack because transform propagation is awkward.
+        *gt = (*transform).into();
     }
 }
 
