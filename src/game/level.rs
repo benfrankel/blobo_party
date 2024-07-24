@@ -5,10 +5,11 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(ConfigHandle<LevelConfig>, PlayerLevel)>();
+    app.configure::<(ConfigHandle<LevelConfig>, PlayerLevel, PlayerLevelIndicator)>();
 
     app.add_plugins((up::plugin, xp::plugin));
 }
@@ -49,5 +50,33 @@ impl Configure for PlayerLevel {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct PlayerLevelIndicator;
+
+impl Configure for PlayerLevelIndicator {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            update_player_level_indicator.in_set(UpdateSet::SyncLate),
+        );
+    }
+}
+
+fn update_player_level_indicator(
+    player_level: Res<PlayerLevel>,
+    mut indicator_query: Query<&mut Text, With<PlayerLevelIndicator>>,
+) {
+    let level = player_level.current + player_level.up;
+    let level = level.to_string();
+
+    for mut text in &mut indicator_query {
+        for section in &mut text.sections {
+            section.value = level.clone();
+        }
     }
 }
