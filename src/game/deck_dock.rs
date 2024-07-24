@@ -37,12 +37,11 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct DeckDockConfig {
-    pub visible_card_count: usize,
-    pub minimum_card_distance: usize,
-    pub card_width: usize,
+    pub max_card_count: usize,
+    pub px_between_cards: f32,
+    pub card_highlight_offset: f32,
+    pub dock_bottom_padding: f32,
     pub dock_height: f32,
-    pub min_card_scale: f32,
-    pub max_card_scale: f32,
 }
 
 impl Config for DeckDockConfig {
@@ -72,9 +71,9 @@ fn deck_dock(mut entity: EntityWorldMut) {
                 height: Percent(config.dock_height),
                 align_self: AlignSelf::End,
                 justify_content: JustifyContent::Center,
-                column_gap: Val::Px(1.0),
+                column_gap: Val::Px(config.px_between_cards),
                 padding: UiRect {
-                    bottom: Val::Px(16.0),
+                    bottom: Val::Px(config.dock_bottom_padding),
                     ..default()
                 },
                 ..default()
@@ -102,13 +101,16 @@ fn add_card(mut added_card_event_writer: EventWriter<AddCardEvent>) {
 fn highlight_selected(
     deck_dock: Query<&Children, With<DeckDockMarker>>,
     player_deck: Query<&Deck, With<IsPlayer>>,
+    config_handle: Res<ConfigHandle<DeckDockConfig>>,
+    config: Res<Assets<DeckDockConfig>>,
     mut visual_cards: Query<&mut Style, With<VisualCardMarker>>,
 ) {
     if let (Ok(deck), Ok(children)) = (player_deck.get_single(), deck_dock.get_single()) {
+        let config = r!(config.get(&config_handle.0));
         for (i, child) in children.iter().enumerate() {
             if let Ok(mut style) = visual_cards.get_mut(*child) {
                 if i == deck.selected() {
-                    style.top = Val::Px(-32.0);
+                    style.top = Val::Px(config.card_highlight_offset);
                 } else {
                     style.top = Val::Px(0.0);
                 }

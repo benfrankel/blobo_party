@@ -1,8 +1,7 @@
 (
-    visible_card_count: 12,
-    minimum_card_distance: 4,
-    card_width: 16,
+    max_card_count: 18,
+    px_between_cards: 1.0,
+    card_highlight_offset: -32.0,
+    dock_bottom_padding: 16.0,
     dock_height: 10.0,
-    max_card_scale: 1,
-    min_card_scale: 1,
 )
