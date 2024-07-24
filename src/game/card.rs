@@ -15,10 +15,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Event)]
-pub struct AddCardEvent {
-    pub card: CardKey,
-    pub index: usize,
-}
+pub struct AddCardEvent(pub CardKey);
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct CardConfig {

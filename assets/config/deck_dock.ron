@@ -1,8 +1,8 @@
 (
     visible_card_count: 12,
-    minimum_card_distance: 16,
-    card_width: 20,
+    minimum_card_distance: 4,
+    card_width: 16,
     dock_height: 10.0,
     max_card_scale: 1,
-    min_card_scale: 0.1,
+    min_card_scale: 1,
 )

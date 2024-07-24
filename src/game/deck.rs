@@ -27,17 +27,29 @@ pub(super) fn plugin(app: &mut App) {
 #[reflect(Component)]
 pub struct Deck {
     pub cards: Vec<CardKey>,
-    next_card: usize,
+    selected: usize,
 }
 
 impl Deck {
     fn peak_next(&self) -> Option<&CardKey> {
-        self.cards.get(self.next_card)
+        self.cards.get(self.next())
+    }
+
+    pub fn selected(&self) -> usize {
+        self.selected
+    }
+
+    fn next(&self) -> usize {
+        if !self.cards.is_empty() {
+            (self.selected + 1) % self.cards.len()
+        } else {
+            0
+        }
     }
 
     fn rotate(&mut self) {
         if !self.cards.is_empty() {
-            self.next_card = (self.next_card + 1) % self.cards.len();
+            self.selected = self.next();
         }
     }
 }
@@ -48,7 +60,7 @@ fn handle_player_added_cards(
 ) {
     for event in added_card_event_reader.read() {
         for mut deck in &mut player_deck {
-            deck.cards.insert(event.index, event.card);
+            deck.cards.push(event.0);
         }
     }
 }
