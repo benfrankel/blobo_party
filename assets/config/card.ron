@@ -1,24 +1,41 @@
 
 (
-    card_texture_path: "image/card/yellow_card.png",
+    card_backgrounds: {
+        Yellow: CardBackground (
+            texture_path: "image/card/yellow_card.png",
+        ),
+        Green: CardBackground (
+            texture_path: "image/card/green_card.png",
+        ),
+        Blue: CardBackground (
+            texture_path: "image/card/blue_card.png",
+        ),
+        Magenta: CardBackground (
+            texture_path: "image/card/magenta_card.png",
+        ),
+    },
     cards: {
         BasicStep: CardInfo(
             name: "Basic Step",
             description: "A-one and a-two and a-step.",
+            card_color: Blue,
             texture_path: "image/card/step.png",
         ),
         DoubleBeat: CardInfo(
             name: "Double Beat",
             description: "Two beats, rapid fire!",
+            card_color: Magenta,
             texture_path: "image/card/double_beat.png",
         ),
         CounterPoint: CardInfo(
             name: "Counter Point",
             description: "Notes that move apart synchronously",
+            card_color: Magenta,
             texture_path: "image/card/counter_point.png",
         ),
         Splits: CardInfo(
             name: "Splits",
+            card_color: Blue,
             description: "Split in two!",
             texture_path: "image/card/splits.png",
         ),

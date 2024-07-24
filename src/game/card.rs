@@ -19,10 +19,23 @@ pub struct AddCardEvent(pub CardKey);
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct CardConfig {
-    pub card_texture_path: String,
-    #[serde(skip)]
-    pub card_texture: Handle<Image>,
     cards: HashMap<CardKey, CardInfo>,
+    pub card_backgrounds: HashMap<CardColor, CardBackground>,
+}
+
+#[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, EnumIter)]
+pub enum CardColor {
+    Yellow,
+    Blue,
+    Green,
+    Magenta,
+}
+
+#[derive(Asset, Reflect, Serialize, Deserialize)]
+pub struct CardBackground {
+    texture_path: String,
+    #[serde(skip)]
+    pub texture: Handle<Image>,
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
@@ -30,6 +43,7 @@ struct CardInfo {
     name: String,
     description: String,
     texture_path: String,
+    card_color: CardColor,
     #[serde(skip)]
     texture: Handle<Image>,
 }
@@ -42,7 +56,10 @@ impl Config for CardConfig {
         let mut system_state = SystemState::<Res<AssetServer>>::new(world);
         let asset_server = system_state.get_mut(world);
 
-        self.card_texture = asset_server.load(&self.card_texture_path);
+        for card_background in self.card_backgrounds.values_mut() {
+            card_background.texture = asset_server.load(&card_background.texture_path);
+        }
+
         for card in self.cards.values_mut() {
             card.texture = asset_server.load(&card.texture_path);
         }
@@ -54,6 +71,7 @@ impl Config for CardConfig {
                     display_name: value.name.clone(),
                     description: value.description.clone(),
                     action: get_system_id(world, key),
+                    color: value.card_color,
                     texture: value.texture.clone(),
                 },
             )
@@ -64,7 +82,9 @@ impl Config for CardConfig {
     }
 
     fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        asset_server.is_loaded_with_dependencies(&self.card_texture)
+        self.card_backgrounds
+            .values()
+            .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
             && self
                 .cards
                 .values()
@@ -94,6 +114,7 @@ pub struct Card {
     pub description: String,
     pub texture: Handle<Image>,
     pub action: SystemId<Entity>,
+    pub color: CardColor,
 }
 
 #[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, EnumIter)]

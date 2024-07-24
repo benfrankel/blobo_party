@@ -140,6 +140,8 @@ fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
         .world()
         .resource::<Assets<CardConfig>>()
         .get(&config_handle.0),);
+    let card_storage = entity.world().resource::<CardStorage>();
+    let card = &card_storage[&card_key];
 
     entity
         .insert((
@@ -148,7 +150,7 @@ fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
                     position_type: PositionType::Relative,
                     ..default()
                 },
-                image: UiImage::new(config.card_texture.clone()),
+                image: UiImage::new(config.card_backgrounds[&card.color].texture.clone()),
                 ..default()
             },
             VisualCardMarker,
