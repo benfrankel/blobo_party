@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::core::camera::CameraRoot;
+use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
 use crate::game::combat::hit::OnHit;
 use crate::game::music::beat::on_beat;
@@ -44,7 +45,10 @@ pub struct DespawnOnDistanceSq(pub f32);
 impl Configure for DespawnOnDistanceSq {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, despawn_on_distance_sq.in_set(UpdateSet::Update));
+        app.add_systems(
+            PostUpdate,
+            despawn_on_distance_sq.after(PostTransformSet::Finish),
+        );
     }
 }
 
