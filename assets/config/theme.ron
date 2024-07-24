@@ -23,11 +23,7 @@
 
         // Popup
         Srgba(Srgba(red: 0.106, green: 0.118, blue: 0.122, alpha: 0.850)),
-        // FacingIndicator
-        Srgba(Srgba(red: 0.400, green: 0.800, blue: 1.000, alpha: 1.000)),
-        // PlayerProjectile
-        Srgba(Srgba(red: 0.425, green: 0.425, blue: 0.925, alpha: 1.000)),
-        // EnemyProjectile
-        Srgba(Srgba(red: 0.925, green: 0.425, blue: 0.425, alpha: 1.000)),
+        // Indicator
+        Srgba(Srgba(red: 0.384, green: 0.827, blue: 0.769, alpha: 1.000)),
     )),
 )

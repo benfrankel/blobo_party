@@ -151,7 +151,7 @@ impl EntityCommand for FacingIndicator {
                 texture,
                 ..default()
             },
-            ThemeColor::FacingIndicator.target::<Sprite>(),
+            ThemeColor::Indicator.target::<Sprite>(),
             Backup::<Transform>::default(),
             self,
         ));

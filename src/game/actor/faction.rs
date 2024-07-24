@@ -1,7 +1,6 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
 
-use crate::core::theme::ThemeColor;
 use crate::game::GameLayer;
 use crate::util::prelude::*;
 
@@ -38,12 +37,5 @@ impl Faction {
             Self::Enemy => GameLayer::Enemy,
         }
         .into()
-    }
-
-    pub fn projectile_color(&self) -> ThemeColor {
-        match self {
-            Self::Player => ThemeColor::PlayerProjectile,
-            Self::Enemy => ThemeColor::EnemyProjectile,
-        }
     }
 }

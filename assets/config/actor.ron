@@ -1,6 +1,6 @@
 (
     players: {
-        "linus": Actor(
+        "pink": Actor(
             name: "Linus",
 
             texture_path: "image/actor/pink.png",
@@ -17,14 +17,12 @@
             ),
 
             movement: Movement(
-                accel: 1000,
-                decel: 0.0001,
-                speed: 50.0,
+                speed: 80.0,
             ),
             attack: Attack(
                 power: 2,
                 force: 4,
-                distance: 7,
+                color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000)),
                 // TODO: For testing purposes. This should actually be None.
                 projectile: Some("quarter_note"),
             ),
@@ -36,7 +34,7 @@
     },
 
     enemies: {
-        "lucy": Actor(
+        "red": Actor(
             name: "Lucy",
 
             texture_path: "image/actor/red.png",
@@ -51,9 +49,13 @@
                     SpriteAnimationFrame(index: 1, beats: 1),
                 ],
             ),
+
+            attack: Attack(
+                color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000)),
+            ),
         ),
 
-        "linus": Actor(
+        "pink": Actor(
             name: "Linus",
 
             texture_path: "image/actor/pink.png",
@@ -68,9 +70,13 @@
                     SpriteAnimationFrame(index: 1, beats: 1),
                 ],
             ),
+
+            attack: Attack(
+                color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000)),
+            ),
         ),
 
-        "jade": Actor(
+        "green": Actor(
             name: "Jade",
 
             texture_path: "image/actor/green.png",
@@ -85,9 +91,13 @@
                     SpriteAnimationFrame(index: 1, beats: 1),
                 ],
             ),
+
+            attack: Attack(
+                color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000)),
+            ),
         ),
 
-        "aqua": Actor(
+        "blue": Actor(
             name: "Aqua",
 
             texture_path: "image/actor/blue.png",
@@ -102,9 +112,13 @@
                     SpriteAnimationFrame(index: 1, beats: 1),
                 ],
             ),
+
+            attack: Attack(
+                color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000)),
+            ),
         ),
 
-        "lily": Actor(
+        "purple": Actor(
             name: "Lily",
 
             texture_path: "image/actor/purple.png",
@@ -118,6 +132,10 @@
                     SpriteAnimationFrame(index: 0, beats: 1),
                     SpriteAnimationFrame(index: 1, beats: 1),
                 ],
+            ),
+
+            attack: Attack(
+                color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000)),
             ),
         ),
     },

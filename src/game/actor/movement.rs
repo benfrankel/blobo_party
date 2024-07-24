@@ -17,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
 /// Movement parameters.
 #[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
+#[serde(default)]
 pub struct Movement {
     /// The acceleration rate (pixels per second^2).
     /// Applies when the controller is active and speed is under control.

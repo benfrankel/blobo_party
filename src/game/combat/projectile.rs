@@ -60,8 +60,14 @@ pub struct Projectile {
     pub knockback: f32,
 }
 
-pub fn projectile(key: impl Into<String>, power: f32, force: Vec2) -> impl EntityCommand<World> {
+pub fn projectile(
+    key: impl Into<String>,
+    power: f32,
+    force: Vec2,
+    color: impl Into<Color>,
+) -> impl EntityCommand<World> {
     let key = key.into();
+    let color = color.into();
 
     move |mut entity: EntityWorldMut| {
         let config_handle = entity.world().resource::<ConfigHandle<ProjectileConfig>>();
@@ -77,6 +83,7 @@ pub fn projectile(key: impl Into<String>, power: f32, force: Vec2) -> impl Entit
                 Name::new(projectile.name.replace(' ', "")),
                 // Appearance:
                 SpriteBundle {
+                    sprite: Sprite { color, ..default() },
                     texture: projectile.texture.clone(),
                     ..default()
                 },

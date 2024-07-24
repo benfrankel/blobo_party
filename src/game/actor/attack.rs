@@ -20,11 +20,14 @@ pub(super) fn plugin(app: &mut App) {
 /// Attack parameters.
 #[derive(Component, Reflect, Serialize, Deserialize, Clone)]
 #[reflect(Component)]
+#[serde(default)]
 pub struct Attack {
     /// A multiplier for effects like damage and knockback.
     pub power: f32,
     /// A multiplier for initial projectile speed.
     pub force: f32,
+    /// The color of the projectile.
+    pub color: Color,
     /// The relative distance to spawn projectiles from.
     pub distance: f32,
     /// The key of the projectile to attack with.
@@ -43,6 +46,7 @@ impl Default for Attack {
         Self {
             power: 1.0,
             force: 1.0,
+            color: Color::WHITE,
             distance: 7.0,
             projectile: None,
         }
@@ -76,11 +80,11 @@ fn apply_attack(
                 projectile_key,
                 attack.power,
                 attack.force * controller.0,
+                attack.color,
             ))
             .insert((
                 Transform::from_translation(translation),
                 CollisionLayers::new(GameLayer::Projectile, target_layers),
-                faction.projectile_color().target::<Sprite>(),
             ));
     }
 }
