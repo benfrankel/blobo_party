@@ -8,7 +8,7 @@
             radius: 3.0,
             speed: 20.0,
             damage: 2.0,
-            knockback: 50.0,
+            knockback: 0.5,
         ),
     },
 )

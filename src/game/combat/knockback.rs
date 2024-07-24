@@ -8,6 +8,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<HitboxKnockback>();
 }
 
+/// Scales with projectile speed.
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct HitboxKnockback(pub f32);
@@ -21,15 +22,13 @@ impl Configure for HitboxKnockback {
 
 fn apply_hitbox_knockback(
     trigger: Trigger<OnHit>,
-    hitbox_query: Query<(&GlobalTransform, &HitboxKnockback)>,
-    mut hurtbox_query: Query<(&GlobalTransform, &mut LinearVelocity)>,
+    knockback_query: Query<&HitboxKnockback>,
+    mut velocity_query: Query<&mut LinearVelocity>,
 ) {
     let &OnHit(hitbox, hurtbox) = trigger.event();
-    let (hitbox_gt, knockback) = r!(hitbox_query.get(hitbox));
-    let (hurtbox_gt, mut velocity) = r!(hurtbox_query.get_mut(hurtbox));
+    let hitbox_velocity = r!(velocity_query.get(hitbox)).0;
+    let knockback = hitbox_velocity * r!(knockback_query.get(hitbox)).0;
+    let mut velocity = r!(velocity_query.get_mut(hurtbox));
 
-    let hitbox_pos = hitbox_gt.translation().xy();
-    let hurtbox_pos = hurtbox_gt.translation().xy();
-    let direction = Dir2::new(hurtbox_pos - hitbox_pos).unwrap_or(Dir2::EAST);
-    velocity.0 += knockback.0 * direction;
+    velocity.0 += knockback;
 }
