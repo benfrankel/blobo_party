@@ -1,4 +1,3 @@
-use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
@@ -7,7 +6,6 @@ use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
-use crate::game::actor::enemy::enemy;
 use crate::game::actor::player::player;
 use crate::game::deck_dock::deck_dock;
 use crate::game::level::xp::IsXpBarFill;
@@ -110,27 +108,6 @@ fn enter_playing(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands.spawn_with(fade_in);
     // TODO: Character select screen.
     commands.spawn_with(player("pink"));
-    // TODO: Enemy spawner from config.
-    commands
-        .spawn_with(enemy("blue"))
-        .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ));
-    commands
-        .spawn_with(enemy("red"))
-        .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ));
-    commands
-        .spawn_with(enemy("green"))
-        .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ));
-    commands
-        .spawn_with(enemy("purple"))
-        .insert(TransformBundle::from_transform(
-            Transform::from_translation(vec3(20.0, 0.0, 0.0)),
-        ));
 
     commands.spawn_with(playing_hud).set_parent(ui_root.body);
 }

@@ -5,6 +5,7 @@ pub mod faction;
 pub mod health;
 pub mod movement;
 pub mod player;
+pub mod spawner;
 
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
@@ -41,6 +42,7 @@ pub(super) fn plugin(app: &mut App) {
         faction::plugin,
         health::plugin,
         movement::plugin,
+        spawner::plugin,
         player::plugin,
     ));
 }
