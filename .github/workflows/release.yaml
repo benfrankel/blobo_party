@@ -155,7 +155,9 @@ jobs:
           mv tmp/binary/* '${{ env.OUT_DIR }}' || true # Ignore error if there's nothing left to move
 
       - name: Add assets to package
-        run: cp -r '${{ env.ASSETS_DIR }}' '${{ env.OUT_DIR }}' || true # Ignore error if there's nothing to copy
+        run: |
+          rm -f '${{ env.ASSETS_DIR }}'/**/*.aseprite '${{ env.ASSETS_DIR }}/mockup'
+          cp -r '${{ env.ASSETS_DIR }}' '${{ env.OUT_DIR }}' || true # Ignore error if there's nothing to copy
 
       - name: Add web content to package (Web)
         if: ${{ matrix.platform == 'web' }}
