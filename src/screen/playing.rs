@@ -161,7 +161,7 @@ fn upper_hud(mut entity: EntityWorldMut) {
                     width: Percent(100.0),
                     align_items: AlignItems::Center,
                     justify_content: default(),
-                    margin: UiRect::all(Px(16.0)),
+                    padding: UiRect::all(Px(16.0)),
                     column_gap: Px(16.0),
                     ..default()
                 },

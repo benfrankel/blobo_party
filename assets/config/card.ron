@@ -3,7 +3,7 @@
     // Deck:
     deck_cap: 18,
     deck_height: Px(96.0),
-    deck_column_gap: Px(-4.0),
+    deck_column_gap: Px(-6.0),
 
     // Cards:
     card_background_map: {
