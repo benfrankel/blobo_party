@@ -15,6 +15,20 @@ impl<T, E> Success<T> for Result<T, E> {
     }
 }
 
+/// Warn about a failed unwrap.
+#[macro_export]
+macro_rules! warn_unwrap {
+    ($expr:expr) => {
+        warn!(
+            "Unwrap failed at {}:{}:{}: `{}`",
+            file!(),
+            line!(),
+            column!(),
+            stringify!($expr),
+        );
+    };
+}
+
 /// Unwrap or warn and return.
 #[macro_export]
 macro_rules! r {
@@ -22,7 +36,7 @@ macro_rules! r {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,
             None => {
-                warn!("Unwrap failed: {}", stringify!($expr));
+                $crate::warn_unwrap!($expr);
                 return $return;
             },
         }
@@ -32,7 +46,7 @@ macro_rules! r {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,
             None => {
-                warn!("Unwrap failed: {}", stringify!($expr));
+                $crate::warn_unwrap!($expr);
                 return;
             },
         }
@@ -64,7 +78,7 @@ macro_rules! c {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,
             None => {
-                warn!("Unwrap failed: {}", stringify!($expr));
+                $crate::warn_unwrap!($expr);
                 continue;
             },
         }
