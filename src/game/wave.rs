@@ -1,10 +1,7 @@
-use std::f32::consts::TAU;
-
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use pyri_state::prelude::*;
 use rand::seq::IteratorRandom;
-use rand::Rng;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -107,9 +104,9 @@ fn spawn_wave_enemies(
             });
 
         if let Some((key, _)) = available_actors.choose(&mut rng) {
-            let direction = Vec2::from_angle(rng.gen_range(0.0..=TAU));
-            let distance = rng.gen_range(config.min_distance..config.max_distance);
-            let spawn_point = center + direction * distance;
+            let offset =
+                Annulus::new(config.min_distance, config.max_distance).sample_interior(&mut rng);
+            let spawn_point = center + offset;
 
             commands
                 .spawn_with(enemy(key))
