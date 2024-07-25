@@ -1,7 +1,10 @@
+use std::time::Duration;
+
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use bevy_tweening::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -54,13 +57,16 @@ pub struct Projectile {
     #[serde(skip)]
     pub texture: Handle<Image>,
 
-    /// In seconds, not beats.
+    /// Lifetime in seconds, not beats.
     pub lifetime: f32,
+    /// Hitbox radius.
     pub radius: f32,
     pub speed: f32,
     pub damage: f32,
     pub knockback: f32,
 }
+
+const FADE_SECS: f32 = 0.2;
 
 pub fn projectile(
     key: impl Into<String>,
@@ -84,11 +90,26 @@ pub fn projectile(
             .insert((
                 Name::new(projectile.name.replace(' ', "")),
                 // Appearance:
-                SpriteBundle {
-                    sprite: Sprite { color, ..default() },
-                    texture: projectile.texture.clone(),
-                    ..default()
-                },
+                (
+                    SpriteBundle {
+                        sprite: Sprite { color, ..default() },
+                        texture: projectile.texture.clone(),
+                        ..default()
+                    },
+                    Animator::new(
+                        Delay::new(Duration::from_secs_f32(
+                            (projectile.lifetime - FADE_SECS).max(0.001),
+                        ))
+                        .then(Tween::new(
+                            EaseMethod::Linear,
+                            Duration::from_secs_f32(projectile.lifetime.clamp(0.001, FADE_SECS)),
+                            lens::SpriteColorLens {
+                                start: color,
+                                end: Color::NONE,
+                            },
+                        )),
+                    ),
+                ),
                 // Physics:
                 (
                     RigidBody::Kinematic,
