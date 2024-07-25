@@ -6,15 +6,16 @@ use serde::Deserialize;
 use serde::Serialize;
 use strum::EnumIter;
 
+use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
 mod movement;
-mod remove;
+mod projectile;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<CardConfig>>()
         .register_type::<CardKey>()
-        .add_plugins((movement::plugin,))
+        .add_plugins((movement::plugin, projectile::plugin))
         .add_event::<AddCardEvent>();
 }
 
@@ -101,6 +102,7 @@ impl Config for CardConfig {
 fn get_system_id(world: &mut World, card: &CardKey) -> SystemId<Entity> {
     let action = match card {
         CardKey::BasicStep => basic_step,
+        CardKey::DoubleBeat => double_beat,
         _ => noop,
     };
 
@@ -109,9 +111,15 @@ fn get_system_id(world: &mut World, card: &CardKey) -> SystemId<Entity> {
 
 fn basic_step(In(entity): In<Entity>, world: &mut World) {
     if let Some(mut e) = world.get_entity_mut(entity) {
+        e.insert((movement::Move, RemoveOnBeat::<movement::Move>::new(5)));
+    }
+}
+
+fn double_beat(In(entity): In<Entity>, world: &mut World) {
+    if let Some(mut e) = world.get_entity_mut(entity) {
         e.insert((
-            movement::Move,
-            remove::RemoveOnBeat::<movement::Move>::new(5),
+            projectile::DoubleBeat,
+            RemoveOnBeat::<projectile::DoubleBeat>::new(2),
         ));
     }
 }

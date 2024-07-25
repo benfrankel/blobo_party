@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::core::UpdateSet;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::movement::MovementController;
-use crate::game::card::remove::*;
+use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

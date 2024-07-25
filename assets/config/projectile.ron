@@ -11,5 +11,16 @@
             damage: 2.0,
             knockback: 0.5,
         ),
+        "double_beat": Projectile(
+            name: "Double Beat",
+
+            texture_path: "image/projectile/quarter_note.png",
+
+            lifetime: 2,
+            radius: 3.0,
+            speed: 25.0,
+            damage: 3.0,
+            knockback: 0.6,
+        ),
     },
 )
