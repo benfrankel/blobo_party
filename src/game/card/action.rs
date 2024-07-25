@@ -37,17 +37,15 @@ impl FromWorld for CardActionMap {
                     CardActionKey::Step,
                     world.register_system(|In(entity): In<Entity>, world: &mut World| {
                         r!(world.get_entity_mut(entity))
-                            .insert((MoveTowardsFacing, RemoveOnBeat::<MoveTowardsFacing>::new(5)));
+                            .insert(RemoveOnBeat::bundle(MoveTowardsFacing, 1));
                     }),
                 ),
                 (
                     CardActionKey::DoubleBeat,
                     world.register_system(|In(entity): In<Entity>, world: &mut World| {
                         r!(world.get_entity_mut(entity)).insert((
-                            DoubleBeat,
-                            RemoveOnBeat::<DoubleBeat>::new(2),
-                            AimTowardsFacing,
-                            RemoveOnBeat::<AimTowardsFacing>::new(2),
+                            RemoveOnBeat::bundle(DoubleBeat, 2),
+                            RemoveOnBeat::bundle(AimTowardsFacing, 2),
                         ));
                     }),
                 ),

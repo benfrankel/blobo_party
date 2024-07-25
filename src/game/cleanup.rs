@@ -128,20 +128,24 @@ pub struct RemoveOnTimer<C: Component + TypePath> {
     phantom: PhantomData<C>,
 }
 
-impl<C: Component + TypePath> RemoveOnTimer<C> {
-    #[allow(dead_code)]
-    pub fn new(timer: Timer) -> Self {
-        RemoveOnTimer {
-            timer,
-            phantom: PhantomData::<C>,
-        }
-    }
-}
-
 impl<C: Component + TypePath> Configure for RemoveOnTimer<C> {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.add_systems(Update, remove_on_timer::<C>.in_set(UpdateSet::SyncLate));
+    }
+}
+
+#[allow(dead_code)]
+impl<C: Component + TypePath> RemoveOnTimer<C> {
+    pub fn new(timer: Timer) -> Self {
+        Self {
+            timer,
+            phantom: PhantomData,
+        }
+    }
+
+    pub fn bundle(component: C, timer: Timer) -> (C, Self) {
+        (component, Self::new(timer))
     }
 }
 
@@ -152,7 +156,7 @@ fn remove_on_timer<C: Component + TypePath>(
 ) {
     for (entity, mut remove) in &mut remove_query {
         if remove.timer.tick(time.delta()).finished() {
-            commands.entity(entity).remove::<(RemoveOnTimer<C>, C)>();
+            commands.entity(entity).remove::<(C, RemoveOnTimer<C>)>();
         }
     }
 }
@@ -178,11 +182,15 @@ impl<C: Component + TypePath> Configure for RemoveOnBeat<C> {
 }
 
 impl<C: Component + TypePath> RemoveOnBeat<C> {
-    pub fn new(count: usize) -> Self {
-        RemoveOnBeat {
-            beat: count,
+    pub fn new(beat: usize) -> Self {
+        Self {
+            beat,
             phantom: PhantomData,
         }
+    }
+
+    pub fn bundle(component: C, beat: usize) -> (C, Self) {
+        (component, Self::new(beat))
     }
 }
 
@@ -192,7 +200,7 @@ fn remove_on_beat<C: Component + TypePath>(
 ) {
     for (entity, mut remove) in &mut remove_query {
         if remove.beat <= 1 {
-            commands.entity(entity).remove::<(RemoveOnBeat<C>, C)>();
+            commands.entity(entity).remove::<(C, RemoveOnBeat<C>)>();
         }
         remove.beat = remove.beat.saturating_sub(1);
     }
