@@ -275,6 +275,7 @@ fn lower_hud(mut entity: EntityWorldMut) {
             },
         ))
         .with_children(|children| {
-            children.spawn_with(deck_dock);
+            // TODO: Character select screen.
+            children.spawn_with(deck_dock("pink"));
         });
 }

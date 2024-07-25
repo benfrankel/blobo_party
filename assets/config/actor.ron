@@ -30,6 +30,9 @@
                 max: 100,
                 current: 100,
             ),
+            deck: Deck(
+                cards: [BasicStep, DoubleBeat]
+            )
         ),
     },
 
@@ -53,6 +56,10 @@
             attack: Attack(
                 color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000)),
             ),
+            
+            deck: Deck(
+                cards: [BasicStep, BasicStep, DoubleBeat]
+            )
         ),
 
         "pink": Actor(
@@ -74,6 +81,10 @@
             attack: Attack(
                 color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000)),
             ),
+
+            deck: Deck(
+                cards: [BasicStep, DoubleBeat, DoubleBeat]
+            )
         ),
 
         "green": Actor(
@@ -95,6 +106,10 @@
             attack: Attack(
                 color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000)),
             ),
+
+            deck: Deck(
+                cards: [DoubleBeat]
+            )
         ),
 
         "blue": Actor(
@@ -116,6 +131,10 @@
             attack: Attack(
                 color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000)),
             ),
+
+            deck: Deck(
+                cards: [BasicStep, DoubleBeat]
+            )
         ),
 
         "purple": Actor(
@@ -137,6 +156,10 @@
             attack: Attack(
                 color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000)),
             ),
+            
+            deck: Deck(
+                cards: [BasicStep]
+            )
         ),
     },
 )

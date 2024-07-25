@@ -1,6 +1,8 @@
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use pyri_state::prelude::*;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
@@ -23,10 +25,11 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect, Default, Clone, Serialize, Deserialize)]
 #[reflect(Component)]
 pub struct Deck {
     pub cards: Vec<CardKey>,
+    #[serde(default)]
     selected: usize,
 }
 

@@ -95,6 +95,9 @@ pub struct Actor {
     pub health: Health,
     #[serde(default)]
     pub xp_reward: XpReward,
+
+    #[serde(default)]
+    pub deck: Deck,
 }
 
 impl EntityCommand for Actor {
@@ -135,8 +138,7 @@ impl EntityCommand for Actor {
                     DespawnOnDeath,
                 ),
                 self.xp_reward,
-                // TODO: Deck should be pre-defined per actor.
-                Deck::default(),
+                self.deck,
             ))
             .with_children(|children| {
                 children

@@ -1,3 +1,5 @@
+use bevy::ecs::system::EntityCommand;
+use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use pyri_state::prelude::*;
@@ -7,6 +9,7 @@ use serde::Serialize;
 use strum::IntoEnumIterator;
 
 use crate::game::actor::player::IsPlayer;
+use crate::game::actor::ActorConfig;
 use crate::game::card::AddCardEvent;
 use crate::game::card::CardConfig;
 use crate::game::card::CardKey;
@@ -65,27 +68,51 @@ impl Config for DeckDockConfig {
     }
 }
 
-pub fn deck_dock(mut entity: EntityWorldMut) {
-    let config_handle = entity.world().resource::<ConfigHandle<DeckDockConfig>>();
-    let config = r!(entity
-        .world()
-        .resource::<Assets<DeckDockConfig>>()
-        .get(&config_handle.0),);
+pub fn deck_dock(key: impl Into<String>) -> impl EntityCommand {
+    let key = key.into();
 
-    entity.insert((
-        Name::new("DeckDock"),
-        NodeBundle {
-            style: Style {
-                width: Percent(100.0),
-                height: config.height,
-                justify_content: JustifyContent::Center,
-                column_gap: config.gap_between_cards,
-                ..default()
-            },
-            ..default()
-        },
-        IsDeckDock,
-    ));
+    move |entity: Entity, world: &mut World| {
+        let config_handle = world.resource::<ConfigHandle<DeckDockConfig>>();
+        let config = r!(world
+            .resource::<Assets<DeckDockConfig>>()
+            .get(&config_handle.0),);
+
+        let DeckDockConfig {
+            height,
+            gap_between_cards,
+            ..
+        } = *config;
+
+        let actor = {
+            let config = SystemState::<ConfigRef<ActorConfig>>::new(world).get(world);
+            let config = r!(config.get());
+            r!(config.players.get(&key)).clone()
+        };
+        let Some(mut entity) = world.get_entity_mut(entity) else {
+            return;
+        };
+
+        entity
+            .insert((
+                Name::new("DeckDock"),
+                NodeBundle {
+                    style: Style {
+                        width: Percent(100.0),
+                        height,
+                        justify_content: JustifyContent::Center,
+                        column_gap: gap_between_cards,
+                        ..default()
+                    },
+                    ..default()
+                },
+                IsDeckDock,
+            ))
+            .with_children(|children| {
+                actor.deck.cards.into_iter().for_each(|card| {
+                    children.spawn_with(move |e: EntityWorldMut| visual_card(e, card));
+                });
+            });
+    }
 }
 
 #[derive(Component)]
