@@ -93,7 +93,7 @@ fn despawn_on_beat(
         if beat.0 <= 1 {
             despawn.recursive(entity);
         }
-        beat.0 -= 1;
+        beat.0 = beat.0.saturating_sub(1);
     }
 }
 
@@ -114,8 +114,7 @@ fn despawn_on_timer(
     mut despawn_query: Query<(Entity, &mut DespawnOnTimer)>,
 ) {
     for (entity, mut timer) in &mut despawn_query {
-        timer.0.tick(time.delta());
-        if timer.0.finished() {
+        if timer.0.tick(time.delta()).finished() {
             despawn.recursive(entity);
         }
     }
@@ -142,24 +141,18 @@ impl<C: Component + TypePath> RemoveOnTimer<C> {
 impl<C: Component + TypePath> Configure for RemoveOnTimer<C> {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(
-            Update,
-            remove_on_timer::<C>.in_set(UpdateSet::SyncLate), // TODO: Is this the best choice?
-        );
+        app.add_systems(Update, remove_on_timer::<C>.in_set(UpdateSet::SyncLate));
     }
 }
 
 fn remove_on_timer<C: Component + TypePath>(
     mut commands: Commands,
-    mut components_to_remove: Query<(Entity, &mut RemoveOnTimer<C>)>,
+    mut remove_query: Query<(Entity, &mut RemoveOnTimer<C>)>,
     time: Res<Time>,
 ) {
-    for (entity, mut component) in &mut components_to_remove {
-        if component.timer.tick(time.delta()).finished() {
-            if let Some(mut entity) = commands.get_entity(entity) {
-                entity.remove::<C>();
-                entity.remove::<RemoveOnTimer<C>>();
-            }
+    for (entity, mut remove) in &mut remove_query {
+        if remove.timer.tick(time.delta()).finished() {
+            commands.entity(entity).remove::<(RemoveOnTimer<C>, C)>();
         }
     }
 }
@@ -167,18 +160,9 @@ fn remove_on_timer<C: Component + TypePath>(
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct RemoveOnBeat<C: Component + TypePath> {
-    pub count: usize,
+    pub beat: usize,
     #[reflect(ignore)]
     phantom: PhantomData<C>,
-}
-
-impl<C: Component + TypePath> RemoveOnBeat<C> {
-    pub fn new(count: usize) -> Self {
-        RemoveOnBeat {
-            count,
-            phantom: PhantomData::<C>,
-        }
-    }
 }
 
 impl<C: Component + TypePath> Configure for RemoveOnBeat<C> {
@@ -186,23 +170,30 @@ impl<C: Component + TypePath> Configure for RemoveOnBeat<C> {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            remove_on_beat::<C>.in_set(UpdateSet::SyncLate) // TODO: Is this the best choice?
-.run_if(on_beat(1)),
+            remove_on_beat::<C>
+                .in_set(UpdateSet::SyncLate)
+                .run_if(on_beat(1)),
         );
+    }
+}
+
+impl<C: Component + TypePath> RemoveOnBeat<C> {
+    pub fn new(count: usize) -> Self {
+        RemoveOnBeat {
+            beat: count,
+            phantom: PhantomData,
+        }
     }
 }
 
 fn remove_on_beat<C: Component + TypePath>(
     mut commands: Commands,
-    mut components_to_remove: Query<(Entity, &mut RemoveOnBeat<C>)>,
+    mut remove_query: Query<(Entity, &mut RemoveOnBeat<C>)>,
 ) {
-    for (entity, mut component) in &mut components_to_remove {
-        if component.count == 0 {
-            if let Some(mut entity) = commands.get_entity(entity) {
-                entity.remove::<C>();
-                entity.remove::<RemoveOnBeat<C>>();
-            }
+    for (entity, mut remove) in &mut remove_query {
+        if remove.beat <= 1 {
+            commands.entity(entity).remove::<(RemoveOnBeat<C>, C)>();
         }
-        component.count = component.count.saturating_sub(1);
+        remove.beat = remove.beat.saturating_sub(1);
     }
 }

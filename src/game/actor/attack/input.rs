@@ -31,13 +31,13 @@ fn record_attack_action(
     )>,
 ) {
     for (action, facing, mut controller) in &mut action_query {
-        if action.just_pressed(&AttackAction::Fire) {
-            controller.0 = c!(action
-                .axis_pair(&AttackAction::Aim)
-                .map(|x| x.xy().clamp_length_max(1.0))
-                .filter(|&x| x != Vec2::ZERO)
-                .or_else(|| facing.map(|x| x.0.as_vec2())));
-        }
+        controller.aim += action
+            .axis_pair(&AttackAction::Aim)
+            .filter(|x| x.xy() != Vec2::ZERO)
+            .map(|x| x.xy().clamp_length_max(1.0))
+            .or_else(|| facing.map(|x| x.0.as_vec2()))
+            .unwrap_or_default();
+        controller.fire = action.just_pressed(&AttackAction::Fire);
     }
 }
 

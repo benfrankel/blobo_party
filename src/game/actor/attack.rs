@@ -64,14 +64,14 @@ fn apply_attack(
     )>,
 ) {
     for (attack, controller, gt, velocity, faction) in &attack_query {
-        if controller.0 == Vec2::ZERO {
+        if !controller.fire || controller.aim == Vec2::ZERO {
             continue;
         }
         let projectile_key = c!(attack.projectile.as_ref());
 
         let translation = gt.translation();
         // Spawn projectile at an initial distance away from attacker.
-        let pos = translation.xy() + attack.offset * controller.0;
+        let pos = translation.xy() + attack.offset * controller.aim;
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
 
@@ -84,7 +84,7 @@ fn apply_attack(
         // Projectiles get a boost if the actor is moving in the same direction.
         let aligned_speed = velocity
             .filter(|v| v.0 != Vec2::ZERO)
-            .map(|v| v.dot(controller.0) / controller.0.length())
+            .map(|v| v.dot(controller.aim) / controller.aim.length())
             .unwrap_or(0.0)
             .clamp(0.0, 100.0);
         let speed_force_boost = 0.8;
@@ -94,7 +94,7 @@ fn apply_attack(
             .spawn_with(projectile(
                 projectile_key,
                 attack.power,
-                attack.force * controller.0 * speed_force,
+                attack.force * controller.aim * speed_force,
                 attack.color,
             ))
             .insert((
@@ -104,10 +104,12 @@ fn apply_attack(
     }
 }
 
-// TODO: Create a component that aims towards facing (and a component that moves towards facing).
 #[derive(Component, Reflect, Default)]
 #[reflect(Component)]
-pub struct AttackController(pub Vec2);
+pub struct AttackController {
+    pub aim: Vec2,
+    pub fire: bool,
+}
 
 impl Configure for AttackController {
     fn configure(app: &mut App) {
@@ -118,6 +120,6 @@ impl Configure for AttackController {
 
 fn reset_attack_controller(mut controller_query: Query<&mut AttackController>) {
     for mut controller in &mut controller_query {
-        controller.0 = Vec2::ZERO;
+        *controller = default();
     }
 }

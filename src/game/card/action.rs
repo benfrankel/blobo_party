@@ -4,8 +4,9 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::DoubleBeat;
-use crate::game::card::movement::Move;
+use crate::game::card::movement::MoveTowardsFacing;
 use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
@@ -36,14 +37,18 @@ impl FromWorld for CardActionMap {
                     CardActionKey::Step,
                     world.register_system(|In(entity): In<Entity>, world: &mut World| {
                         r!(world.get_entity_mut(entity))
-                            .insert((Move, RemoveOnBeat::<Move>::new(5)));
+                            .insert((MoveTowardsFacing, RemoveOnBeat::<MoveTowardsFacing>::new(5)));
                     }),
                 ),
                 (
                     CardActionKey::DoubleBeat,
                     world.register_system(|In(entity): In<Entity>, world: &mut World| {
-                        r!(world.get_entity_mut(entity))
-                            .insert((DoubleBeat, RemoveOnBeat::<DoubleBeat>::new(2)));
+                        r!(world.get_entity_mut(entity)).insert((
+                            DoubleBeat,
+                            RemoveOnBeat::<DoubleBeat>::new(2),
+                            AimTowardsFacing,
+                            RemoveOnBeat::<AimTowardsFacing>::new(2),
+                        ));
                     }),
                 ),
             ]

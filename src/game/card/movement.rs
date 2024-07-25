@@ -7,19 +7,28 @@ use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<RemoveOnBeat<Move>>();
-
-    app.add_systems(
-        Update,
-        handle_move.in_set(UpdateSet::RecordInput), // TODO: Is this the best choice?
-    );
+    app.configure::<MoveTowardsFacing>();
 }
 
 #[derive(Component, Reflect)]
-pub struct Move;
+#[reflect(Component)]
+pub struct MoveTowardsFacing;
 
-fn handle_move(mut moves: Query<(&Facing, &mut MovementController), With<Move>>) {
-    for (facing, mut controller) in &mut moves {
+impl Configure for MoveTowardsFacing {
+    fn configure(app: &mut App) {
+        app.configure::<RemoveOnBeat<Self>>();
+        app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            apply_move_towards_facing.in_set(UpdateSet::RecordInput),
+        );
+    }
+}
+
+fn apply_move_towards_facing(
+    mut movement_query: Query<(&mut MovementController, &Facing), With<MoveTowardsFacing>>,
+) {
+    for (mut controller, facing) in &mut movement_query {
         controller.0 += *facing.0;
     }
 }

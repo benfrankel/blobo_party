@@ -50,6 +50,8 @@ pub enum UpdateSet {
     TickTimers,
     /// Synchronize start-of-frame values.
     SyncEarly,
+    /// Play cards.
+    PlayCards,
     /// Record player and AI input.
     RecordInput,
     /// Step game logic.
@@ -71,6 +73,7 @@ impl Configure for UpdateSet {
             (
                 Self::TickTimers,
                 Self::SyncEarly,
+                Self::PlayCards,
                 Self::RecordInput,
                 Self::Update,
                 Self::TriggerDeath,

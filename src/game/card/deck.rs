@@ -28,9 +28,7 @@ impl Configure for Deck {
             Update,
             (
                 add_cards_to_deck.in_set(UpdateSet::SyncLate),
-                run_card_actions
-                    .in_set(UpdateSet::Update)
-                    .run_if(on_beat(2)),
+                play_cards.in_set(UpdateSet::PlayCards).run_if(on_beat(2)),
             ),
         );
     }
@@ -74,7 +72,7 @@ fn add_cards_to_deck(
     }
 }
 
-fn run_card_actions(
+fn play_cards(
     mut commands: Commands,
     config: ConfigRef<CardConfig>,
     mut deck_query: Query<(Entity, &mut Deck)>,
