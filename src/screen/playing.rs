@@ -1,3 +1,4 @@
+use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
@@ -7,7 +8,7 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::game::actor::player::player;
-use crate::game::card::deck_dock::deck_dock;
+use crate::game::card::deck::deck_display;
 use crate::game::level::xp::IsXpBarFill;
 use crate::game::level::xp::Xp;
 use crate::game::level::IsLevelIndicator;
@@ -121,35 +122,39 @@ fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<
     commands.spawn_with(fade_in);
 
     // TODO: Character select screen.
-    commands.spawn_with(player("pink"));
+    let player = commands.spawn_with(player("pink")).id();
 
     commands
         .spawn_with(spotlight_lamp_spawner)
         .set_parent(game_root.vfx);
 
-    commands.spawn_with(playing_hud).set_parent(ui_root.body);
+    commands
+        .spawn_with(playing_hud(player))
+        .set_parent(ui_root.body);
 }
 
-fn playing_hud(mut entity: EntityWorldMut) {
-    entity
-        .insert((
-            Name::new("PlayingScreen"),
-            NodeBundle {
-                style: Style {
-                    width: Percent(100.0),
-                    height: Percent(100.0),
-                    justify_content: JustifyContent::SpaceBetween,
-                    flex_direction: FlexDirection::Column,
+fn playing_hud(player: Entity) -> impl EntityCommand<World> {
+    move |mut entity: EntityWorldMut| {
+        entity
+            .insert((
+                Name::new("PlayingScreen"),
+                NodeBundle {
+                    style: Style {
+                        width: Percent(100.0),
+                        height: Percent(100.0),
+                        justify_content: JustifyContent::SpaceBetween,
+                        flex_direction: FlexDirection::Column,
+                        ..default()
+                    },
                     ..default()
                 },
-                ..default()
-            },
-        ))
-        .with_children(|children| {
-            children.spawn_with(upper_hud);
-            children.spawn_with(middle_hud);
-            children.spawn_with(lower_hud);
-        });
+            ))
+            .with_children(|children| {
+                children.spawn_with(upper_hud);
+                children.spawn_with(middle_hud);
+                children.spawn_with(lower_hud(player));
+            });
+    }
 }
 
 fn upper_hud(mut entity: EntityWorldMut) {
@@ -262,22 +267,23 @@ fn middle_hud(mut entity: EntityWorldMut) {
     entity.add(widget::row_top).insert(Name::new("MiddleHud"));
 }
 
-fn lower_hud(mut entity: EntityWorldMut) {
-    entity
-        .insert((
-            Name::new("LowerHud"),
-            NodeBundle {
-                style: Style {
-                    width: Percent(100.0),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::Center,
+fn lower_hud(player: Entity) -> impl EntityCommand<World> {
+    move |mut entity: EntityWorldMut| {
+        entity
+            .insert((
+                Name::new("LowerHud"),
+                NodeBundle {
+                    style: Style {
+                        width: Percent(100.0),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        ..default()
+                    },
                     ..default()
                 },
-                ..default()
-            },
-        ))
-        .with_children(|children| {
-            // TODO: Character select screen.
-            children.spawn_with(deck_dock("pink"));
-        });
+            ))
+            .with_children(|children| {
+                children.spawn_with(deck_display(player));
+            });
+    }
 }

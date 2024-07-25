@@ -37,7 +37,7 @@ pub struct Attack {
 impl Configure for Attack {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_attack.in_set(UpdateSet::Update));
+        app.add_systems(Update, apply_attack.in_set(UpdateSet::Spawn));
     }
 }
 

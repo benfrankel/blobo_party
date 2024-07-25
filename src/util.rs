@@ -13,7 +13,7 @@ pub mod prelude {
     pub use super::config::Config;
     pub use super::config::ConfigHandle;
     pub use super::config::ConfigRef;
-    pub use super::despawn::DespawnSet;
+    pub use super::despawn::LateDespawn;
     pub use super::patch::AppExtConfigure as _;
     pub use super::patch::ColorExtBetterMix as _;
     pub use super::patch::Configure;

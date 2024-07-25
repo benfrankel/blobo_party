@@ -38,6 +38,6 @@ impl Configure for DespawnOnDeath {
     }
 }
 
-fn despawn_on_death(trigger: Trigger<OnDeath>, mut despawn: ResMut<DespawnSet>) {
+fn despawn_on_death(trigger: Trigger<OnDeath>, mut despawn: ResMut<LateDespawn>) {
     despawn.recursive(r!(trigger.get_entity()));
 }

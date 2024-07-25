@@ -60,8 +60,10 @@ pub enum UpdateSet {
     TriggerDeath,
     /// Detect XP and trigger level up.
     TriggerLevelUp,
-    /// Spawn and despawn entities.
-    SpawnDespawn,
+    /// Despawn entities.
+    Despawn,
+    /// Spawn entities.
+    Spawn,
     /// Synchronize end-of-frame values.
     SyncLate,
 }
@@ -78,7 +80,8 @@ impl Configure for UpdateSet {
                 Self::Update,
                 Self::TriggerDeath,
                 Self::TriggerLevelUp,
-                Self::SpawnDespawn,
+                Self::Despawn,
+                Self::Spawn,
                 Self::SyncLate,
             )
                 .chain(),

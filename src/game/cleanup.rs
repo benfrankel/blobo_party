@@ -26,7 +26,7 @@ impl Configure for DespawnOnHit {
 
 fn despawn_on_hit(
     trigger: Trigger<OnHit>,
-    mut despawn: ResMut<DespawnSet>,
+    mut despawn: ResMut<LateDespawn>,
     despawn_query: Query<(), With<DespawnOnHit>>,
 ) {
     let hitbox = trigger.event().0;
@@ -58,7 +58,7 @@ impl DespawnRadiusSq {
 fn apply_despawn_radius_sq(
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
-    mut despawn: ResMut<DespawnSet>,
+    mut despawn: ResMut<LateDespawn>,
     despawn_query: Query<(Entity, &GlobalTransform, &DespawnRadiusSq)>,
 ) {
     let camera_gt = r!(camera_query.get(camera_root.primary));
@@ -86,7 +86,7 @@ impl Configure for DespawnOnBeat {
 }
 
 fn despawn_on_beat(
-    mut despawn: ResMut<DespawnSet>,
+    mut despawn: ResMut<LateDespawn>,
     mut despawn_query: Query<(Entity, &mut DespawnOnBeat)>,
 ) {
     for (entity, mut beat) in &mut despawn_query {
@@ -110,7 +110,7 @@ impl Configure for DespawnOnTimer {
 
 fn despawn_on_timer(
     time: Res<Time>,
-    mut despawn: ResMut<DespawnSet>,
+    mut despawn: ResMut<LateDespawn>,
     mut despawn_query: Query<(Entity, &mut DespawnOnTimer)>,
 ) {
     for (entity, mut timer) in &mut despawn_query {

@@ -1,3 +1,4 @@
+use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
@@ -5,20 +6,23 @@ use serde::Serialize;
 use super::CardConfig;
 use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
+use crate::game::card::card;
 use crate::game::card::AddCardEvent;
 use crate::game::music::beat::on_beat;
+use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<Deck>();
+    app.configure::<(Deck, DeckDisplay)>();
 }
 
 #[derive(Component, Reflect, Serialize, Deserialize, Default, Clone)]
 #[reflect(Component)]
 pub struct Deck {
-    pub cards: Vec<String>,
+    #[serde(rename = "cards")]
+    pub card_keys: Vec<String>,
     #[serde(default)]
-    pub selected: usize,
+    pub active: usize,
 }
 
 impl Configure for Deck {
@@ -28,7 +32,7 @@ impl Configure for Deck {
             Update,
             (
                 add_cards_to_deck.in_set(UpdateSet::SyncLate),
-                play_cards.in_set(UpdateSet::PlayCards).run_if(on_beat(2)),
+                advance_deck.in_set(UpdateSet::PlayCards).run_if(on_beat(2)),
             ),
         );
     }
@@ -37,26 +41,26 @@ impl Configure for Deck {
 impl Deck {
     pub fn new(cards: impl Into<Vec<String>>) -> Self {
         Self {
-            cards: cards.into(),
-            selected: 0,
+            card_keys: cards.into(),
+            active: 0,
         }
     }
 
     fn peek_next(&self) -> Option<&String> {
-        self.cards.get(self.next())
+        self.card_keys.get(self.next())
     }
 
     fn next(&self) -> usize {
-        if !self.cards.is_empty() {
-            (self.selected + 1) % self.cards.len()
+        if !self.card_keys.is_empty() {
+            (self.active + 1) % self.card_keys.len()
         } else {
             0
         }
     }
 
     fn advance(&mut self) {
-        if !self.cards.is_empty() {
-            self.selected = self.next();
+        if !self.card_keys.is_empty() {
+            self.active = self.next();
         }
     }
 }
@@ -67,12 +71,12 @@ fn add_cards_to_deck(
 ) {
     for event in add_card_events.read() {
         for mut deck in &mut player_deck {
-            deck.cards.push(event.0.clone());
+            deck.card_keys.push(event.0.clone());
         }
     }
 }
 
-fn play_cards(
+fn advance_deck(
     mut commands: Commands,
     config: ConfigRef<CardConfig>,
     mut deck_query: Query<(Entity, &mut Deck)>,
@@ -86,5 +90,93 @@ fn play_cards(
         let action_config = card_action.action_config.clone();
         commands.run_system_with_input(action.0, (entity, action_config));
         deck.advance();
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+struct DeckDisplay {
+    target: Entity,
+}
+
+impl Configure for DeckDisplay {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(
+            Update,
+            (
+                clear_deck_display.in_set(UpdateSet::Despawn),
+                populate_deck_display.in_set(UpdateSet::Spawn),
+            ),
+        );
+    }
+}
+
+impl Default for DeckDisplay {
+    fn default() -> Self {
+        Self {
+            target: Entity::PLACEHOLDER,
+        }
+    }
+}
+
+// Clear deck display if its target or its target's deck has changed.
+fn clear_deck_display(
+    mut commands: Commands,
+    deck_display_query: Query<(Entity, &DeckDisplay)>,
+    target_changed_query: Query<(), Changed<DeckDisplay>>,
+    deck_changed_query: Query<(), Changed<Deck>>,
+) {
+    // Clear display if target entity has not changed, but its deck has.
+    for (entity, deck_display) in &deck_display_query {
+        if !target_changed_query.contains(entity)
+            && !deck_changed_query.contains(deck_display.target)
+        {
+            continue;
+        }
+
+        commands.entity(entity).despawn_descendants();
+    }
+}
+
+// Populate deck display if its target or its target's deck has changed.
+fn populate_deck_display(
+    mut commands: Commands,
+    deck_display_query: Query<(Entity, &DeckDisplay)>,
+    deck_query: Query<&Deck>,
+    target_changed_query: Query<(), Changed<DeckDisplay>>,
+    deck_changed_query: Query<(), Changed<Deck>>,
+) {
+    for (entity, deck_display) in &deck_display_query {
+        if !target_changed_query.contains(entity)
+            && !deck_changed_query.contains(deck_display.target)
+        {
+            continue;
+        }
+        let deck = deck_query.get(deck_display.target).unwrap();
+
+        commands.entity(entity).with_children(|children| {
+            for (i, card_key) in deck.card_keys.iter().enumerate() {
+                children.spawn_with(card(card_key, i == deck.active));
+            }
+        });
+    }
+}
+
+pub fn deck_display(player: Entity) -> impl EntityCommand {
+    move |entity: Entity, world: &mut World| {
+        world.entity_mut(entity).insert((
+            Name::new("DeckDisplay"),
+            NodeBundle {
+                style: Style {
+                    width: Percent(100.0),
+                    justify_content: JustifyContent::Center,
+                    column_gap: Px(-4.0),
+                    ..default()
+                },
+                ..default()
+            },
+            DeckDisplay { target: player },
+        ));
     }
 }

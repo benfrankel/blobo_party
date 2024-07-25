@@ -2,10 +2,9 @@
 (
     // Deck:
     deck_cap: 18,
-    deck_height: Px(96.0),
-    deck_column_gap: Px(-6.0),
 
     // Cards:
+    card_height: Px(96.0),
     card_background_map: {
         "yellow": CardBackground (
             texture: "image/card/yellow_card.png",
@@ -40,49 +39,55 @@
             ),
         ),
     },
+    card_icon_map: {
+        "step": CardIcon(texture: "image/card/step.png"),
+        "double_beat": CardIcon(texture: "image/card/double_beat.png"),
+        "counter_point": CardIcon(texture: "image/card/counter_point.png"),
+        "splits": CardIcon(texture: "image/card/splits.png"),
+    },
     card_map: {
         "step": Card(
             name: "Basic Step",
             description: "A-one and a-two and a-step.",
             background: "blue",
-            icon_texture: "image/card/step.png",
+            icon: "step",
             action: Step,
             action_config: CardActionConfig(
-               remove_on_beat: 2, 
+                remove_on_beat: 2,
             ),
         ),
         "double_beat": Card(
             name: "Double Beat",
             description: "Two beats, rapid fire!",
             background: "pink",
-            icon_texture: "image/card/double_beat.png",
+            icon: "double_beat",
             action: DoubleBeat,
             action_config: CardActionConfig(
-               remove_on_beat: 2, 
-               attack: Attack (
-                   power: 2.0,
-                   force: 4.0,
-                   projectile: Some("quarter_note")
-               )
+                remove_on_beat: 2,
+                attack: Attack (
+                    power: 2.0,
+                    force: 4.0,
+                    projectile: Some("quarter_note"),
+                ),
             ),
         ),
         "counter_point": Card(
             name: "Counter Point",
             description: "Notes that move apart synchronously",
             background: "pink",
-            icon_texture: "image/card/counter_point.png",
+            icon: "counter_point",
             action_config: CardActionConfig(
-               remove_on_beat: 2, 
+                remove_on_beat: 2,
             ),
         ),
         "splits": Card(
             name: "Splits",
             description: "Split in two!",
             background: "blue",
-            icon_texture: "image/card/splits.png",
+            icon: "splits",
             modifier: 1.0,
             action_config: CardActionConfig(
-               remove_on_beat: 2, 
+                remove_on_beat: 2,
             ),
         ),
     }

@@ -69,7 +69,7 @@ impl FromWorld for CardActionMap {
     }
 }
 
-#[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Default)]
+#[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Copy, Clone, Default)]
 pub enum CardActionKey {
     #[default]
     Rest,

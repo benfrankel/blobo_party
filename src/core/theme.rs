@@ -70,6 +70,7 @@ pub enum ThemeColor {
     // Misc UI colors
     Popup,
     Indicator,
+    CardBorder,
 }
 
 impl ThemeColor {
