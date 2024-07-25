@@ -48,7 +48,7 @@ pub struct DynamicFontSize {
 impl Configure for DynamicFontSize {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_font_size.in_set(UpdateSet::SyncLate));
+        app.add_systems(Update, apply_dynamic_font_size.in_set(UpdateSet::SyncLate));
     }
 }
 
@@ -73,7 +73,7 @@ impl DynamicFontSize {
     }
 }
 
-pub fn apply_font_size(
+pub fn apply_dynamic_font_size(
     window_root: Res<WindowRoot>,
     window_query: Query<&Window>,
     mut text_query: Query<(&DynamicFontSize, &Node, &mut Text)>,
@@ -85,13 +85,13 @@ pub fn apply_font_size(
         // Compute font size.
         let size = c!(font_size.size.resolve(node.size().x, viewport_size));
 
-        // Round to nearest multiple of step.
+        // Round font size to nearest multiple of step.
         let resolved = if font_size.step > 0.0 {
             (size / font_size.step).floor() * font_size.step
         } else {
             size
         };
-        // Clamp above minimum.
+        // Clamp font size above minimum.
         let size = resolved.max(font_size.minimum);
 
         for section in &mut text.sections {

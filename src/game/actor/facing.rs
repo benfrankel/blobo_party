@@ -55,7 +55,7 @@ fn face_player(
     player_query: Query<&GlobalTransform, With<IsPlayer>>,
     mut facing_query: Query<(&mut Facing, &GlobalTransform), With<FacePlayer>>,
 ) {
-    let target_pos = r!(player_query.get_single()).translation().xy();
+    let target_pos = rq!(player_query.get_single()).translation().xy();
 
     for (mut facing, gt) in &mut facing_query {
         let pos = gt.translation().xy();
@@ -83,13 +83,13 @@ fn face_cursor(
 ) {
     let window = r!(window_query.get(window_root.primary));
     let (camera, camera_gt) = r!(camera_query.get(camera_root.primary));
-    let target_pos = rq!(window
+    let cursor_pos = rq!(window
         .cursor_position()
         .and_then(|cursor| camera.viewport_to_world_2d(camera_gt, cursor)));
 
     for (mut facing, gt) in &mut facing_query {
         let pos = gt.translation().xy();
-        facing.0 = c!(Dir2::new(target_pos - pos));
+        facing.0 = c!(Dir2::new(cursor_pos - pos));
     }
 }
 
