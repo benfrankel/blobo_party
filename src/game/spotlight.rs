@@ -164,13 +164,9 @@ fn spawn_spotlight_lamps(
         };
 
         for _ in 0..spawn_count {
-            let direction = Vec2::from_angle(rng.gen_range(0.0..=TAU));
-            let r_hi2 = config.spawn_radius_hi * config.spawn_radius_hi;
-            let r_lo2 = spawn_radius_lo * spawn_radius_lo;
-            let t = rng.gen_range(0f32..=1.0);
-            let distance = ((r_hi2 - r_lo2) * t + r_lo2).sqrt();
-
-            let spawn_point = center + direction * distance;
+            let offset =
+                Annulus::new(spawn_radius_lo, config.spawn_radius_hi).sample_interior(&mut rng);
+            let spawn_point = center + offset;
 
             commands
                 .spawn_with(spotlight_lamp)
