@@ -31,7 +31,7 @@
                 current: 100,
             ),
             deck: Deck(
-                cards: [BasicStep, DoubleBeat]
+                cards: ["BasicStep", "DoubleBeat"]
             )
         ),
     },
@@ -58,7 +58,7 @@
             ),
             
             deck: Deck(
-                cards: [BasicStep, BasicStep, DoubleBeat]
+                cards: ["BasicStep", "BasicStep", "DoubleBeat"]
             )
         ),
 
@@ -83,7 +83,7 @@
             ),
 
             deck: Deck(
-                cards: [BasicStep, DoubleBeat, DoubleBeat]
+                cards: ["BasicStep", "DoubleBeat", "DoubleBeat"]
             )
         ),
 
@@ -108,7 +108,7 @@
             ),
 
             deck: Deck(
-                cards: [DoubleBeat]
+                cards: ["DoubleBeat"]
             )
         ),
 
@@ -133,7 +133,7 @@
             ),
 
             deck: Deck(
-                cards: [BasicStep, DoubleBeat]
+                cards: ["BasicStep", "DoubleBeat"]
             )
         ),
 
@@ -158,7 +158,7 @@
             ),
             
             deck: Deck(
-                cards: [BasicStep]
+                cards: ["BasicStep"]
             )
         ),
     },

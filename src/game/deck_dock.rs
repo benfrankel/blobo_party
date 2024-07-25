@@ -3,16 +3,13 @@ use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use pyri_state::prelude::*;
-use rand::seq::SliceRandom;
 use serde::Deserialize;
 use serde::Serialize;
-use strum::IntoEnumIterator;
 
 use crate::game::actor::player::IsPlayer;
 use crate::game::actor::ActorConfig;
 use crate::game::card::AddCardEvent;
 use crate::game::card::CardConfig;
-use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
 use crate::game::deck::Deck;
 use crate::screen::playing::PlayingAction;
@@ -30,7 +27,6 @@ pub(super) fn plugin(app: &mut App) {
             handle_added_cards,
             highlight_selected,
             set_selected_from_player_deck,
-            add_card.run_if(action_just_pressed(PlayingAction::AddCard)),
             // TODO: Run these on level up screen
             swap_card_left.run_if(action_just_pressed(PlayingAction::SwapCardLeft)),
             swap_card_right.run_if(action_just_pressed(PlayingAction::SwapCardRight)),
@@ -119,15 +115,7 @@ pub fn deck_dock(key: impl Into<String>) -> impl EntityCommand {
 struct IsDeckDock;
 
 #[derive(Component)]
-struct VisualCard(CardKey);
-
-fn add_card(mut add_card_events: EventWriter<AddCardEvent>) {
-    let card_keys = CardKey::iter().collect::<Vec<_>>();
-    let random_card = card_keys.choose(&mut rand::thread_rng());
-    if let Some(random_card) = random_card {
-        add_card_events.send(AddCardEvent(*random_card));
-    }
-}
+struct VisualCard(String);
 
 fn set_selected_from_player_deck(
     player_deck: Query<&Deck, With<IsPlayer>>,
@@ -167,14 +155,14 @@ fn handle_added_cards(
     for event in added_card_event_reader.read() {
         for dock_entity in &dock {
             commands.entity(dock_entity).with_children(|children| {
-                let card = event.0;
+                let card = event.0.clone();
                 children.spawn_with(move |e: EntityWorldMut| visual_card(e, card));
             });
         }
     }
 }
 
-fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
+fn visual_card(mut entity: EntityWorldMut, card_key: String) {
     let config_handle = entity.world().resource::<ConfigHandle<CardConfig>>();
     let config = r!(entity
         .world()
@@ -182,6 +170,7 @@ fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
         .get(&config_handle.0),);
     let card_storage = entity.world().resource::<CardStorage>();
     let card = &card_storage[&card_key];
+    let cloned_key = card_key.clone();
 
     entity
         .insert((
@@ -196,11 +185,11 @@ fn visual_card(mut entity: EntityWorldMut, card_key: CardKey) {
             VisualCard(card_key),
         ))
         .with_children(|children| {
-            children.spawn_with(move |e: EntityWorldMut| add_icon(e, card_key));
+            children.spawn_with(move |e: EntityWorldMut| add_icon(e, cloned_key));
         });
 }
 
-fn add_icon(mut entity: EntityWorldMut, card_key: CardKey) {
+fn add_icon(mut entity: EntityWorldMut, card_key: String) {
     let card_storage = entity.world().resource::<CardStorage>();
     let card = &card_storage[&card_key];
 
@@ -274,7 +263,7 @@ fn sync_to_player_deck(
     let cards = children
         .iter()
         .filter_map(|child| visual_cards.get(*child).ok())
-        .map(|card| card.0)
+        .map(|card| card.0.to_owned())
         .collect::<Vec<_>>();
 
     for mut deck in &mut player_deck {

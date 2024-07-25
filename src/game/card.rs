@@ -14,17 +14,16 @@ mod projectile;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<CardConfig>>()
-        .register_type::<CardKey>()
         .add_plugins((movement::plugin, projectile::plugin))
         .add_event::<AddCardEvent>();
 }
 
 #[derive(Event)]
-pub struct AddCardEvent(pub CardKey);
+pub struct AddCardEvent(pub String);
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct CardConfig {
-    cards: HashMap<CardKey, CardInfo>,
+    cards: HashMap<String, CardInfo>,
     pub card_backgrounds: HashMap<CardColor, CardBackground>,
 }
 
@@ -71,7 +70,7 @@ impl Config for CardConfig {
 
         let cards = self.cards.iter().map(|(key, value)| {
             (
-                *key,
+                key.to_owned(),
                 Card {
                     display_name: value.name.clone(),
                     description: value.description.clone(),
@@ -99,10 +98,10 @@ impl Config for CardConfig {
 
 // TODO: This works for mapping Cards to their Actions but it might
 // be better in another file and maybe as a resource?
-fn get_system_id(world: &mut World, card: &CardKey) -> SystemId<Entity> {
-    let action = match card {
-        CardKey::BasicStep => basic_step,
-        CardKey::DoubleBeat => double_beat,
+fn get_system_id(world: &mut World, card: &String) -> SystemId<Entity> {
+    let action = match &**card {
+        "BasicStep" => basic_step,
+        "DoubleBeat" => double_beat,
         _ => noop,
     };
 
@@ -135,13 +134,5 @@ pub struct Card {
     pub color: CardColor,
 }
 
-#[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, EnumIter)]
-pub enum CardKey {
-    BasicStep,
-    DoubleBeat,
-    CounterPoint,
-    Splits,
-}
-
 #[derive(Resource, Deref, DerefMut)]
-pub struct CardStorage(pub HashMap<CardKey, Card>);
+pub struct CardStorage(pub HashMap<String, Card>);

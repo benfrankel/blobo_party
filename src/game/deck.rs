@@ -7,7 +7,6 @@ use serde::Serialize;
 use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
 use crate::game::card::AddCardEvent;
-use crate::game::card::CardKey;
 use crate::game::card::CardStorage;
 use crate::game::music::beat::on_beat;
 use crate::screen::Screen;
@@ -28,17 +27,17 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Reflect, Default, Clone, Serialize, Deserialize)]
 #[reflect(Component)]
 pub struct Deck {
-    pub cards: Vec<CardKey>,
+    pub cards: Vec<String>,
     #[serde(default)]
     selected: usize,
 }
 
 impl Deck {
-    pub fn new(cards: Vec<CardKey>) -> Self {
+    pub fn new(cards: Vec<String>) -> Self {
         Self { cards, selected: 0 }
     }
 
-    fn peak_next(&self) -> Option<&CardKey> {
+    fn peak_next(&self) -> Option<&String> {
         self.cards.get(self.next())
     }
 
@@ -67,7 +66,7 @@ fn handle_player_added_cards(
 ) {
     for event in added_card_event_reader.read() {
         for mut deck in &mut player_deck {
-            deck.cards.push(event.0);
+            deck.cards.push(event.0.clone());
         }
     }
 }
