@@ -19,6 +19,4 @@
         // Purple
         Oklcha(Oklcha(lightness: 0.410, chroma: 0.18, hue: 308, alpha: 0.550)),
     ],
-    alpha_lo: 0.3,
-    alpha_hi: 0.3,
 )

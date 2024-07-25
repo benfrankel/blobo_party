@@ -25,8 +25,6 @@ pub struct SpotlightConfig {
     pub color_loop_rate_lo: f32,
     pub color_loop_rate_hi: f32,
     pub color_loop: Vec<Color>,
-    pub alpha_lo: f32,
-    pub alpha_hi: f32,
 }
 
 impl Config for SpotlightConfig {
