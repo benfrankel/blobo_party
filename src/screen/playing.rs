@@ -58,13 +58,15 @@ impl Configure for PlayingAssets {
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum PlayingAction {
     Restart,
+    Pause,
+    // TODO: These actions should be split out.
+    // TODO: Discard action.
     AddCard,
     SelectCardRight,
     SelectCardLeft,
     SwapCardLeft,
     SwapCardRight,
     AcceptDeckChanges,
-    // TODO: Pause
 }
 
 impl Configure for PlayingAction {
@@ -72,12 +74,27 @@ impl Configure for PlayingAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
+                .insert(Self::Restart, GamepadButtonType::Select)
                 .insert(Self::Restart, KeyCode::KeyR)
-                .insert(Self::SelectCardLeft, KeyCode::BracketLeft)
-                .insert(Self::SelectCardRight, KeyCode::BracketRight)
-                .insert(Self::SwapCardLeft, KeyCode::Comma)
-                .insert(Self::SwapCardRight, KeyCode::Period)
-                .insert(Self::AcceptDeckChanges, KeyCode::Space)
+                .insert(Self::Pause, GamepadButtonType::Start)
+                .insert(Self::Pause, KeyCode::Escape)
+                .insert(Self::Pause, KeyCode::Tab)
+                .insert(Self::Pause, KeyCode::KeyP)
+                .insert(Self::SelectCardLeft, GamepadButtonType::DPadLeft)
+                .insert(Self::SelectCardLeft, GamepadButtonType::LeftTrigger)
+                .insert(Self::SelectCardLeft, KeyCode::KeyA)
+                .insert(Self::SelectCardLeft, KeyCode::ArrowLeft)
+                .insert(Self::SelectCardRight, GamepadButtonType::DPadRight)
+                .insert(Self::SelectCardRight, GamepadButtonType::RightTrigger)
+                .insert(Self::SelectCardRight, KeyCode::KeyD)
+                .insert(Self::SelectCardRight, KeyCode::ArrowRight)
+                .insert(Self::SwapCardLeft, GamepadButtonType::LeftTrigger2)
+                .insert_modified(Self::SwapCardLeft, Modifier::Shift, KeyCode::KeyA)
+                .insert_modified(Self::SwapCardLeft, Modifier::Shift, KeyCode::ArrowLeft)
+                .insert(Self::SwapCardRight, GamepadButtonType::RightTrigger2)
+                .insert_modified(Self::SwapCardRight, Modifier::Shift, KeyCode::KeyD)
+                .insert_modified(Self::SwapCardRight, Modifier::Shift, KeyCode::ArrowRight)
+                .insert(Self::AcceptDeckChanges, KeyCode::Enter)
                 .insert(Self::AddCard, KeyCode::KeyL)
                 .build(),
         );
