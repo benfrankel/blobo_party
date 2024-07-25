@@ -3,7 +3,7 @@
     spawn_radius_lo: 420.0,
     spawn_radius_hi: 520.0,
     despawn_radius: 521.0,
-    spawn_cap: 5,
+    spawn_cap: 3,
 
     // Lamp:
     light_count_lo: 6,
@@ -30,5 +30,5 @@
         // Purple
         Oklcha(Oklcha(lightness: 0.410, chroma: 0.18, hue: 308, alpha: 0.650)),
     ],
-    alpha_multiplier: 0.6,
+    alpha_multiplier: 0.15,
 )
