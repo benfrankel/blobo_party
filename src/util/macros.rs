@@ -15,9 +15,33 @@ impl<T, E> Success<T> for Result<T, E> {
     }
 }
 
-/// Unwrap or return.
+/// Unwrap or warn and return.
 #[macro_export]
 macro_rules! r {
+    ($return:expr, $expr:expr $(,)?) => {
+        match $crate::util::macros::Success::success($expr) {
+            Some(x) => x,
+            None => {
+                warn!("Unwrap failed: {}", stringify!($expr));
+                return $return;
+            },
+        }
+    };
+
+    ($expr:expr $(,)?) => {
+        match $crate::util::macros::Success::success($expr) {
+            Some(x) => x,
+            None => {
+                warn!("Unwrap failed: {}", stringify!($expr));
+                return;
+            },
+        }
+    };
+}
+
+/// Unwrap or return quietly.
+#[macro_export]
+macro_rules! rq {
     ($return:expr, $expr:expr $(,)?) => {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,
@@ -33,9 +57,23 @@ macro_rules! r {
     };
 }
 
-/// Unwrap or continue.
+/// Unwrap or warn and continue.
 #[macro_export]
 macro_rules! c {
+    ($expr:expr) => {
+        match $crate::util::macros::Success::success($expr) {
+            Some(x) => x,
+            None => {
+                warn!("Unwrap failed: {}", stringify!($expr));
+                continue;
+            },
+        }
+    };
+}
+
+/// Unwrap or continue quiety.
+#[macro_export]
+macro_rules! cq {
     ($expr:expr) => {
         match $crate::util::macros::Success::success($expr) {
             Some(x) => x,

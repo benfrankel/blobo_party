@@ -4,8 +4,6 @@ pub mod actor;
 pub mod card;
 pub mod cleanup;
 pub mod combat;
-pub mod deck;
-pub mod deck_dock;
 pub mod level;
 pub mod music;
 pub mod spotlight;
@@ -25,8 +23,6 @@ pub(super) fn plugin(app: &mut App) {
         card::plugin,
         cleanup::plugin,
         combat::plugin,
-        deck::plugin,
-        deck_dock::plugin,
         level::plugin,
         music::plugin,
         spotlight::plugin,

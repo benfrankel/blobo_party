@@ -1,43 +1,46 @@
 
 (
-    card_backgrounds: {
-        Yellow: CardBackground (
-            texture_path: "image/card/yellow_card.png",
+    card_background_map: {
+        "yellow": CardBackground (
+            texture: "image/card/yellow_card.png",
         ),
-        Green: CardBackground (
-            texture_path: "image/card/green_card.png",
+        "green": CardBackground (
+            texture: "image/card/green_card.png",
         ),
-        Blue: CardBackground (
-            texture_path: "image/card/blue_card.png",
+        "blue": CardBackground (
+            texture: "image/card/blue_card.png",
         ),
-        Magenta: CardBackground (
-            texture_path: "image/card/magenta_card.png",
+        "pink": CardBackground (
+            texture: "image/card/pink_card.png",
         ),
     },
-    cards: {
-        "BasicStep": CardInfo(
+
+    card_map: {
+        "step": Card(
+            background: "blue",
             name: "Basic Step",
             description: "A-one and a-two and a-step.",
-            card_color: Blue,
-            texture_path: "image/card/step.png",
+            icon_texture: "image/card/step.png",
+            action: Step,
         ),
-        "DoubleBeat": CardInfo(
+        "double_beat": Card(
+            background: "pink",
             name: "Double Beat",
             description: "Two beats, rapid fire!",
-            card_color: Magenta,
-            texture_path: "image/card/double_beat.png",
+            icon_texture: "image/card/double_beat.png",
+            action: DoubleBeat,
         ),
-        "CounterPoint": CardInfo(
+        "counter_point": Card(
+            background: "pink",
             name: "Counter Point",
             description: "Notes that move apart synchronously",
-            card_color: Magenta,
-            texture_path: "image/card/counter_point.png",
+            icon_texture: "image/card/counter_point.png",
         ),
-        "Splits": CardInfo(
+        "splits": Card(
+            background: "blue",
             name: "Splits",
-            card_color: Blue,
             description: "Split in two!",
-            texture_path: "image/card/splits.png",
+            icon_texture: "image/card/splits.png",
         ),
     }
 )

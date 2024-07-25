@@ -7,7 +7,7 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::game::actor::player::player;
-use crate::game::deck_dock::deck_dock;
+use crate::game::card::deck_dock::deck_dock;
 use crate::game::level::xp::IsXpBarFill;
 use crate::game::level::xp::Xp;
 use crate::game::level::IsLevelIndicator;
@@ -209,6 +209,8 @@ fn xp_bar(mut entity: EntityWorldMut) {
                     width: Percent(100.0),
                     height: Px(28.0),
                     //padding: UiRect::all(Px(8.0)),
+                    // TODO: Why is this needed? Bevy layouting bug?
+                    margin: UiRect::right(Px(4.0)),
                     ..default()
                 },
                 image: UiImage::new(texture),

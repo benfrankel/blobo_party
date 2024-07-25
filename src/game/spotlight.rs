@@ -60,6 +60,7 @@ impl Config for SpotlightConfig {
 }
 
 impl SpotlightConfig {
+    // TODO: This panicked once with "len is 7 but index is 7". I have NO CLUE how that's possible.
     fn color(&self, t: f32) -> Color {
         let n = self.color_loop.len();
         let t = t * n as f32;
@@ -229,7 +230,7 @@ fn spotlight(entity: Entity, world: &mut World) {
 
     let mut rng = rand::thread_rng();
 
-    let initial_rotation = Quat::from_rotation_z(rng.gen_range(0.0..=TAU));
+    let initial_rotation = Quat::from_rotation_z(rng.gen_range(0.0..TAU));
     let rotation_rate = if rng.gen::<bool>() { -1.0 } else { 1.0 }
         * rng.gen_range(config.rotation_rate_lo..=config.rotation_rate_hi);
 

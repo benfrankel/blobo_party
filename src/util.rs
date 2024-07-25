@@ -26,7 +26,9 @@ pub mod prelude {
     pub use super::patch::WorldSpawnWithExt as _;
     pub use super::texture_atlas_grid::TextureAtlasGrid;
     pub use crate::c;
+    pub use crate::cq;
     pub use crate::r;
+    pub use crate::rq;
 }
 
 use bevy::prelude::*;

@@ -1,55 +1,36 @@
-use bevy::ecs::system::SystemId;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
-use strum::EnumIter;
 
-use crate::game::cleanup::RemoveOnBeat;
+use crate::game::card::action::CardAction;
+use crate::game::card::action::CardActionKey;
+use crate::game::card::action::CardActionMap;
 use crate::util::prelude::*;
 
-mod movement;
-mod projectile;
+pub mod action;
+pub mod attack;
+pub mod deck;
+pub mod deck_dock;
+pub mod movement;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<ConfigHandle<CardConfig>>()
-        .add_plugins((movement::plugin, projectile::plugin))
-        .add_event::<AddCardEvent>();
-}
+    app.configure::<(ConfigHandle<CardConfig>, AddCardEvent)>();
 
-#[derive(Event)]
-pub struct AddCardEvent(pub String);
+    app.add_plugins((
+        action::plugin,
+        attack::plugin,
+        deck::plugin,
+        deck_dock::plugin,
+        movement::plugin,
+    ));
+}
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct CardConfig {
-    cards: HashMap<String, CardInfo>,
-    pub card_backgrounds: HashMap<CardColor, CardBackground>,
-}
-
-#[derive(Reflect, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, EnumIter)]
-pub enum CardColor {
-    Yellow,
-    Blue,
-    Green,
-    Magenta,
-}
-
-#[derive(Asset, Reflect, Serialize, Deserialize)]
-pub struct CardBackground {
-    texture_path: String,
-    #[serde(skip)]
-    pub texture: Handle<Image>,
-}
-
-#[derive(Asset, Reflect, Serialize, Deserialize)]
-struct CardInfo {
-    name: String,
-    description: String,
-    texture_path: String,
-    card_color: CardColor,
-    #[serde(skip)]
-    texture: Handle<Image>,
+    pub card_background_map: HashMap<String, CardBackground>,
+    pub card_map: HashMap<String, Card>,
 }
 
 impl Config for CardConfig {
@@ -57,82 +38,58 @@ impl Config for CardConfig {
     const EXTENSION: &'static str = "card.ron";
 
     fn on_load(&mut self, world: &mut World) {
-        let mut system_state = SystemState::<Res<AssetServer>>::new(world);
-        let asset_server = system_state.get_mut(world);
+        let (asset_server, card_action_map) =
+            SystemState::<(Res<AssetServer>, Res<CardActionMap>)>::new(world).get(world);
 
-        for card_background in self.card_backgrounds.values_mut() {
+        for card_background in self.card_background_map.values_mut() {
             card_background.texture = asset_server.load(&card_background.texture_path);
         }
 
-        for card in self.cards.values_mut() {
-            card.texture = asset_server.load(&card.texture_path);
+        for card in self.card_map.values_mut() {
+            card.icon_texture = asset_server.load(&card.icon_texture_path);
+            card.action = *c!(card_action_map.0.get(&card.action_key));
         }
-
-        let cards = self.cards.iter().map(|(key, value)| {
-            (
-                key.to_owned(),
-                Card {
-                    display_name: value.name.clone(),
-                    description: value.description.clone(),
-                    action: get_system_id(world, key),
-                    color: value.card_color,
-                    texture: value.texture.clone(),
-                },
-            )
-        });
-
-        let card_storage = CardStorage(cards.collect());
-        world.insert_resource(card_storage);
     }
 
     fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        self.card_backgrounds
+        self.card_background_map
             .values()
             .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
             && self
-                .cards
+                .card_map
                 .values()
-                .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
+                .all(|x| asset_server.is_loaded_with_dependencies(&x.icon_texture))
     }
 }
 
-// TODO: This works for mapping Cards to their Actions but it might
-// be better in another file and maybe as a resource?
-fn get_system_id(world: &mut World, card: &String) -> SystemId<Entity> {
-    let action = match &**card {
-        "BasicStep" => basic_step,
-        "DoubleBeat" => double_beat,
-        _ => noop,
-    };
-
-    world.register_system(action)
-}
-
-fn basic_step(In(entity): In<Entity>, world: &mut World) {
-    if let Some(mut e) = world.get_entity_mut(entity) {
-        e.insert((movement::Move, RemoveOnBeat::<movement::Move>::new(5)));
-    }
-}
-
-fn double_beat(In(entity): In<Entity>, world: &mut World) {
-    if let Some(mut e) = world.get_entity_mut(entity) {
-        e.insert((
-            projectile::DoubleBeat,
-            RemoveOnBeat::<projectile::DoubleBeat>::new(2),
-        ));
-    }
-}
-
-fn noop(In(_): In<Entity>, _world: &mut World) {}
-
-#[allow(dead_code)]
-pub struct Card {
-    pub display_name: String,
-    pub description: String,
+#[derive(Asset, Reflect, Serialize, Deserialize)]
+pub struct CardBackground {
+    #[serde(rename = "texture")]
+    texture_path: String,
+    #[serde(skip)]
     pub texture: Handle<Image>,
-    pub action: SystemId<Entity>,
-    pub color: CardColor,
 }
 
-#[derive(Resource, Deref, DerefMut)]
-pub struct CardStorage(pub HashMap<String, Card>);
+#[derive(Reflect, Serialize, Deserialize)]
+pub struct Card {
+    pub background: String,
+    pub name: String,
+    pub description: String,
+    #[serde(rename = "icon_texture")]
+    icon_texture_path: String,
+    #[serde(skip)]
+    pub icon_texture: Handle<Image>,
+    #[serde(rename = "action", default)]
+    action_key: CardActionKey,
+    #[serde(skip)]
+    pub action: CardAction,
+}
+
+#[derive(Event)]
+pub struct AddCardEvent(pub String);
+
+impl Configure for AddCardEvent {
+    fn configure(app: &mut App) {
+        app.add_event::<Self>();
+    }
+}

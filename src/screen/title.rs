@@ -6,9 +6,9 @@ use pyri_state::prelude::*;
 
 use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
+use crate::game::card::deck_dock::DeckDockConfig;
 use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
-use crate::game::deck_dock::DeckDockConfig;
 use crate::game::level::LevelConfig;
 use crate::game::music::MusicConfig;
 use crate::game::wave::WaveConfig;

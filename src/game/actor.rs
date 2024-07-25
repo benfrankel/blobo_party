@@ -24,9 +24,9 @@ use crate::game::actor::health::HealthBar;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::OldMovementController;
+use crate::game::card::deck::Deck;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
-use crate::game::deck::Deck;
 use crate::game::level::xp::XpReward;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -79,10 +79,11 @@ impl Config for ActorConfig {
 pub struct Actor {
     pub name: String,
 
-    pub texture_path: String,
+    #[serde(rename = "texture")]
+    texture_path: String,
     #[serde(skip)]
     pub texture: Handle<Image>,
-    pub texture_atlas_grid: TextureAtlasGrid,
+    texture_atlas_grid: TextureAtlasGrid,
     #[serde(skip)]
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     pub sprite_animation: SpriteAnimation,

@@ -83,7 +83,7 @@ fn face_cursor(
 ) {
     let window = r!(window_query.get(window_root.primary));
     let (camera, camera_gt) = r!(camera_query.get(camera_root.primary));
-    let target_pos = r!(window
+    let target_pos = rq!(window
         .cursor_position()
         .and_then(|cursor| camera.viewport_to_world_2d(camera_gt, cursor)));
 
