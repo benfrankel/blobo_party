@@ -121,7 +121,6 @@ fn despawn_on_timer(
     }
 }
 
-#[allow(dead_code)]
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct RemoveOnTimer<C: Component + TypePath> {
@@ -131,6 +130,7 @@ pub struct RemoveOnTimer<C: Component + TypePath> {
 }
 
 impl<C: Component + TypePath> RemoveOnTimer<C> {
+    #[allow(dead_code)]
     pub fn new(timer: Timer) -> Self {
         RemoveOnTimer {
             timer,

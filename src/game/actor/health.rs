@@ -10,7 +10,33 @@ use crate::game::combat::death::OnDeath;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Health, ConfigHandle<HealthBarConfig>, HealthBar)>();
+    app.configure::<(ConfigHandle<HealthConfig>, Health, HealthBar)>();
+}
+
+#[derive(Asset, Reflect, Serialize, Deserialize)]
+pub struct HealthConfig {
+    pub color_ramp: Vec<Color>,
+}
+
+impl Config for HealthConfig {
+    const PATH: &'static str = "config/health.ron";
+    const EXTENSION: &'static str = "health.ron";
+}
+
+impl HealthConfig {
+    fn color(&self, t: f32) -> Color {
+        let n = self.color_ramp.len();
+        let t = t * (n - 1) as f32;
+        let lo = t as usize;
+        let hi = lo + 1;
+        let t = t.fract();
+
+        if hi >= n {
+            self.color_ramp[n - 1]
+        } else {
+            self.color_ramp[lo].mix(&self.color_ramp[hi], t)
+        }
+    }
 }
 
 #[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
@@ -60,32 +86,6 @@ fn trigger_death_from_health(
     }
 }
 
-#[derive(Asset, Reflect, Serialize, Deserialize)]
-pub struct HealthBarConfig {
-    pub color_ramp: Vec<Color>,
-}
-
-impl Config for HealthBarConfig {
-    const PATH: &'static str = "config/health_bar.ron";
-    const EXTENSION: &'static str = "health_bar.ron";
-}
-
-impl HealthBarConfig {
-    fn color(&self, t: f32) -> Color {
-        let n = self.color_ramp.len();
-        let t = t * (n - 1) as f32;
-        let lo = t as usize;
-        let hi = lo + 1;
-        let t = t.fract();
-
-        if hi >= n {
-            self.color_ramp[n - 1]
-        } else {
-            self.color_ramp[lo].mix(&self.color_ramp[hi], t)
-        }
-    }
-}
-
 /// Reads from the `Health` component on its parent entity.
 #[derive(Component, Reflect)]
 #[reflect(Component)]
@@ -101,7 +101,7 @@ impl Configure for HealthBar {
 }
 
 fn update_health_bar(
-    config: ConfigRef<HealthBarConfig>,
+    config: ConfigRef<HealthConfig>,
     health_query: Query<&Health>,
     mut health_bar_query: Query<(&HealthBar, &Parent, &mut Sprite)>,
 ) {

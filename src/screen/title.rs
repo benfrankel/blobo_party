@@ -4,7 +4,7 @@ use bevy_mod_picking::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::game::actor::health::HealthBarConfig;
+use crate::game::actor::health::HealthConfig;
 use crate::game::actor::ActorConfig;
 use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
@@ -29,7 +29,7 @@ pub(super) fn plugin(app: &mut App) {
         Screen::Title.on_update((
             ActorConfig::progress.track_progress(),
             CardConfig::progress.track_progress(),
-            HealthBarConfig::progress.track_progress(),
+            HealthConfig::progress.track_progress(),
             LevelConfig::progress.track_progress(),
             MusicConfig::progress.track_progress(),
             ProjectileConfig::progress.track_progress(),
