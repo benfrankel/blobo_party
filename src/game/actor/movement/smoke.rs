@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
+use bevy_tweening::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::movement::MovementController;
@@ -32,6 +35,8 @@ fn spawn_movement_smoke(
             .insert(Transform::from_translation(translation));
     }
 }
+
+const LIFETIME_SECS: f32 = 0.5;
 
 fn smoke(movement: Vec2) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
@@ -71,9 +76,17 @@ fn smoke(movement: Vec2) -> impl EntityCommand<World> {
                     texture,
                     ..default()
                 },
+                Animator::new(Tween::new(
+                    EaseMethod::Linear,
+                    Duration::from_secs_f32(LIFETIME_SECS),
+                    lens::SpriteColorLens {
+                        start: Color::WHITE,
+                        end: Color::NONE,
+                    },
+                )),
                 RigidBody::Kinematic,
                 LinearVelocity(-12.0 * movement),
-                DespawnOnTimer(Timer::from_seconds(0.2, TimerMode::Once)),
+                DespawnOnTimer(Timer::from_seconds(LIFETIME_SECS, TimerMode::Once)),
             ))
             .set_parent(parent);
     }

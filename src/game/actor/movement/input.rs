@@ -28,8 +28,9 @@ fn record_movement_action(
     mut action_query: Query<(&ActionState<MovementAction>, &mut MovementController)>,
 ) {
     for (action, mut controller) in &mut action_query {
-        let input = cq!(action.axis_pair(&MovementAction::Move));
-        controller.0 = input.xy().clamp_length_max(1.0);
+        controller.0 += cq!(action.axis_pair(&MovementAction::Move))
+            .xy()
+            .clamp_length_max(1.0);
     }
 }
 
