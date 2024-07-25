@@ -207,7 +207,7 @@ fn xp_bar(mut entity: EntityWorldMut) {
             ImageBundle {
                 style: Style {
                     width: Percent(100.0),
-                    height: Px(20.0),
+                    height: Px(28.0),
                     //padding: UiRect::all(Px(8.0)),
                     ..default()
                 },
