@@ -8,6 +8,7 @@ pub mod deck;
 pub mod deck_dock;
 pub mod level;
 pub mod music;
+pub mod spotlight;
 pub mod sprite;
 pub mod wave;
 
@@ -28,6 +29,7 @@ pub(super) fn plugin(app: &mut App) {
         deck_dock::plugin,
         level::plugin,
         music::plugin,
+        spotlight::plugin,
         sprite::plugin,
         wave::plugin,
     ));

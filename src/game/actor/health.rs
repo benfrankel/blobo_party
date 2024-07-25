@@ -72,13 +72,16 @@ impl Config for HealthBarConfig {
 
 impl HealthBarConfig {
     fn color(&self, t: f32) -> Color {
-        let t = t * (self.color_ramp.len() - 1) as f32;
+        let n = self.color_ramp.len();
+        let t = t * (n - 1) as f32;
         let lo = t as usize;
         let hi = lo + 1;
-        if hi >= self.color_ramp.len() {
-            self.color_ramp[self.color_ramp.len() - 1]
+        let t = t.fract();
+
+        if hi >= n {
+            self.color_ramp[n - 1]
         } else {
-            self.color_ramp[lo].mix(&self.color_ramp[hi], t.fract())
+            self.color_ramp[lo].mix(&self.color_ramp[hi], t)
         }
     }
 }

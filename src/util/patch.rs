@@ -134,3 +134,57 @@ impl Dir2ExtToQuat for Dir2 {
         Quat::from_rotation_z(self.to_angle())
     }
 }
+
+/// Copy-pasted from bevy's `pub(crate)` version of this.
+fn lerp_hue(a: f32, b: f32, t: f32) -> f32 {
+    let diff = (b - a + 180.0).rem_euclid(360.0) - 180.0;
+    (a + diff * t).rem_euclid(360.0)
+}
+
+// TODO: Workaround for https://github.com/bevyengine/bevy/pull/14468.
+pub trait ColorExtBetterMix {
+    fn better_mix(&self, other: &Self, factor: f32) -> Self;
+}
+
+impl ColorExtBetterMix for Color {
+    fn better_mix(&self, other: &Self, factor: f32) -> Self {
+        let mut new = *self;
+
+        match &mut new {
+            Color::Srgba(x) => *x = x.mix(&(*other).into(), factor),
+            Color::LinearRgba(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Hsla(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Hsva(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Hwba(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Laba(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Lcha(x) => {
+                *x = {
+                    let other: Lcha = (*other).into();
+                    let n_factor = 1.0 - factor;
+                    Lcha {
+                        lightness: x.lightness * n_factor + other.lightness * factor,
+                        chroma: x.chroma * n_factor + other.chroma * factor,
+                        hue: lerp_hue(x.hue, other.hue, factor),
+                        alpha: x.alpha * n_factor + other.alpha * factor,
+                    }
+                };
+            },
+            Color::Oklaba(x) => *x = x.mix(&(*other).into(), factor),
+            Color::Oklcha(x) => {
+                *x = {
+                    let other: Oklcha = (*other).into();
+                    let n_factor = 1.0 - factor;
+                    Oklcha {
+                        lightness: x.lightness * n_factor + other.lightness * factor,
+                        chroma: x.chroma * n_factor + other.chroma * factor,
+                        hue: lerp_hue(x.hue, other.hue, factor),
+                        alpha: x.alpha * n_factor + other.alpha * factor,
+                    }
+                };
+            },
+            Color::Xyza(x) => *x = x.mix(&(*other).into(), factor),
+        }
+
+        new
+    }
+}
