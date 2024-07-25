@@ -3,7 +3,6 @@ use leafwing_input_manager::prelude::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::attack::AttackController;
-use crate::game::actor::facing::Facing;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -24,20 +23,13 @@ impl Configure for AttackAction {
 }
 
 fn record_attack_action(
-    mut action_query: Query<(
-        &ActionState<AttackAction>,
-        Option<&Facing>,
-        &mut AttackController,
-    )>,
+    mut action_query: Query<(&ActionState<AttackAction>, &mut AttackController)>,
 ) {
-    for (action, facing, mut controller) in &mut action_query {
-        controller.aim += action
-            .axis_pair(&AttackAction::Aim)
-            .filter(|x| x.xy() != Vec2::ZERO)
-            .map(|x| x.xy().clamp_length_max(1.0))
-            .or_else(|| facing.map(|x| x.0.as_vec2()))
-            .unwrap_or_default();
-        controller.fire = action.just_pressed(&AttackAction::Fire);
+    for (action, mut controller) in &mut action_query {
+        controller.aim += cq!(action.axis_pair(&AttackAction::Aim))
+            .xy()
+            .clamp_length_max(1.0);
+        controller.fire |= action.just_pressed(&AttackAction::Fire);
     }
 }
 
@@ -46,8 +38,8 @@ pub fn attack_action(mut entity: EntityWorldMut) {
         InputMap::default()
             .insert(AttackAction::Aim, DualAxis::right_stick())
             .insert(AttackAction::Aim, VirtualDPad::arrow_keys())
-            .insert(AttackAction::Fire, MouseButton::Left)
-            .insert(AttackAction::Fire, KeyCode::Space)
+            .insert(AttackAction::Fire, GamepadButtonType::East)
+            .insert(AttackAction::Fire, VirtualDPad::arrow_keys())
             .build(),
     ));
 }

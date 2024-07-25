@@ -47,7 +47,7 @@ impl Default for Attack {
             power: 1.0,
             force: 1.0,
             color: Color::WHITE,
-            offset: 7.0,
+            offset: 5.0,
             projectile: None,
         }
     }

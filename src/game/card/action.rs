@@ -37,7 +37,7 @@ impl FromWorld for CardActionMap {
                     CardActionKey::Step,
                     world.register_system(|In(entity): In<Entity>, world: &mut World| {
                         r!(world.get_entity_mut(entity))
-                            .insert(RemoveOnBeat::bundle(MoveTowardsFacing, 1));
+                            .insert(RemoveOnBeat::bundle(MoveTowardsFacing, 2));
                     }),
                 ),
                 (
