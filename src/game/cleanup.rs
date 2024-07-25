@@ -8,12 +8,7 @@ use crate::game::music::beat::on_beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(
-        DespawnOnHit,
-        DespawnOnDistanceSq,
-        DespawnOnBeat,
-        DespawnOnTimer,
-    )>();
+    app.configure::<(DespawnOnHit, DespawnRadiusSq, DespawnOnBeat, DespawnOnTimer)>();
 }
 
 #[derive(Component, Reflect)]
@@ -40,29 +35,29 @@ fn despawn_on_hit(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct DespawnOnDistanceSq(pub f32);
+pub struct DespawnRadiusSq(pub f32);
 
-impl Configure for DespawnOnDistanceSq {
+impl Configure for DespawnRadiusSq {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.add_systems(
             PostUpdate,
-            despawn_on_distance_sq.after(PostTransformSet::Finish),
+            apply_despawn_radius_sq.after(PostTransformSet::Finish),
         );
     }
 }
 
-impl DespawnOnDistanceSq {
+impl DespawnRadiusSq {
     pub fn new(distance: f32) -> Self {
         Self(distance * distance)
     }
 }
 
-fn despawn_on_distance_sq(
+fn apply_despawn_radius_sq(
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
     mut despawn: ResMut<DespawnSet>,
-    despawn_query: Query<(Entity, &GlobalTransform, &DespawnOnDistanceSq)>,
+    despawn_query: Query<(Entity, &GlobalTransform, &DespawnRadiusSq)>,
 ) {
     let camera_gt = r!(camera_query.get(camera_root.primary));
     let camera_pos = camera_gt.translation().xy();

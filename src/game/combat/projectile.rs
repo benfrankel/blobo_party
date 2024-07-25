@@ -5,9 +5,9 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::game::cleanup::DespawnOnDistanceSq;
 use crate::game::cleanup::DespawnOnHit;
 use crate::game::cleanup::DespawnOnTimer;
+use crate::game::cleanup::DespawnRadiusSq;
 use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::knockback::HitboxKnockback;
@@ -18,7 +18,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(
         ConfigHandle<ProjectileConfig>,
         DespawnOnHit,
-        DespawnOnDistanceSq,
+        DespawnRadiusSq,
     )>();
 }
 
@@ -106,7 +106,7 @@ pub fn projectile(
                 // Cleanup:
                 (
                     DespawnOnHit,
-                    DespawnOnDistanceSq::new(200.0),
+                    DespawnRadiusSq::new(200.0),
                     DespawnOnTimer(Timer::from_seconds(projectile.lifetime, TimerMode::Once)),
                 ),
             ))

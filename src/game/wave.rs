@@ -77,14 +77,13 @@ impl Configure for Wave {
 
 fn spawn_wave_enemies(
     mut commands: Commands,
+    config: ConfigRef<WaveConfig>,
     mut wave: ResMut<Wave>,
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
     level: Res<Level>,
-    config_handle: Res<ConfigHandle<WaveConfig>>,
-    config: Res<Assets<WaveConfig>>,
 ) {
-    let config = r!(config.get(&config_handle.0));
+    let config = r!(config.get());
     let camera_gt = r!(camera_query.get(camera_root.primary));
     let center = camera_gt.translation().xy();
 

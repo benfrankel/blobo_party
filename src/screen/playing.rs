@@ -12,7 +12,7 @@ use crate::game::level::xp::IsXpBarFill;
 use crate::game::level::xp::Xp;
 use crate::game::level::IsLevelIndicator;
 use crate::game::level::Level;
-use crate::game::spotlight::spotlight_lamp;
+use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::Screen;
@@ -117,12 +117,15 @@ fn exit_playing(
     };
 }
 
-fn enter_playing(mut commands: Commands, ui_root: Res<UiRoot>) {
+fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<UiRoot>) {
     commands.spawn_with(fade_in);
+
     // TODO: Character select screen.
     commands.spawn_with(player("pink"));
-    // TODO: Dynamic spotlight lamp spawner.
-    commands.spawn_with(spotlight_lamp);
+
+    commands
+        .spawn_with(spotlight_lamp_spawner)
+        .set_parent(game_root.vfx);
 
     commands.spawn_with(playing_hud).set_parent(ui_root.body);
 }
