@@ -3,6 +3,7 @@ use std::f32::consts::TAU;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
+use interpolation::Ease as _;
 use rand::Rng as _;
 use serde::Deserialize;
 use serde::Serialize;
@@ -25,11 +26,18 @@ pub struct SpotlightConfig {
     pub color_loop_rate_lo: f32,
     pub color_loop_rate_hi: f32,
     pub color_loop: Vec<Color>,
+    pub alpha_multiplier: f32,
 }
 
 impl Config for SpotlightConfig {
     const PATH: &'static str = "config/spotlight.ron";
     const EXTENSION: &'static str = "spotlight.ron";
+
+    fn on_load(&mut self, _world: &mut World) {
+        for color in &mut self.color_loop {
+            color.set_alpha(color.alpha() * self.alpha_multiplier);
+        }
+    }
 }
 
 impl SpotlightConfig {
@@ -38,7 +46,7 @@ impl SpotlightConfig {
         let t = t * n as f32;
         let lo = t as usize;
         let hi = if lo + 1 < n { lo + 1 } else { 0 };
-        let t = t.fract();
+        let t = t.fract().quadratic_in_out();
 
         self.color_loop[lo].better_mix(&self.color_loop[hi], t)
     }

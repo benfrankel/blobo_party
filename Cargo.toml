@@ -43,6 +43,7 @@ bevy_mod_picking = { version = "0.20", default-features = false, features = [
     "backend_bevy_ui",
 ] }
 bevy_state = "0.14"
+interpolation = "0.3"
 iyes_progress = "0.12"
 lazy-regex = { version = "3", features = ["lite"] }
 leafwing-input-manager = "0.14"
