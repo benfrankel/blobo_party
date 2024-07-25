@@ -4,6 +4,7 @@ use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::actor::attack::Attack;
 use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::DoubleBeat;
 use crate::game::card::movement::MoveTowardsFacing;
@@ -31,23 +32,34 @@ impl FromWorld for CardActionMap {
             [
                 (
                     CardActionKey::Rest,
-                    world.register_system(|_: In<Entity>, _: &mut World| {}),
+                    world.register_system(|_: In<(Entity, CardActionConfig)>, _: &mut World| {}),
                 ),
                 (
                     CardActionKey::Step,
-                    world.register_system(|In(entity): In<Entity>, world: &mut World| {
-                        r!(world.get_entity_mut(entity))
-                            .insert(RemoveOnBeat::bundle(MoveTowardsFacing, 2));
-                    }),
+                    world.register_system(
+                        |In((entity, config)): In<(Entity, CardActionConfig)>,
+                         world: &mut World| {
+                            r!(world.get_entity_mut(entity)).insert(RemoveOnBeat::bundle(
+                                MoveTowardsFacing,
+                                config.remove_on_beat,
+                            ));
+                        },
+                    ),
                 ),
                 (
                     CardActionKey::DoubleBeat,
-                    world.register_system(|In(entity): In<Entity>, world: &mut World| {
-                        r!(world.get_entity_mut(entity)).insert((
-                            RemoveOnBeat::bundle(DoubleBeat, 2),
-                            RemoveOnBeat::bundle(AimTowardsFacing, 2),
-                        ));
-                    }),
+                    world.register_system(
+                        |In((entity, config)): In<(Entity, CardActionConfig)>,
+                         world: &mut World| {
+                            r!(world.get_entity_mut(entity)).insert((
+                                RemoveOnBeat::bundle(
+                                    DoubleBeat(config.attack.clone()),
+                                    config.remove_on_beat,
+                                ),
+                                RemoveOnBeat::bundle(AimTowardsFacing, config.remove_on_beat),
+                            ));
+                        },
+                    ),
                 ),
             ]
             .into_iter()
@@ -68,10 +80,21 @@ pub enum CardActionKey {
 /// A newtyped `SystemId<Entity>` with a `Default` impl.
 #[derive(Reflect, Copy, Clone)]
 #[reflect(Default)]
-pub struct CardAction(#[reflect(ignore)] pub SystemId<Entity>);
+pub struct CardAction(#[reflect(ignore)] pub SystemId<(Entity, CardActionConfig)>);
 
 impl Default for CardAction {
     fn default() -> Self {
         Self(SystemId::from_entity(Entity::PLACEHOLDER))
     }
+}
+
+#[derive(Default, Reflect, Serialize, Deserialize, Clone)]
+#[serde(default)]
+pub struct CardActionConfig {
+    #[serde(default)]
+    remove_on_beat: usize,
+    #[serde(default)]
+    remove_on_timer: Timer,
+    #[serde(default)]
+    attack: Attack,
 }

@@ -47,6 +47,9 @@
             background: "blue",
             icon_texture: "image/card/step.png",
             action: Step,
+            action_config: CardActionConfig(
+               remove_on_beat: 2, 
+            ),
         ),
         "double_beat": Card(
             name: "Double Beat",
@@ -54,18 +57,33 @@
             background: "pink",
             icon_texture: "image/card/double_beat.png",
             action: DoubleBeat,
+            action_config: CardActionConfig(
+               remove_on_beat: 2, 
+               attack: Attack (
+                   power: 2.0,
+                   force: 4.0,
+                   projectile: Some("quarter_note")
+               )
+            ),
         ),
         "counter_point": Card(
             name: "Counter Point",
             description: "Notes that move apart synchronously",
             background: "pink",
             icon_texture: "image/card/counter_point.png",
+            action_config: CardActionConfig(
+               remove_on_beat: 2, 
+            ),
         ),
         "splits": Card(
             name: "Splits",
             description: "Split in two!",
             background: "blue",
             icon_texture: "image/card/splits.png",
+            modifier: 1.0,
+            action_config: CardActionConfig(
+               remove_on_beat: 2, 
+            ),
         ),
     }
 )

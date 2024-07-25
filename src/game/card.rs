@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::game::card::action::CardAction;
+use crate::game::card::action::CardActionConfig;
 use crate::game::card::action::CardActionKey;
 use crate::game::card::action::CardActionMap;
 use crate::util::prelude::*;
@@ -97,6 +98,7 @@ pub struct Card {
     action_key: CardActionKey,
     #[serde(skip)]
     pub action: CardAction,
+    pub action_config: CardActionConfig, // TODO: Naming
 }
 
 #[derive(Event)]

@@ -81,8 +81,10 @@ fn play_cards(
 
     for (entity, mut deck) in &mut deck_query {
         let card_key = c!(deck.peek_next());
-        let action = c!(config.card_map.get(card_key)).action;
-        commands.run_system_with_input(action.0, entity);
+        let card_action = c!(config.card_map.get(card_key));
+        let action = card_action.action;
+        let action_config = card_action.action_config.clone();
+        commands.run_system_with_input(action.0, (entity, action_config));
         deck.advance();
     }
 }

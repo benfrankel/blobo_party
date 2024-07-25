@@ -37,7 +37,7 @@ fn apply_aim_towards_facing(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct DoubleBeat;
+pub struct DoubleBeat(pub Attack);
 
 impl Configure for DoubleBeat {
     fn configure(app: &mut App) {
@@ -52,12 +52,11 @@ impl Configure for DoubleBeat {
     }
 }
 
-fn double_beat(mut attack_query: Query<(&mut Attack, &mut AttackController), With<DoubleBeat>>) {
-    for (mut attack, mut controller) in &mut attack_query {
-        // TODO: Put these values in the config somehow.
-        attack.power = 2.0;
-        attack.force = 4.0;
-        attack.projectile = Some("quarter_note".to_string());
+fn double_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &DoubleBeat)>) {
+    for (mut attack, mut controller, double_beat) in &mut attack_query {
+        attack.power = double_beat.0.power;
+        attack.force = double_beat.0.force;
+        attack.projectile = double_beat.0.projectile.clone();
 
         controller.fire = true;
     }
