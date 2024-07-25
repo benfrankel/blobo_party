@@ -8,9 +8,13 @@ use strum::EnumIter;
 
 use crate::util::prelude::*;
 
+mod movement;
+mod remove;
+
 pub(super) fn plugin(app: &mut App) {
     app.configure::<ConfigHandle<CardConfig>>()
         .register_type::<CardKey>()
+        .add_plugins((movement::plugin,))
         .add_event::<AddCardEvent>();
 }
 
@@ -97,16 +101,22 @@ impl Config for CardConfig {
 fn get_system_id(world: &mut World, card: &CardKey) -> SystemId<Entity> {
     let action = match card {
         CardKey::BasicStep => basic_step,
-        _ => basic_attack,
+        _ => noop,
     };
 
     world.register_system(action)
 }
 
-fn basic_step(In(entity): In<Entity>) {
-    println!("Moved {}", entity)
+fn basic_step(In(entity): In<Entity>, world: &mut World) {
+    if let Some(mut e) = world.get_entity_mut(entity) {
+        e.insert((
+            movement::Move,
+            remove::RemoveOnBeat::<movement::Move>::new(5),
+        ));
+    }
 }
-fn basic_attack(In(_): In<Entity>) {}
+
+fn noop(In(_): In<Entity>, _world: &mut World) {}
 
 #[allow(dead_code)]
 pub struct Card {
