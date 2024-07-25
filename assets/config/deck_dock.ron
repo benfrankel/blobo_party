@@ -1,6 +1,0 @@
-(
-    max_card_count: 18,
-    gap_between_cards: Px(1.0),
-    card_highlight_offset: Px(-32.0),
-    height: Px(64.0),
-)

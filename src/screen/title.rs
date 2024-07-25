@@ -6,7 +6,6 @@ use pyri_state::prelude::*;
 
 use crate::game::actor::health::HealthBarConfig;
 use crate::game::actor::ActorConfig;
-use crate::game::card::deck_dock::DeckDockConfig;
 use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
 use crate::game::level::LevelConfig;
@@ -30,7 +29,6 @@ pub(super) fn plugin(app: &mut App) {
         Screen::Title.on_update((
             ActorConfig::progress.track_progress(),
             CardConfig::progress.track_progress(),
-            DeckDockConfig::progress.track_progress(),
             HealthBarConfig::progress.track_progress(),
             LevelConfig::progress.track_progress(),
             MusicConfig::progress.track_progress(),

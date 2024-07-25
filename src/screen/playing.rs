@@ -139,7 +139,6 @@ fn playing_hud(mut entity: EntityWorldMut) {
                     width: Percent(100.0),
                     height: Percent(100.0),
                     justify_content: JustifyContent::SpaceBetween,
-                    padding: UiRect::all(Px(16.0)),
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
@@ -162,6 +161,7 @@ fn upper_hud(mut entity: EntityWorldMut) {
                     width: Percent(100.0),
                     align_items: AlignItems::Center,
                     justify_content: default(),
+                    margin: UiRect::all(Px(16.0)),
                     column_gap: Px(16.0),
                     ..default()
                 },

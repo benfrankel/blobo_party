@@ -29,6 +29,12 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
 pub struct CardConfig {
+    // Deck:
+    pub deck_cap: usize,
+    pub deck_height: Val,
+    pub deck_column_gap: Val,
+
+    // Cards:
     pub card_background_map: HashMap<String, CardBackground>,
     pub card_map: HashMap<String, Card>,
 }
@@ -38,11 +44,16 @@ impl Config for CardConfig {
     const EXTENSION: &'static str = "card.ron";
 
     fn on_load(&mut self, world: &mut World) {
-        let (asset_server, card_action_map) =
-            SystemState::<(Res<AssetServer>, Res<CardActionMap>)>::new(world).get(world);
+        let (asset_server, card_action_map, mut layouts) = SystemState::<(
+            Res<AssetServer>,
+            Res<CardActionMap>,
+            ResMut<Assets<TextureAtlasLayout>>,
+        )>::new(world)
+        .get_mut(world);
 
-        for card_background in self.card_background_map.values_mut() {
-            card_background.texture = asset_server.load(&card_background.texture_path);
+        for background in self.card_background_map.values_mut() {
+            background.texture = asset_server.load(&background.texture_path);
+            background.texture_atlas_layout = layouts.add(&background.texture_atlas_grid);
         }
 
         for card in self.card_map.values_mut() {
@@ -68,13 +79,16 @@ pub struct CardBackground {
     texture_path: String,
     #[serde(skip)]
     pub texture: Handle<Image>,
+    texture_atlas_grid: TextureAtlasGrid,
+    #[serde(skip)]
+    pub texture_atlas_layout: Handle<TextureAtlasLayout>,
 }
 
 #[derive(Reflect, Serialize, Deserialize)]
 pub struct Card {
-    pub background: String,
     pub name: String,
     pub description: String,
+    pub background: String,
     #[serde(rename = "icon_texture")]
     icon_texture_path: String,
     #[serde(skip)]

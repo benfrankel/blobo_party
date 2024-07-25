@@ -1,45 +1,70 @@
 
 (
+    // Deck:
+    deck_cap: 18,
+    deck_height: Px(96.0),
+    deck_column_gap: Px(-4.0),
+
+    // Cards:
     card_background_map: {
         "yellow": CardBackground (
             texture: "image/card/yellow_card.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
         ),
         "green": CardBackground (
             texture: "image/card/green_card.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
         ),
         "blue": CardBackground (
             texture: "image/card/blue_card.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
         ),
         "pink": CardBackground (
             texture: "image/card/pink_card.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
         ),
     },
-
     card_map: {
         "step": Card(
-            background: "blue",
             name: "Basic Step",
             description: "A-one and a-two and a-step.",
+            background: "blue",
             icon_texture: "image/card/step.png",
             action: Step,
         ),
         "double_beat": Card(
-            background: "pink",
             name: "Double Beat",
             description: "Two beats, rapid fire!",
+            background: "pink",
             icon_texture: "image/card/double_beat.png",
             action: DoubleBeat,
         ),
         "counter_point": Card(
-            background: "pink",
             name: "Counter Point",
             description: "Notes that move apart synchronously",
+            background: "pink",
             icon_texture: "image/card/counter_point.png",
         ),
         "splits": Card(
-            background: "blue",
             name: "Splits",
             description: "Split in two!",
+            background: "blue",
             icon_texture: "image/card/splits.png",
         ),
     }

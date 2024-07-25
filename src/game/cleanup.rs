@@ -121,6 +121,7 @@ fn despawn_on_timer(
     }
 }
 
+#[allow(dead_code)]
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct RemoveOnTimer<C: Component + TypePath> {
