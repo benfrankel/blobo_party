@@ -80,14 +80,6 @@ impl Configure for PlayingAssets {
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum PlayingAction {
     TogglePause,
-    // TODO: These actions should be split out.
-    // TODO: Discard action.
-    AddCard,
-    SelectCardRight,
-    SelectCardLeft,
-    SwapCardLeft,
-    SwapCardRight,
-    AcceptDeckChanges,
 }
 
 impl Configure for PlayingAction {
@@ -99,22 +91,6 @@ impl Configure for PlayingAction {
                 .insert(Self::TogglePause, KeyCode::Escape)
                 .insert(Self::TogglePause, KeyCode::Tab)
                 .insert(Self::TogglePause, KeyCode::KeyP)
-                .insert(Self::SelectCardLeft, GamepadButtonType::DPadLeft)
-                .insert(Self::SelectCardLeft, GamepadButtonType::LeftTrigger)
-                .insert(Self::SelectCardLeft, KeyCode::KeyA)
-                .insert(Self::SelectCardLeft, KeyCode::ArrowLeft)
-                .insert(Self::SelectCardRight, GamepadButtonType::DPadRight)
-                .insert(Self::SelectCardRight, GamepadButtonType::RightTrigger)
-                .insert(Self::SelectCardRight, KeyCode::KeyD)
-                .insert(Self::SelectCardRight, KeyCode::ArrowRight)
-                .insert(Self::SwapCardLeft, GamepadButtonType::LeftTrigger2)
-                .insert_modified(Self::SwapCardLeft, Modifier::Shift, KeyCode::KeyA)
-                .insert_modified(Self::SwapCardLeft, Modifier::Shift, KeyCode::ArrowLeft)
-                .insert(Self::SwapCardRight, GamepadButtonType::RightTrigger2)
-                .insert_modified(Self::SwapCardRight, Modifier::Shift, KeyCode::KeyD)
-                .insert_modified(Self::SwapCardRight, Modifier::Shift, KeyCode::ArrowRight)
-                .insert(Self::AcceptDeckChanges, KeyCode::Enter)
-                .insert(Self::AddCard, KeyCode::KeyL)
                 .build(),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());
