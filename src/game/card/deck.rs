@@ -13,7 +13,7 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Deck, DeckDisplay)>();
+    app.configure::<(Deck, IsDeckDisplay)>();
 }
 
 #[derive(Component, Reflect, Serialize, Deserialize, Default, Clone)]
@@ -95,11 +95,11 @@ fn advance_deck(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-struct DeckDisplay {
+struct IsDeckDisplay {
     target: Entity,
 }
 
-impl Configure for DeckDisplay {
+impl Configure for IsDeckDisplay {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.add_systems(
@@ -112,7 +112,7 @@ impl Configure for DeckDisplay {
     }
 }
 
-impl Default for DeckDisplay {
+impl Default for IsDeckDisplay {
     fn default() -> Self {
         Self {
             target: Entity::PLACEHOLDER,
@@ -120,18 +120,15 @@ impl Default for DeckDisplay {
     }
 }
 
-// Clear deck display if its target or its target's deck has changed.
+/// Clear deck display on any change.
 fn clear_deck_display(
     mut commands: Commands,
-    deck_display_query: Query<(Entity, &DeckDisplay)>,
-    target_changed_query: Query<(), Changed<DeckDisplay>>,
+    deck_display_query: Query<(Entity, &Selection), With<IsDeckDisplay>>,
+    target_changed_query: Query<(), Changed<Selection>>,
     deck_changed_query: Query<(), Changed<Deck>>,
 ) {
-    // Clear display if target entity has not changed, but its deck has.
-    for (entity, deck_display) in &deck_display_query {
-        if !target_changed_query.contains(entity)
-            && !deck_changed_query.contains(deck_display.target)
-        {
+    for (entity, selection) in &deck_display_query {
+        if !target_changed_query.contains(entity) && !deck_changed_query.contains(selection.0) {
             continue;
         }
 
@@ -139,21 +136,19 @@ fn clear_deck_display(
     }
 }
 
-// Populate deck display if its target or its target's deck has changed.
+/// Populate deck display on any change.
 fn populate_deck_display(
     mut commands: Commands,
-    deck_display_query: Query<(Entity, &DeckDisplay)>,
+    deck_display_query: Query<(Entity, &Selection), With<IsDeckDisplay>>,
     deck_query: Query<&Deck>,
-    target_changed_query: Query<(), Changed<DeckDisplay>>,
+    target_changed_query: Query<(), Changed<IsDeckDisplay>>,
     deck_changed_query: Query<(), Changed<Deck>>,
 ) {
-    for (entity, deck_display) in &deck_display_query {
-        if !target_changed_query.contains(entity)
-            && !deck_changed_query.contains(deck_display.target)
-        {
+    for (entity, selection) in &deck_display_query {
+        if !target_changed_query.contains(entity) && !deck_changed_query.contains(selection.0) {
             continue;
         }
-        let deck = deck_query.get(deck_display.target).unwrap();
+        let deck = deck_query.get(selection.0).unwrap();
 
         commands.entity(entity).with_children(|children| {
             for (i, card_key) in deck.card_keys.iter().enumerate() {
@@ -176,7 +171,7 @@ pub fn deck_display(player: Entity) -> impl EntityCommand {
                 },
                 ..default()
             },
-            DeckDisplay { target: player },
+            IsDeckDisplay { target: player },
         ));
     }
 }

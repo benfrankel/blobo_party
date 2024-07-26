@@ -73,7 +73,7 @@ impl DynamicFontSize {
     }
 }
 
-pub fn apply_dynamic_font_size(
+fn apply_dynamic_font_size(
     window_root: Res<WindowRoot>,
     window_query: Query<&Window>,
     mut text_query: Query<(&DynamicFontSize, &Node, &mut Text)>,

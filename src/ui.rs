@@ -4,14 +4,22 @@
 
 pub mod font;
 pub mod interaction;
+pub mod selection;
 pub mod tooltip;
 pub mod widget;
 
 pub mod prelude {
     pub use bevy::ui::Val::*;
 
-    pub use super::font::*;
-    pub use super::interaction::*;
+    pub use super::font::parse_rich;
+    pub use super::font::parse_rich_custom;
+    pub use super::font::DynamicFontSize;
+    pub use super::font::BOLD_FONT_HANDLE;
+    pub use super::font::FONT_HANDLE;
+    pub use super::font::THICK_FONT_HANDLE;
+    pub use super::interaction::InteractionTable;
+    pub use super::interaction::IsDisabled;
+    pub use super::selection::Selection;
     pub use super::widget;
     pub use super::UiRoot;
     pub use crate::core::theme::ThemeColor;
@@ -28,7 +36,12 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.configure::<UiRoot>();
 
-    app.add_plugins((font::plugin, interaction::plugin, tooltip::plugin));
+    app.add_plugins((
+        font::plugin,
+        interaction::plugin,
+        selection::plugin,
+        tooltip::plugin,
+    ));
 }
 
 #[derive(Resource, Reflect)]
