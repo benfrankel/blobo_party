@@ -14,7 +14,6 @@ use crate::game::actor::player::player;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
-use crate::screen::fade_out;
 use crate::screen::playing::hud::playing_hud;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -71,7 +70,6 @@ impl Configure for PlayingAssets {
 
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum PlayingAction {
-    Restart,
     TogglePause,
     // TODO: These actions should be split out.
     // TODO: Discard action.
@@ -88,8 +86,6 @@ impl Configure for PlayingAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
-                .insert(Self::Restart, GamepadButtonType::Select)
-                .insert(Self::Restart, KeyCode::KeyR)
                 .insert(Self::TogglePause, GamepadButtonType::Start)
                 .insert(Self::TogglePause, KeyCode::Escape)
                 .insert(Self::TogglePause, KeyCode::Tab)
@@ -115,27 +111,16 @@ impl Configure for PlayingAction {
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(
             StateFlush,
-            (
-                restart.in_set(ResolveStateSet::<Screen>::Compute).run_if(
+            PlayingMenu::Pause
+                .toggle()
+                .in_set(ResolveStateSet::<PlayingMenu>::Compute)
+                .run_if(
                     Screen::Playing
                         .will_exit()
-                        .and_then(action_just_pressed(Self::Restart)),
+                        .and_then(action_just_pressed(Self::TogglePause)),
                 ),
-                PlayingMenu::Pause
-                    .toggle()
-                    .in_set(ResolveStateSet::<PlayingMenu>::Compute)
-                    .run_if(
-                        Screen::Playing
-                            .will_exit()
-                            .and_then(action_just_pressed(Self::TogglePause)),
-                    ),
-            ),
         );
     }
-}
-
-fn restart(mut commands: Commands) {
-    commands.spawn_with(fade_out(Screen::Playing));
 }
 
 // TODO: Deck actions in deck.rs, but disabled by default. Enable the actions within PlayingMenu::LevelUp (and disable PlayingAction maybe?).
