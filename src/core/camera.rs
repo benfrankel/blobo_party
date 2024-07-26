@@ -7,6 +7,7 @@ use serde::Serialize;
 
 use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::screen::Screen;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -50,6 +51,7 @@ impl Configure for CameraRoot {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
+        app.add_systems(StateFlush, Screen::ANY.on_exit(clear_camera_root));
     }
 }
 
@@ -76,6 +78,10 @@ impl FromWorld for CameraRoot {
                 .id(),
         }
     }
+}
+
+fn clear_camera_root(mut commands: Commands, camera_root: Res<CameraRoot>) {
+    commands.entity(camera_root.primary).despawn_descendants();
 }
 
 #[derive(Component, Reflect)]
