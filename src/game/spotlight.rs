@@ -62,11 +62,10 @@ impl Config for SpotlightConfig {
 }
 
 impl SpotlightConfig {
-    // TODO: This panicked once with "len is 7 but index is 7". I have NO CLUE how that's possible.
     fn color(&self, t: f32) -> Color {
         let n = self.color_loop.len();
         let t = t * n as f32;
-        let lo = t as usize;
+        let lo = (t as usize).rem_euclid(n);
         let hi = if lo + 1 < n { lo + 1 } else { 0 };
         let t = t.fract().quadratic_in_out();
 
@@ -95,10 +94,10 @@ impl Configure for Spotlight {
         app.add_systems(
             PostUpdate,
             (
+                update_spotlight_color.in_set(PostColorSet::Blend),
                 update_spotlight_rotation
                     .in_set(PostTransformSet::Blend)
                     .run_if(Pause::is_disabled),
-                update_spotlight_color.in_set(PostColorSet::Blend),
             ),
         );
     }
@@ -108,17 +107,6 @@ fn tick_spotlight(time: Res<Time>, mut spotlight_query: Query<&mut Spotlight>) {
     let dt = time.delta_seconds();
     for mut spotlight in &mut spotlight_query {
         spotlight.color_loop_t += spotlight.color_loop_rate * dt;
-        spotlight.color_loop_t = spotlight.color_loop_t.rem_euclid(1.0);
-    }
-}
-
-fn update_spotlight_rotation(
-    time: Res<Time>,
-    mut spotlight_query: Query<(&Spotlight, &mut Transform)>,
-) {
-    let dt = time.delta_seconds();
-    for (spotlight, mut transform) in &mut spotlight_query {
-        transform.rotate_z(spotlight.rotation_rate * dt);
     }
 }
 
@@ -129,6 +117,16 @@ fn update_spotlight_color(
     let config = r!(config.get());
     for (spotlight, mut sprite) in &mut spotlight_query {
         sprite.color = config.color(spotlight.color_loop_t);
+    }
+}
+
+fn update_spotlight_rotation(
+    time: Res<Time>,
+    mut spotlight_query: Query<(&Spotlight, &mut Transform)>,
+) {
+    let dt = time.delta_seconds();
+    for (spotlight, mut transform) in &mut spotlight_query {
+        transform.rotate_z(spotlight.rotation_rate * dt);
     }
 }
 
