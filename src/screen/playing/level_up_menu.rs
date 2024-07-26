@@ -9,6 +9,7 @@ use crate::screen::playing::PlayingMenu;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
+// TODO: Deck actions in deck.rs, but disabled by default. Enable them during this menu.
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,

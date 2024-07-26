@@ -117,16 +117,13 @@ impl Configure for PlayingAction {
                 .run_if(
                     Screen::Playing
                         .will_exit()
+                        .and_then(not(PlayingMenu::LevelUp.will_exit()))
                         .and_then(action_just_pressed(Self::TogglePause)),
                 ),
         );
     }
 }
 
-// TODO: Deck actions in deck.rs, but disabled by default. Enable the actions within PlayingMenu::LevelUp (and disable PlayingAction maybe?).
-
-// TODO: What happens if you try to pause while in the level-up menu?
-// TODO: Make sure `PlayingAction` is enabled / disabled based on `Screen::Playing`.
 #[derive(State, Eq, PartialEq, Clone, Debug, Reflect)]
 #[state(after(Screen), before(Pause), entity_scope, log_flush)]
 #[reflect(Resource)]
