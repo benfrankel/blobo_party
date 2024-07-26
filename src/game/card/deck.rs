@@ -7,7 +7,7 @@ use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
 use crate::game::card::card;
 use crate::game::card::AddCardEvent;
-use crate::game::music::beat::on_beat;
+use crate::game::music::beat::on_full_beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -30,7 +30,9 @@ impl Configure for Deck {
             Update,
             (
                 add_cards_to_deck.in_set(UpdateSet::SyncLate),
-                advance_deck.in_set(UpdateSet::PlayCards).run_if(on_beat(2)),
+                advance_deck
+                    .in_set(UpdateSet::PlayCards)
+                    .run_if(on_full_beat(2)),
             ),
         );
     }

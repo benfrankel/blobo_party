@@ -141,7 +141,7 @@ impl Configure for IsSpotlightLampSpawner {
             Update,
             spawn_spotlight_lamps
                 .in_set(UpdateSet::Update)
-                .run_if(not(any_with_component::<Spotlight>).or_else(on_beat(1))),
+                .run_if(not(any_with_component::<Spotlight>).or_else(on_beat(4))),
         );
     }
 }

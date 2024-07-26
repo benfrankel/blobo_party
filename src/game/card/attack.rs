@@ -47,7 +47,7 @@ impl Configure for DoubleBeat {
             Update,
             double_beat
                 .in_set(UpdateSet::RecordInput)
-                .run_if(on_beat(1)),
+                .run_if(on_beat(4)),
         );
     }
 }

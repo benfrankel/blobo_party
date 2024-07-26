@@ -28,6 +28,6 @@ impl Config for MusicConfig {
         world
             .resource_mut::<BeatTimer>()
             .0
-            .set_duration(Duration::from_secs_f32(60.0 / self.bpm));
+            .set_duration(Duration::from_secs_f32(60.0 / 8.0 / self.bpm));
     }
 }

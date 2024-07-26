@@ -91,8 +91,10 @@ impl Default for CardAction {
 #[derive(Default, Reflect, Serialize, Deserialize, Clone)]
 #[serde(default)]
 pub struct CardActionConfig {
+    /// Remove component after this many eighth-beats.
     #[serde(default)]
     remove_on_beat: usize,
+    /// Remove component when this timer finishes.
     #[serde(default)]
     remove_on_timer: Timer,
     #[serde(default)]

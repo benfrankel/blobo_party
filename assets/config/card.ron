@@ -53,7 +53,7 @@
             icon: "step",
             action: Step,
             action_config: CardActionConfig(
-                remove_on_beat: 2,
+                remove_on_beat: 8,
             ),
         ),
         "double_beat": Card(
@@ -63,7 +63,7 @@
             icon: "double_beat",
             action: DoubleBeat,
             action_config: CardActionConfig(
-                remove_on_beat: 2,
+                remove_on_beat: 4,
                 attack: Attack (
                     power: 2.0,
                     force: 4.0,
@@ -77,7 +77,7 @@
             background: "pink",
             icon: "counter_point",
             action_config: CardActionConfig(
-                remove_on_beat: 2,
+                remove_on_beat: 16,
             ),
         ),
         "splits": Card(
@@ -87,7 +87,7 @@
             icon: "splits",
             modifier: 1.0,
             action_config: CardActionConfig(
-                remove_on_beat: 2,
+                remove_on_beat: 16,
             ),
         ),
     }

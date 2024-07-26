@@ -9,7 +9,7 @@ use crate::core::camera::CameraRoot;
 use crate::core::UpdateSet;
 use crate::game::actor::enemy::enemy;
 use crate::game::actor::level::Level;
-use crate::game::music::beat::on_beat;
+use crate::game::music::beat::on_full_beat;
 use crate::screen::Screen;
 use crate::util::prelude::*;
 
@@ -63,7 +63,7 @@ impl Configure for Wave {
             Screen::Playing.on_update(
                 spawn_wave_enemies
                     .in_set(UpdateSet::Update)
-                    .run_if(on_beat(2)),
+                    .run_if(on_full_beat(1)),
             ),
         );
     }

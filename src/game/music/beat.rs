@@ -51,7 +51,9 @@ fn pause_beat_timer(mut beat_timer: ResMut<BeatTimer>) {
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct Beat {
+    /// The total number of eighth-beats counted.
     pub total: usize,
+    /// The number of eighth-beats finished this tick (usually 0 or 1).
     pub this_tick: usize,
 }
 
@@ -68,11 +70,16 @@ fn update_beat(beat_timer: Res<BeatTimer>, mut beat: ResMut<Beat>) {
     beat.total += beat.this_tick;
 }
 
-/// A run condition to run a system every `n` beats.
+/// A run condition to run a system every `n` eighth-beats.
 pub fn on_beat(n: usize) -> impl Fn(Res<Beat>) -> bool {
     move |beat| {
         let hi = beat.total;
         let lo = hi - beat.this_tick;
         hi / n > lo / n
     }
+}
+
+/// A run condition to run a system every `n` beats.
+pub fn on_full_beat(n: usize) -> impl Fn(Res<Beat>) -> bool {
+    on_beat(8 * n)
 }

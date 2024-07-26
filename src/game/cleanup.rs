@@ -94,10 +94,11 @@ fn apply_despawn_on_beat(
     mut despawn_query: Query<(Entity, &mut DespawnOnBeat)>,
 ) {
     for (entity, mut beat) in &mut despawn_query {
-        if beat.0 <= 1 {
+        if beat.0 > 0 {
+            beat.0 -= 1;
+        } else {
             despawn.recursive(entity);
         }
-        beat.0 = beat.0.saturating_sub(1);
     }
 }
 
@@ -222,6 +223,7 @@ fn apply_remove_on_timer<C: Component + TypePath>(
     }
 }
 
+/// Remove a component after a certain number of eighth-beats.
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct RemoveOnBeat<C: Component + TypePath> {
@@ -260,9 +262,10 @@ fn apply_remove_on_beat<C: Component + TypePath>(
     mut remove_query: Query<(Entity, &mut RemoveOnBeat<C>)>,
 ) {
     for (entity, mut remove) in &mut remove_query {
-        if remove.beat <= 1 {
+        if remove.beat > 0 {
+            remove.beat -= 1;
+        } else {
             commands.entity(entity).remove::<(C, RemoveOnBeat<C>)>();
         }
-        remove.beat = remove.beat.saturating_sub(1);
     }
 }
