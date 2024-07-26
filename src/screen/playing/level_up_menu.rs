@@ -172,16 +172,6 @@ impl Configure for LevelUpMenuAction {
     }
 }
 
-fn card_discard(
-    deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
-    mut deck_query: Query<&mut Deck>,
-) {
-    for selection in &deck_display_query {
-        let mut deck = c!(deck_query.get_mut(selection.0));
-        deck.discard();
-    }
-}
-
 fn card_select_left(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
@@ -219,5 +209,15 @@ fn card_swap_right(
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.swap(1);
+    }
+}
+
+fn card_discard(
+    deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
+    mut deck_query: Query<&mut Deck>,
+) {
+    for selection in &deck_display_query {
+        let mut deck = c!(deck_query.get_mut(selection.0));
+        deck.discard();
     }
 }

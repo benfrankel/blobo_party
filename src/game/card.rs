@@ -19,7 +19,7 @@ pub mod deck;
 pub mod movement;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(ConfigHandle<CardConfig>, AddCardEvent)>();
+    app.configure::<ConfigHandle<CardConfig>>();
 
     app.add_plugins((
         action::plugin,
@@ -183,14 +183,5 @@ fn card(key: impl Into<String>, active: bool) -> impl EntityCommand {
                     children.spawn_with(icon);
                 });
             });
-    }
-}
-
-#[derive(Event)]
-pub struct AddCardEvent(pub String);
-
-impl Configure for AddCardEvent {
-    fn configure(app: &mut App) {
-        app.add_event::<Self>();
     }
 }

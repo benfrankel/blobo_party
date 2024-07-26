@@ -4,9 +4,7 @@ use serde::Serialize;
 
 use super::CardConfig;
 use crate::core::UpdateSet;
-use crate::game::actor::player::IsPlayer;
 use crate::game::card::card;
-use crate::game::card::AddCardEvent;
 use crate::game::music::beat::on_full_beat;
 use crate::util::prelude::*;
 
@@ -28,12 +26,9 @@ impl Configure for Deck {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            (
-                add_cards_to_deck.in_set(UpdateSet::SyncLate),
-                advance_deck
-                    .in_set(UpdateSet::PlayCards)
-                    .run_if(on_full_beat(2)),
-            ),
+            play_card_from_deck
+                .in_set(UpdateSet::PlayCards)
+                .run_if(on_full_beat(2)),
         );
     }
 }
@@ -78,20 +73,13 @@ impl Deck {
             self.active = 0;
         }
     }
-}
 
-fn add_cards_to_deck(
-    mut add_card_events: EventReader<AddCardEvent>,
-    mut player_deck: Query<&mut Deck, With<IsPlayer>>,
-) {
-    for event in add_card_events.read() {
-        for mut deck in &mut player_deck {
-            deck.card_keys.push(event.0.clone());
-        }
+    pub fn add(&mut self, card_key: impl Into<String>) {
+        self.card_keys.insert(self.active, card_key.into());
     }
 }
 
-fn advance_deck(
+fn play_card_from_deck(
     mut commands: Commands,
     config: ConfigRef<CardConfig>,
     mut deck_query: Query<(Entity, &mut Deck)>,
