@@ -1,6 +1,7 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use bevy::utils::HashMap;
 use serde::Deserialize;
 use serde::Serialize;
@@ -172,7 +173,8 @@ fn card(key: impl Into<String>, active: bool) -> impl EntityCommand {
                 Interaction::default(),
                 Tooltip {
                     text: tooltip_text,
-                    side: TooltipSide::Top,
+                    self_anchor: Anchor::TopCenter,
+                    tooltip_anchor: Anchor::BottomCenter,
                     offset: Vec2::ZERO,
                 },
             ))

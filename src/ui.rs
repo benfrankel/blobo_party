@@ -21,7 +21,6 @@ pub mod prelude {
     pub use super::interaction::InteractionTable;
     pub use super::interaction::IsDisabled;
     pub use super::tooltip::Tooltip;
-    pub use super::tooltip::TooltipSide;
     pub use super::widget;
     pub use super::UiRoot;
     pub use crate::core::theme::ThemeColor;
