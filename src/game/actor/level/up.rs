@@ -57,7 +57,7 @@ fn trigger_level_up(
     mut level_query: Query<(Entity, &mut Level)>,
 ) {
     for (entity, mut level) in &mut level_query {
-        if level.up <= 0 {
+        if level.up == 0 {
             continue;
         }
 
