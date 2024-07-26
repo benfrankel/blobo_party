@@ -24,6 +24,7 @@ fn open_pause_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 fn pause_overlay(mut entity: EntityWorldMut) {
     entity.add(widget::blocking_overlay).insert((
         Name::new("PauseOverlay"),
+        ZIndex::Global(1),
         ThemeColor::Overlay.target::<BackgroundColor>(),
         StateScope::<PlayingMenu>::default(),
     ));
@@ -34,8 +35,8 @@ fn pause_menu(mut entity: EntityWorldMut) {
         .insert((
             Name::new("PauseMenu"),
             NodeBundle {
-                style: Style::ABS_COLUMN_MID,
-                z_index: ZIndex::Global(5000),
+                style: Style::ABS_COLUMN_CENTER,
+                z_index: ZIndex::Global(2),
                 ..default()
             },
             StateScope::<PlayingMenu>::default(),

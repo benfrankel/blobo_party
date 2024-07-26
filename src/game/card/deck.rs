@@ -1,4 +1,3 @@
-use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
@@ -9,7 +8,6 @@ use crate::game::actor::player::IsPlayer;
 use crate::game::card::card;
 use crate::game::card::AddCardEvent;
 use crate::game::music::beat::on_beat;
-use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -95,7 +93,7 @@ fn advance_deck(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-struct IsDeckDisplay;
+pub struct IsDeckDisplay;
 
 impl Configure for IsDeckDisplay {
     fn configure(app: &mut App) {
@@ -145,24 +143,5 @@ fn populate_deck_display(
                 children.spawn_with(card(card_key, i == deck.active));
             }
         });
-    }
-}
-
-pub fn deck_display(player: Entity) -> impl EntityCommand {
-    move |entity: Entity, world: &mut World| {
-        world.entity_mut(entity).insert((
-            Name::new("DeckDisplay"),
-            NodeBundle {
-                style: Style {
-                    width: Percent(100.0),
-                    justify_content: JustifyContent::Center,
-                    column_gap: Px(-4.0),
-                    ..default()
-                },
-                ..default()
-            },
-            IsDeckDisplay,
-            Selection(player),
-        ));
     }
 }

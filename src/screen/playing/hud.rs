@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use crate::game::actor::level::xp::IsXpBarFill;
 use crate::game::actor::level::IsLevelIndicator;
-use crate::game::card::deck::deck_display;
+use crate::game::card::deck::IsDeckDisplay;
 use crate::screen::playing::PlayingAssets;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -170,7 +170,44 @@ fn lower_hud(player: Entity) -> impl EntityCommand<World> {
                 },
             ))
             .with_children(|children| {
+                children.spawn_with(arrow);
                 children.spawn_with(deck_display(player));
+                children.spawn_with(arrow);
             });
     }
+}
+
+fn deck_display(player: Entity) -> impl EntityCommand {
+    move |entity: Entity, world: &mut World| {
+        world.entity_mut(entity).insert((
+            Name::new("DeckDisplay"),
+            NodeBundle {
+                style: Style {
+                    column_gap: Px(-4.0),
+                    ..default()
+                },
+                ..default()
+            },
+            IsDeckDisplay,
+            Selection(player),
+        ));
+    }
+}
+
+fn arrow(mut entity: EntityWorldMut) {
+    let texture = entity.world().resource::<PlayingAssets>().arrow.clone();
+
+    entity.insert((
+        Name::new("Arrow"),
+        ImageBundle {
+            style: Style {
+                height: Px(20.0),
+                margin: UiRect::horizontal(Px(8.0)),
+                ..default()
+            },
+            image: UiImage::new(texture),
+            ..default()
+        },
+        ThemeColor::Indicator.target::<UiImage>(),
+    ));
 }

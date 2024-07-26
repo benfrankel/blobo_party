@@ -138,18 +138,10 @@ fn restart(mut commands: Commands) {
     commands.spawn_with(fade_out(Screen::Playing));
 }
 
-// TODO: Where can we define the in-game pause menu?
-// In playing screen, we can say "on TogglePause action, toggle the Pause state AND toggle the in-game pause menu"
-// In-game pause menu should be defined by the playing screen itself. Think of it like an extension of the HUD, but usually hidden.
-// It _could_ be in a submodule as well.
-// Then what about the level-up menu? Is that also defined by the playing screen?
-// What happens if you try to pause while in the level-up menu?
+// TODO: Deck actions in deck.rs, but disabled by default. Enable the actions within PlayingMenu::LevelUp (and disable PlayingAction maybe?).
 
-// TODO: This state is usually disabled. Disable it when you exit `Screen::Playing`. Also make sure `PlayingAction` is enabled / disabled based on `Screen::Playing`.
-//       on `PlayingAction::Pause`, enter `PlayingMenu::Pause` which will enable `Pause`. Exiting `PlayingMenu::Pause` will disable `Pause`.
-//       Same pausing behavior for `PlayingMenu::LevelUp`.
-//       Use state-scoping for any `PlayingMenu` spawned UI, while also being a child of the UI root (not the playing screen). Compare this to how the playing screen root UI node is set up.
-//       Both playing menus will be defined in `src/screen/playing/`, not in `src/game/actor/level/up` or whatever.
+// TODO: What happens if you try to pause while in the level-up menu?
+// TODO: Make sure `PlayingAction` is enabled / disabled based on `Screen::Playing`.
 #[derive(State, Eq, PartialEq, Clone, Debug, Reflect)]
 #[state(after(Screen), before(Pause), entity_scope, log_flush)]
 #[reflect(Resource)]
