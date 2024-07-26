@@ -6,7 +6,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<Selection>();
 }
 
-/// The entity that a UI display will pull values from.
+/// A selected entity to pull values from.
 #[derive(Component, Reflect)]
 #[reflect(Component)]
 pub struct Selection(pub Entity);

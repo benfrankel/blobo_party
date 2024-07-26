@@ -30,8 +30,6 @@ pub struct WaveConfig {
 impl Config for WaveConfig {
     const PATH: &'static str = "config/wave.ron";
     const EXTENSION: &'static str = "wave.ron";
-
-    fn on_load(&mut self, _world: &mut World) {}
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
@@ -53,14 +51,13 @@ enum SpawnCondition {
     LessThan(usize),
 }
 
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 struct Wave(usize);
 
 impl Configure for Wave {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.init_resource::<Self>();
         app.add_systems(
             Update,
             Screen::Playing.on_update(
@@ -75,26 +72,29 @@ impl Configure for Wave {
 fn spawn_wave_enemies(
     mut commands: Commands,
     config: ConfigRef<WaveConfig>,
-    mut wave: ResMut<Wave>,
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
-    level: Res<Level>,
+    mut wave_query: Query<(&mut Wave, &Selection)>,
+    level_query: Query<&Level>,
 ) {
     let config = r!(config.get());
     let camera_gt = r!(camera_query.get(camera_root.primary));
     let center = camera_gt.translation().xy();
 
-    wave.0 = wave.0.wrapping_add(1);
-    if wave.0 % config.spawn_cadence != 0 {
-        return;
-    }
+    for (mut wave, selection) in &mut wave_query {
+        let level = c!(level_query.get(selection.0));
 
-    let mut rng = rand::thread_rng();
-    let spawn_count = (level.current / config.spawn_count_scale)
-        .max(1)
-        .min(config.max_spawn_count);
-    for _ in 0..spawn_count {
-        let available_actors = config
+        wave.0 = wave.0.wrapping_add(1);
+        if wave.0 % config.spawn_cadence != 0 {
+            return;
+        }
+
+        let mut rng = rand::thread_rng();
+        let spawn_count = (level.current / config.spawn_count_scale)
+            .max(1)
+            .min(config.max_spawn_count);
+        for _ in 0..spawn_count {
+            let available_actors = config
             .enemies
             .iter()
             // Flatten each spawn_info with its actor key.
@@ -103,14 +103,15 @@ fn spawn_wave_enemies(
                 info.condition.is_empty() || any_condition_met(&info.condition, &level.current)
             });
 
-        if let Some((key, _)) = available_actors.choose(&mut rng) {
-            let offset =
-                Annulus::new(config.min_distance, config.max_distance).sample_interior(&mut rng);
-            let spawn_point = center + offset;
+            if let Some((key, _)) = available_actors.choose(&mut rng) {
+                let offset = Annulus::new(config.min_distance, config.max_distance)
+                    .sample_interior(&mut rng);
+                let spawn_point = center + offset;
 
-            commands
-                .spawn_with(enemy(key))
-                .insert(Transform::from_translation(spawn_point.extend(0.0)));
+                commands
+                    .spawn_with(enemy(key))
+                    .insert(Transform::from_translation(spawn_point.extend(0.0)));
+            }
         }
     }
 }

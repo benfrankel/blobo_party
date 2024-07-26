@@ -37,8 +37,8 @@ pub struct LevelData {
     pub xp_cost: f32,
 }
 
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
 pub struct Level {
     /// The current level.
     pub current: usize,
@@ -49,7 +49,6 @@ pub struct Level {
 impl Configure for Level {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.init_resource::<Self>();
     }
 }
 
@@ -65,13 +64,14 @@ impl Configure for IsLevelIndicator {
 }
 
 fn update_level_indicator(
-    level: Res<Level>,
-    mut indicator_query: Query<&mut Text, With<IsLevelIndicator>>,
+    mut indicator_query: Query<(&mut Text, &Selection), With<IsLevelIndicator>>,
+    level_query: Query<&Level>,
 ) {
-    let level = level.current + level.up;
-    let level = level.to_string();
+    for (mut text, selection) in &mut indicator_query {
+        let level = c!(level_query.get(selection.0));
+        let level = level.current + level.up;
+        let level = level.to_string();
 
-    for mut text in &mut indicator_query {
         for section in &mut text.sections {
             section.value.clone_from(&level);
         }

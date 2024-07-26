@@ -3,9 +3,10 @@
 #![allow(dead_code, unused_imports)]
 
 pub mod config;
-pub mod despawn;
+pub mod late_despawn;
 pub mod macros;
 pub mod patch;
+pub mod selection;
 pub mod texture_atlas_grid;
 pub mod time;
 
@@ -13,7 +14,7 @@ pub mod prelude {
     pub use super::config::Config;
     pub use super::config::ConfigHandle;
     pub use super::config::ConfigRef;
-    pub use super::despawn::LateDespawn;
+    pub use super::late_despawn::LateDespawn;
     pub use super::patch::AppExtConfigure as _;
     pub use super::patch::ColorExtBetterMix as _;
     pub use super::patch::Configure;
@@ -24,6 +25,7 @@ pub mod prelude {
     pub use super::patch::SpawnWithExt as _;
     pub use super::patch::TriggerExtGetEntity as _;
     pub use super::patch::WorldSpawnWithExt as _;
+    pub use super::selection::Selection;
     pub use super::texture_atlas_grid::TextureAtlasGrid;
     pub use crate::c;
     pub use crate::cq;
@@ -34,5 +36,5 @@ pub mod prelude {
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins(despawn::plugin);
+    app.add_plugins((late_despawn::plugin, selection::plugin));
 }

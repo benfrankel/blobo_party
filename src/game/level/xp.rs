@@ -11,37 +11,51 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Xp, OnReceiveXp, XpReward, IsXpBarFill)>();
+    app.configure::<(Xp, OnXpReward, XpReward, IsXpBarFill)>();
 }
 
-/// The player's XP relative to the current level.
-#[derive(Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct Xp(pub f32);
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct Xp {
+    /// The total amount of XP.
+    pub total: f32,
+    /// The amount of XP relative to the current level.
+    pub relative: f32,
+}
 
 impl Configure for Xp {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.init_resource::<Self>();
     }
 }
 
-/// An observable event triggered when the player receives XP.
-#[derive(Event)]
-pub struct OnReceiveXp(pub f32);
+impl Xp {
+    pub fn gain(&mut self, amount: f32) {
+        self.total += amount;
+        self.relative += amount;
+    }
+}
 
-impl Configure for OnReceiveXp {
+/// An observable event triggered when an entity receives XP.
+#[derive(Event)]
+pub struct OnXpReward(pub f32);
+
+impl Configure for OnXpReward {
     fn configure(app: &mut App) {
         app.add_event::<Self>();
         app.observe(receive_xp);
     }
 }
 
-fn receive_xp(trigger: Trigger<OnReceiveXp>, mut xp: ResMut<Xp>) {
-    xp.0 += trigger.event().0;
+fn receive_xp(trigger: Trigger<OnXpReward>, mut xp_query: Query<&mut Xp>) {
+    let entity = r!(trigger.get_entity());
+    let mut xp = r!(xp_query.get_mut(entity));
+    xp.gain(trigger.event().0);
 }
 
-/// Experience rewarded to the player on death.
+// TODO: Not needed for this jam game, but it would be "more correct" to track
+//       the owner of the projectile that killed the actor with the `XpReward`.
+/// Experience rewarded to player entities on death.
 #[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
 #[serde(transparent)]
@@ -69,7 +83,7 @@ fn apply_xp_reward(
     let (faction, reward) = r!(death_query.get(entity));
 
     if faction.is_enemy() {
-        commands.trigger(OnReceiveXp(reward.0));
+        commands.trigger(OnXpReward(reward.0));
     }
 }
 
@@ -86,18 +100,18 @@ impl Configure for IsXpBarFill {
 
 fn update_xp_bar_fill(
     config: ConfigRef<LevelConfig>,
-    level: Res<Level>,
-    xp: Res<Xp>,
-    mut xp_bar_fill_query: Query<&mut Style, With<IsXpBarFill>>,
+    level_query: Query<(&Level, &Xp)>,
+    mut xp_bar_fill_query: Query<(&mut Style, &Selection), With<IsXpBarFill>>,
 ) {
     let config = r!(config.get());
     if config.levels.is_empty() {
         return;
     }
-    let xp_cost = config.level(level.current + level.up).xp_cost;
-    let width = Percent(xp.0 / xp_cost * 100.0);
 
-    for mut style in &mut xp_bar_fill_query {
-        style.width = width;
+    for (mut style, selection) in &mut xp_bar_fill_query {
+        let (level, xp) = r!(level_query.get(selection.0));
+        let level_cost = config.level(level.current + level.up).xp_cost;
+
+        style.width = Percent(xp.relative / level_cost * 100.0);
     }
 }

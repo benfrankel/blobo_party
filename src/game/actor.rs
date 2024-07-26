@@ -27,7 +27,9 @@ use crate::game::actor::movement::OldMovementController;
 use crate::game::card::deck::Deck;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
+use crate::game::level::xp::Xp;
 use crate::game::level::xp::XpReward;
+use crate::game::level::Level;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
@@ -138,8 +140,8 @@ impl EntityCommand for Actor {
                     // TODO: Death animation instead, despawn when it's finished.
                     DespawnOnDeath,
                 ),
-                self.xp_reward,
-                self.deck,
+                // Inventory:
+                (Level::default(), Xp::default(), self.xp_reward, self.deck),
             ))
             .with_children(|children| {
                 children

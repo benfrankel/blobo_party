@@ -11,9 +11,9 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<LevelUp>();
 }
 
-/// A buffered event sent when the player levels up.
+/// A buffered event sent when an actor levels up.
 #[derive(Event)]
-pub struct LevelUp;
+pub struct LevelUp(#[allow(unused)] Entity);
 
 impl Configure for LevelUp {
     fn configure(app: &mut App) {
@@ -32,29 +32,37 @@ impl Configure for LevelUp {
 
 fn update_level_up_from_xp(
     config: ConfigRef<LevelConfig>,
-    mut level: ResMut<Level>,
-    mut xp: ResMut<Xp>,
+    mut level_query: Query<(&mut Level, &mut Xp)>,
 ) {
     let config = r!(config.get());
     if config.levels.is_empty() {
         return;
     }
 
-    loop {
-        let xp_cost = config.level(level.current + level.up).xp_cost;
-        if xp.0 < xp_cost {
-            break;
-        }
+    for (mut level, mut xp) in &mut level_query {
+        loop {
+            let level_cost = config.level(level.current + level.up).xp_cost;
+            if xp.relative < level_cost {
+                break;
+            }
 
-        xp.0 -= xp_cost;
-        level.up += 1;
+            xp.relative -= level_cost;
+            level.up += 1;
+        }
     }
 }
 
-fn trigger_level_up(mut level_up_events: EventWriter<LevelUp>, mut level: ResMut<Level>) {
-    if level.up > 0 {
+fn trigger_level_up(
+    mut level_up_events: EventWriter<LevelUp>,
+    mut level_query: Query<(Entity, &mut Level)>,
+) {
+    for (entity, mut level) in &mut level_query {
+        if level.up <= 0 {
+            continue;
+        }
+
         level.up -= 1;
         level.current += 1;
-        level_up_events.send(LevelUp);
+        level_up_events.send(LevelUp(entity));
     }
 }

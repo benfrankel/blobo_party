@@ -95,9 +95,7 @@ fn advance_deck(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-struct IsDeckDisplay {
-    target: Entity,
-}
+struct IsDeckDisplay;
 
 impl Configure for IsDeckDisplay {
     fn configure(app: &mut App) {
@@ -109,14 +107,6 @@ impl Configure for IsDeckDisplay {
                 populate_deck_display.in_set(UpdateSet::Spawn),
             ),
         );
-    }
-}
-
-impl Default for IsDeckDisplay {
-    fn default() -> Self {
-        Self {
-            target: Entity::PLACEHOLDER,
-        }
     }
 }
 
@@ -171,7 +161,8 @@ pub fn deck_display(player: Entity) -> impl EntityCommand {
                 },
                 ..default()
             },
-            IsDeckDisplay { target: player },
+            IsDeckDisplay,
+            Selection(player),
         ));
     }
 }
