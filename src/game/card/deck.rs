@@ -57,17 +57,26 @@ impl Deck {
         Some(&self.card_keys[self.active])
     }
 
-    pub fn swap(&mut self, step: isize) -> Option<&String> {
+    pub fn swap(&mut self, step: isize) {
         if self.card_keys.is_empty() {
-            return None;
+            return;
         }
 
         let old = self.active;
         self.active =
             (self.active as isize + step).rem_euclid(self.card_keys.len() as isize) as usize;
         self.card_keys.swap(old, self.active);
+    }
 
-        Some(&self.card_keys[self.active])
+    pub fn discard(&mut self) {
+        if self.card_keys.len() <= 1 {
+            return;
+        }
+
+        self.card_keys.remove(self.active);
+        if self.active >= self.card_keys.len() {
+            self.active = 0;
+        }
     }
 }
 

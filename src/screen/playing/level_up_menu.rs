@@ -115,11 +115,11 @@ fn ready_button(mut entity: EntityWorldMut) {
 
 #[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
 pub enum LevelUpMenuAction {
-    // TODO: Discard action.
     SelectLeft,
     SelectRight,
     SwapLeft,
     SwapRight,
+    Discard,
 }
 
 impl Configure for LevelUpMenuAction {
@@ -141,6 +141,9 @@ impl Configure for LevelUpMenuAction {
                 .insert(Self::SwapRight, GamepadButtonType::RightTrigger2)
                 .insert_modified(Self::SwapRight, Modifier::Shift, KeyCode::KeyD)
                 .insert_modified(Self::SwapRight, Modifier::Shift, KeyCode::ArrowRight)
+                .insert(Self::Discard, GamepadButtonType::West)
+                .insert(Self::Discard, KeyCode::Backspace)
+                .insert(Self::Discard, KeyCode::Delete)
                 .build(),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());
@@ -148,33 +151,38 @@ impl Configure for LevelUpMenuAction {
         //       action disabling is buggy in LWIM 0.14. The fix is merged but not yet released.
         app.add_systems(
             Update,
-            (
-                select_card_left.in_set(UpdateSet::RecordInput).run_if(
-                    PlayingMenu::LevelUp
-                        .will_update()
-                        .and_then(action_just_pressed(Self::SelectLeft)),
-                ),
-                select_card_right.in_set(UpdateSet::RecordInput).run_if(
-                    PlayingMenu::LevelUp
-                        .will_update()
-                        .and_then(action_just_pressed(Self::SelectRight)),
-                ),
-                swap_card_left.in_set(UpdateSet::RecordInput).run_if(
-                    PlayingMenu::LevelUp
-                        .will_update()
-                        .and_then(action_just_pressed(Self::SwapLeft)),
-                ),
-                swap_card_right.in_set(UpdateSet::RecordInput).run_if(
-                    PlayingMenu::LevelUp
-                        .will_update()
-                        .and_then(action_just_pressed(Self::SwapRight)),
-                ),
-            ),
+            PlayingMenu::LevelUp.on_update((
+                card_select_left
+                    .in_set(UpdateSet::RecordInput)
+                    .run_if(action_just_pressed(Self::SelectLeft)),
+                card_select_right
+                    .in_set(UpdateSet::RecordInput)
+                    .run_if(action_just_pressed(Self::SelectRight)),
+                card_swap_left
+                    .in_set(UpdateSet::RecordInput)
+                    .run_if(action_just_pressed(Self::SwapLeft)),
+                card_swap_right
+                    .in_set(UpdateSet::RecordInput)
+                    .run_if(action_just_pressed(Self::SwapRight)),
+                card_discard
+                    .in_set(UpdateSet::RecordInput)
+                    .run_if(action_just_pressed(Self::Discard)),
+            )),
         );
     }
 }
 
-fn select_card_left(
+fn card_discard(
+    deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
+    mut deck_query: Query<&mut Deck>,
+) {
+    for selection in &deck_display_query {
+        let mut deck = c!(deck_query.get_mut(selection.0));
+        deck.discard();
+    }
+}
+
+fn card_select_left(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
@@ -184,7 +192,7 @@ fn select_card_left(
     }
 }
 
-fn select_card_right(
+fn card_select_right(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
@@ -194,7 +202,7 @@ fn select_card_right(
     }
 }
 
-fn swap_card_left(
+fn card_swap_left(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
@@ -204,7 +212,7 @@ fn swap_card_left(
     }
 }
 
-fn swap_card_right(
+fn card_swap_right(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
