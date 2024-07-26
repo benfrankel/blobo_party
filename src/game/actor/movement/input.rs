@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
+use pyri_state::prelude::*;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::actor::movement::MovementController;
 use crate::util::prelude::*;
@@ -19,7 +21,9 @@ impl Configure for MovementAction {
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(
             Update,
-            record_movement_action.in_set(UpdateSet::RecordInput),
+            record_movement_action
+                .in_set(UpdateSet::RecordInput)
+                .run_if(Pause::is_disabled),
         );
     }
 }

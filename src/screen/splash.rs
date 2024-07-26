@@ -27,7 +27,6 @@ pub(super) fn plugin(app: &mut App) {
         StateFlush,
         Screen::Splash.on_edge(exit_splash, enter_splash),
     );
-
     app.add_systems(
         Update,
         Screen::Splash.on_update((

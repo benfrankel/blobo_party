@@ -1,8 +1,10 @@
 use std::marker::PhantomData;
 
 use bevy::prelude::*;
+use pyri_state::prelude::*;
 
 use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
 use crate::game::combat::hit::OnHit;
@@ -20,11 +22,11 @@ pub struct DespawnOnHit;
 impl Configure for DespawnOnHit {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(despawn_on_hit);
+        app.observe(apply_despawn_on_hit);
     }
 }
 
-fn despawn_on_hit(
+fn apply_despawn_on_hit(
     trigger: Trigger<OnHit>,
     mut despawn: ResMut<LateDespawn>,
     despawn_query: Query<(), With<DespawnOnHit>>,
@@ -80,12 +82,14 @@ impl Configure for DespawnOnBeat {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            despawn_on_beat.in_set(UpdateSet::Update).run_if(on_beat(1)),
+            apply_despawn_on_beat
+                .in_set(UpdateSet::Update)
+                .run_if(on_beat(1)),
         );
     }
 }
 
-fn despawn_on_beat(
+fn apply_despawn_on_beat(
     mut despawn: ResMut<LateDespawn>,
     mut despawn_query: Query<(Entity, &mut DespawnOnBeat)>,
 ) {
@@ -104,17 +108,44 @@ pub struct DespawnOnTimer(pub Timer);
 impl Configure for DespawnOnTimer {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, despawn_on_timer.in_set(UpdateSet::Update));
+        app.add_systems(
+            StateFlush,
+            Pause.on_edge(unpause_despawn_on_timer, pause_despawn_on_timer),
+        );
+        app.add_systems(
+            Update,
+            (
+                tick_despawn_on_timer.in_set(UpdateSet::TickTimers),
+                apply_despawn_on_timer.in_set(UpdateSet::Update),
+            ),
+        );
     }
 }
 
-fn despawn_on_timer(
-    time: Res<Time>,
+fn unpause_despawn_on_timer(mut timer_query: Query<&mut DespawnOnTimer>) {
+    for mut timer in &mut timer_query {
+        timer.0.unpause();
+    }
+}
+
+fn pause_despawn_on_timer(mut timer_query: Query<&mut DespawnOnTimer>) {
+    for mut timer in &mut timer_query {
+        timer.0.pause();
+    }
+}
+
+fn tick_despawn_on_timer(time: Res<Time>, mut timer_query: Query<&mut DespawnOnTimer>) {
+    for mut timer in &mut timer_query {
+        timer.0.tick(time.delta());
+    }
+}
+
+fn apply_despawn_on_timer(
     mut despawn: ResMut<LateDespawn>,
-    mut despawn_query: Query<(Entity, &mut DespawnOnTimer)>,
+    timer_query: Query<(Entity, &DespawnOnTimer)>,
 ) {
-    for (entity, mut timer) in &mut despawn_query {
-        if timer.0.tick(time.delta()).finished() {
+    for (entity, timer) in &timer_query {
+        if timer.0.finished() {
             despawn.recursive(entity);
         }
     }
@@ -131,7 +162,17 @@ pub struct RemoveOnTimer<C: Component + TypePath> {
 impl<C: Component + TypePath> Configure for RemoveOnTimer<C> {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, remove_on_timer::<C>.in_set(UpdateSet::SyncLate));
+        app.add_systems(
+            StateFlush,
+            Pause.on_edge(unpause_remove_on_timer::<C>, pause_remove_on_timer::<C>),
+        );
+        app.add_systems(
+            Update,
+            (
+                tick_remove_on_timer::<C>.in_set(UpdateSet::TickTimers),
+                apply_remove_on_timer::<C>.in_set(UpdateSet::SyncLate),
+            ),
+        );
     }
 }
 
@@ -149,13 +190,33 @@ impl<C: Component + TypePath> RemoveOnTimer<C> {
     }
 }
 
-fn remove_on_timer<C: Component + TypePath>(
-    mut commands: Commands,
-    mut remove_query: Query<(Entity, &mut RemoveOnTimer<C>)>,
+fn tick_remove_on_timer<C: Component + TypePath>(
     time: Res<Time>,
+    mut timer_query: Query<&mut RemoveOnTimer<C>>,
 ) {
-    for (entity, mut remove) in &mut remove_query {
-        if remove.timer.tick(time.delta()).finished() {
+    for mut timer in &mut timer_query {
+        timer.timer.tick(time.delta());
+    }
+}
+
+fn unpause_remove_on_timer<C: Component + TypePath>(mut timer_query: Query<&mut RemoveOnTimer<C>>) {
+    for mut timer in &mut timer_query {
+        timer.timer.unpause();
+    }
+}
+
+fn pause_remove_on_timer<C: Component + TypePath>(mut timer_query: Query<&mut RemoveOnTimer<C>>) {
+    for mut timer in &mut timer_query {
+        timer.timer.pause();
+    }
+}
+
+fn apply_remove_on_timer<C: Component + TypePath>(
+    mut commands: Commands,
+    timer_query: Query<(Entity, &RemoveOnTimer<C>)>,
+) {
+    for (entity, timer) in &timer_query {
+        if timer.timer.finished() {
             commands.entity(entity).remove::<(C, RemoveOnTimer<C>)>();
         }
     }
@@ -174,7 +235,7 @@ impl<C: Component + TypePath> Configure for RemoveOnBeat<C> {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            remove_on_beat::<C>
+            apply_remove_on_beat::<C>
                 .in_set(UpdateSet::SyncLate)
                 .run_if(on_beat(1)),
         );
@@ -194,7 +255,7 @@ impl<C: Component + TypePath> RemoveOnBeat<C> {
     }
 }
 
-fn remove_on_beat<C: Component + TypePath>(
+fn apply_remove_on_beat<C: Component + TypePath>(
     mut commands: Commands,
     mut remove_query: Query<(Entity, &mut RemoveOnBeat<C>)>,
 ) {

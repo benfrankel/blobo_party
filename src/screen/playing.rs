@@ -7,6 +7,7 @@ use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
 use crate::game::actor::player::player;
 use crate::game::card::deck::deck_display;
 use crate::game::level::xp::IsXpBarFill;
@@ -101,13 +102,22 @@ impl Configure for PlayingAction {
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(
             StateFlush,
-            Screen::refresh
-                .in_set(ResolveStateSet::<Screen>::Compute)
-                .run_if(
-                    Screen::Playing
-                        .will_exit()
-                        .and_then(action_just_pressed(Self::Restart)),
-                ),
+            (
+                Screen::refresh
+                    .in_set(ResolveStateSet::<Screen>::Compute)
+                    .run_if(
+                        Screen::Playing
+                            .will_exit()
+                            .and_then(action_just_pressed(Self::Restart)),
+                    ),
+                Pause::toggle_default
+                    .in_set(ResolveStateSet::<Pause>::Compute)
+                    .run_if(
+                        Screen::Playing
+                            .will_exit()
+                            .and_then(action_just_pressed(Self::Pause)),
+                    ),
+            ),
         );
     }
 }

@@ -5,6 +5,7 @@ pub mod audio;
 pub mod camera;
 #[cfg(feature = "dev")]
 pub mod debug;
+pub mod pause;
 pub mod physics;
 pub mod state;
 pub mod theme;
@@ -38,11 +39,13 @@ pub(super) fn plugin(app: &mut App) {
         camera::plugin,
         #[cfg(feature = "dev")]
         debug::plugin,
-        theme::plugin,
+        pause::plugin,
         physics::plugin,
+        theme::plugin,
     ));
 }
 
+// TODO: This would fit better in `game.rs`.
 /// Game logic system ordering in the [`Update`] schedule.
 #[derive(SystemSet, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum UpdateSet {
@@ -89,6 +92,7 @@ impl Configure for UpdateSet {
     }
 }
 
+// TODO: This would fit better in `animation.rs`.
 /// [`Transform`] post-processing system ordering in the [`PostUpdate`] schedule.
 #[derive(SystemSet, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum PostTransformSet {
@@ -120,6 +124,7 @@ impl Configure for PostTransformSet {
     }
 }
 
+// TODO: This would fit better in `animation.rs`.
 /// [`Color`] post-processing system ordering in the [`PostUpdate`] schedule.
 #[derive(SystemSet, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum PostColorSet {

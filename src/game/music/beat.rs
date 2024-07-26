@@ -1,7 +1,9 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use pyri_state::prelude::*;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
@@ -18,6 +20,10 @@ impl Configure for BeatTimer {
         app.register_type::<Self>();
         app.init_resource::<Self>();
         app.add_systems(Update, tick_beat_timer.in_set(UpdateSet::TickTimers));
+        app.add_systems(
+            StateFlush,
+            Pause.on_edge(unpause_beat_timer, pause_beat_timer),
+        );
     }
 }
 
@@ -32,6 +38,14 @@ impl Default for BeatTimer {
 
 fn tick_beat_timer(time: Res<Time>, mut beat_timer: ResMut<BeatTimer>) {
     beat_timer.0.tick(time.delta());
+}
+
+fn unpause_beat_timer(mut beat_timer: ResMut<BeatTimer>) {
+    beat_timer.0.unpause();
+}
+
+fn pause_beat_timer(mut beat_timer: ResMut<BeatTimer>) {
+    beat_timer.0.pause();
 }
 
 #[derive(Resource, Reflect, Default)]

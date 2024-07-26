@@ -1,9 +1,11 @@
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
+use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
@@ -86,7 +88,7 @@ pub struct SmoothFollow {
 impl Configure for SmoothFollow {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_smooth_follow);
+        app.add_systems(Update, apply_smooth_follow.run_if(Pause::is_disabled));
     }
 }
 

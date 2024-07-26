@@ -4,12 +4,14 @@ use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use interpolation::Ease as _;
+use pyri_state::prelude::*;
 use rand::Rng as _;
 use serde::Deserialize;
 use serde::Serialize;
 
 use super::cleanup::DespawnRadiusSq;
 use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
 use crate::core::PostColorSet;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
@@ -84,11 +86,18 @@ pub struct Spotlight {
 impl Configure for Spotlight {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, tick_spotlight.in_set(UpdateSet::TickTimers));
+        app.add_systems(
+            Update,
+            tick_spotlight
+                .in_set(UpdateSet::TickTimers)
+                .run_if(Pause::is_disabled),
+        );
         app.add_systems(
             PostUpdate,
             (
-                update_spotlight_rotation.in_set(PostTransformSet::Blend),
+                update_spotlight_rotation
+                    .in_set(PostTransformSet::Blend)
+                    .run_if(Pause::is_disabled),
                 update_spotlight_color.in_set(PostColorSet::Blend),
             ),
         );

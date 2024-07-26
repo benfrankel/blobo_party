@@ -24,6 +24,10 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_plugins(ProgressPlugin::new(Screen::Loading.bevy()));
     app.add_systems(
+        StateFlush,
+        Screen::Loading.on_edge(exit_loading, enter_loading),
+    );
+    app.add_systems(
         Update,
         // TODO: This is kinda silly. Find a better way later.
         Screen::Loading.on_update((
@@ -35,10 +39,6 @@ pub(super) fn plugin(app: &mut App) {
             ProjectileConfig::progress.track_progress(),
             WaveConfig::progress.track_progress(),
         )),
-    );
-    app.add_systems(
-        StateFlush,
-        Screen::Loading.on_edge(exit_loading, enter_loading),
     );
 
     app.configure::<IsLoadingBarFill>();

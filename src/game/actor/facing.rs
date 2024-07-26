@@ -1,8 +1,10 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
+use pyri_state::prelude::*;
 
 use crate::animation::backup::Backup;
 use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
 use crate::core::theme::ThemeColor;
 use crate::core::window::WindowRoot;
 use crate::core::PostTransformSet;
@@ -47,7 +49,12 @@ pub struct FacePlayer;
 impl Configure for FacePlayer {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, face_player.in_set(UpdateSet::SyncEarly));
+        app.add_systems(
+            Update,
+            face_player
+                .in_set(UpdateSet::SyncEarly)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 
@@ -70,7 +77,12 @@ pub struct FaceCursor;
 impl Configure for FaceCursor {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, face_cursor.in_set(UpdateSet::SyncEarly));
+        app.add_systems(
+            Update,
+            face_cursor
+                .in_set(UpdateSet::SyncEarly)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 

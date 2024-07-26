@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
+use pyri_state::prelude::*;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::actor::attack::AttackController;
 use crate::util::prelude::*;
@@ -18,7 +20,12 @@ enum AttackAction {
 impl Configure for AttackAction {
     fn configure(app: &mut App) {
         app.add_plugins(InputManagerPlugin::<Self>::default());
-        app.add_systems(Update, record_attack_action.in_set(UpdateSet::RecordInput));
+        app.add_systems(
+            Update,
+            record_attack_action
+                .in_set(UpdateSet::RecordInput)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 

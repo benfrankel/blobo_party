@@ -23,6 +23,7 @@ pub(super) fn plugin(app: &mut App) {
         LoadingState::new(Screen::Title.bevy()).load_collection::<PlayingAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Title.bevy()));
+    app.add_systems(StateFlush, Screen::Title.on_edge(exit_title, enter_title));
     app.add_systems(
         Update,
         // TODO: This is kinda silly. Find a better way later.
@@ -36,7 +37,6 @@ pub(super) fn plugin(app: &mut App) {
             WaveConfig::progress.track_progress(),
         )),
     );
-    app.add_systems(StateFlush, Screen::Title.on_edge(exit_title, enter_title));
 
     app.configure::<TitleScreenAssets>();
 }
