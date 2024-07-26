@@ -64,8 +64,8 @@ impl Config for SpotlightConfig {
 impl SpotlightConfig {
     fn color(&self, t: f32) -> Color {
         let n = self.color_loop.len();
-        let t = t * n as f32;
-        let lo = (t as usize).rem_euclid(n);
+        let t = (t * n as f32).rem_euclid(n as f32);
+        let lo = t as usize;
         let hi = if lo + 1 < n { lo + 1 } else { 0 };
         let t = t.fract().quadratic_in_out();
 

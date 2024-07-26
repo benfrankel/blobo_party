@@ -32,7 +32,7 @@ impl Configure for SpriteAnimation {
             Update,
             update_sprite_animation
                 .in_set(UpdateSet::Update)
-                .run_if(on_beat(4)),
+                .run_if(on_beat(1)),
         );
     }
 }

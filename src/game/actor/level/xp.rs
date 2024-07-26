@@ -6,6 +6,7 @@ use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
+use crate::game::actor::player::IsPlayer;
 use crate::game::combat::death::OnDeath;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -47,15 +48,16 @@ impl Configure for OnXpReward {
     }
 }
 
-fn receive_xp(trigger: Trigger<OnXpReward>, mut xp_query: Query<&mut Xp>) {
-    let entity = r!(trigger.get_entity());
-    let mut xp = r!(xp_query.get_mut(entity));
-    xp.gain(trigger.event().0);
+// TODO: Not needed for this jam game, but it would be "more correct" to track
+//       the owner of the projectile that killed the actor with the `XpReward`,
+//       and only trigger `OnXpReward` for that entity.
+fn receive_xp(trigger: Trigger<OnXpReward>, mut xp_query: Query<&mut Xp, With<IsPlayer>>) {
+    for mut xp in &mut xp_query {
+        xp.gain(trigger.event().0);
+    }
 }
 
-// TODO: Not needed for this jam game, but it would be "more correct" to track
-//       the owner of the projectile that killed the actor with the `XpReward`.
-/// Experience rewarded to player entities on death.
+/// Experience points rewarded to the killer on death.
 #[derive(Component, Reflect, Serialize, Deserialize, Copy, Clone)]
 #[reflect(Component)]
 #[serde(transparent)]

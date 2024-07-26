@@ -1,3 +1,4 @@
+use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use pyri_state::prelude::*;
@@ -121,4 +122,10 @@ fn any_condition_met(conditions: &[SpawnCondition], current_level: &usize) -> bo
         SpawnCondition::GreaterThan(value) => current_level > value,
         SpawnCondition::LessThan(value) => current_level < value,
     })
+}
+
+pub fn wave(player: Entity) -> impl EntityCommand<World> {
+    move |mut entity: EntityWorldMut| {
+        entity.insert((Name::new("Wave"), Wave::default(), Selection(player)));
+    }
 }

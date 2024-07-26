@@ -12,6 +12,7 @@ use pyri_state::schedule::ResolveStateSet;
 use crate::core::pause::Pause;
 use crate::game::actor::player::player;
 use crate::game::spotlight::spotlight_lamp_spawner;
+use crate::game::wave::wave;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::playing::hud::playing_hud;
@@ -31,12 +32,20 @@ fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<
     commands.spawn_with(fade_in);
 
     // TODO: Character select screen.
+    // Spawn player.
     let player = commands.spawn_with(player("pink")).id();
 
+    // Spawn enemies.
+    commands
+        .spawn_with(wave(player))
+        .set_parent(game_root.enemies);
+
+    // Spawn VFX.
     commands
         .spawn_with(spotlight_lamp_spawner)
         .set_parent(game_root.vfx);
 
+    // Spawn UI.
     commands
         .spawn_with(playing_hud(player))
         .set_parent(ui_root.body);
