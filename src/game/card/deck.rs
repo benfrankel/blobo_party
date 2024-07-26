@@ -46,22 +46,28 @@ impl Deck {
         }
     }
 
-    fn peek_next(&self) -> Option<&String> {
-        self.card_keys.get(self.next())
+    pub fn advance(&mut self, step: isize) -> Option<&String> {
+        if self.card_keys.is_empty() {
+            return None;
+        }
+
+        self.active =
+            (self.active as isize + step).rem_euclid(self.card_keys.len() as isize) as usize;
+
+        Some(&self.card_keys[self.active])
     }
 
-    fn next(&self) -> usize {
-        if !self.card_keys.is_empty() {
-            (self.active + 1) % self.card_keys.len()
-        } else {
-            0
+    pub fn swap(&mut self, step: isize) -> Option<&String> {
+        if self.card_keys.is_empty() {
+            return None;
         }
-    }
 
-    fn advance(&mut self) {
-        if !self.card_keys.is_empty() {
-            self.active = self.next();
-        }
+        let old = self.active;
+        self.active =
+            (self.active as isize + step).rem_euclid(self.card_keys.len() as isize) as usize;
+        self.card_keys.swap(old, self.active);
+
+        Some(&self.card_keys[self.active])
     }
 }
 
@@ -84,12 +90,11 @@ fn advance_deck(
     let config = r!(config.get());
 
     for (entity, mut deck) in &mut deck_query {
-        let card_key = c!(deck.peek_next());
+        let card_key = c!(deck.advance(1));
         let card_action = c!(config.card_map.get(card_key));
         let action = card_action.action;
         let action_config = card_action.action_config.clone();
         commands.run_system_with_input(action.0, (entity, action_config));
-        deck.advance();
     }
 }
 
