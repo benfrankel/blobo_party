@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_mod_picking::prelude::*;
+use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
