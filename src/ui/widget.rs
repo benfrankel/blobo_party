@@ -6,116 +6,9 @@ use crate::animation::backup::Backup;
 use crate::animation::offset::Offset;
 use crate::ui::prelude::*;
 
-pub fn column_left(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Start,
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn column_mid(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Center,
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn column_right(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::End,
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn column_center(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            flex_direction: FlexDirection::Column,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn row_top(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Start,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn row_mid(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Center,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn row_bottom(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::End,
-            ..default()
-        },
-        ..default()
-    });
-}
-
-pub fn row_center(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style {
-            width: Percent(100.0),
-            height: Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..default()
-        },
-        ..default()
-    });
-}
-
 pub fn overlay(mut entity: EntityWorldMut) {
     entity.insert(NodeBundle {
-        style: Style {
-            position_type: PositionType::Absolute,
-            width: Percent(100.0),
-            height: Percent(100.0),
-            ..default()
-        },
+        style: Style::ABS_FILL,
         z_index: ZIndex::Global(1000),
         ..default()
     });
@@ -123,12 +16,7 @@ pub fn overlay(mut entity: EntityWorldMut) {
 
 pub fn blocking_overlay(mut entity: EntityWorldMut) {
     entity.insert(NodeBundle {
-        style: Style {
-            position_type: PositionType::Absolute,
-            width: Percent(100.0),
-            height: Percent(100.0),
-            ..default()
-        },
+        style: Style::ABS_FILL,
         focus_policy: FocusPolicy::Block,
         z_index: ZIndex::Global(1000),
         ..default()
@@ -140,7 +28,7 @@ pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
         entity
             .insert((
-                Name::new(format!("{}Button", text.replace(' ', ""))),
+                Name::new(format!("Button(\"{}\")", text)),
                 ButtonBundle {
                     style: Style {
                         height: Vw(11.0),

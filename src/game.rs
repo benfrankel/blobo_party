@@ -9,9 +9,14 @@ pub mod spotlight;
 pub mod sprite;
 pub mod wave;
 
-use avian2d::prelude::*;
-use bevy::prelude::*;
+use std::borrow::Cow;
 
+use avian2d::prelude::*;
+use bevy::ecs::system::EntityCommand;
+use bevy::prelude::*;
+use pyri_state::prelude::*;
+
+use crate::screen::Screen;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -42,23 +47,16 @@ impl Configure for GameRoot {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
+        app.add_systems(StateFlush, Screen::ANY.on_exit(clear_game_root));
     }
 }
 
 impl FromWorld for GameRoot {
     fn from_world(world: &mut World) -> Self {
-        let players = world
-            .spawn((Name::new("Players"), SpatialBundle::default()))
-            .id();
-        let enemies = world
-            .spawn((Name::new("Enemies"), SpatialBundle::default()))
-            .id();
-        let projectiles = world
-            .spawn((Name::new("Projectiles"), SpatialBundle::default()))
-            .id();
-        let vfx = world
-            .spawn((Name::new("Vfx"), SpatialBundle::default()))
-            .id();
+        let players = world.spawn_with(root("Players")).id();
+        let enemies = world.spawn_with(root("Enemies")).id();
+        let projectiles = world.spawn_with(root("Projectiles")).id();
+        let vfx = world.spawn_with(root("Vfx")).id();
 
         Self {
             players,
@@ -69,12 +67,18 @@ impl FromWorld for GameRoot {
     }
 }
 
-impl GameRoot {
-    pub fn despawn_descendants(&self, commands: &mut Commands) {
-        commands.entity(self.players).despawn_descendants();
-        commands.entity(self.enemies).despawn_descendants();
-        commands.entity(self.projectiles).despawn_descendants();
-        commands.entity(self.vfx).despawn_descendants();
+fn clear_game_root(mut commands: Commands, game_root: Res<GameRoot>) {
+    commands.entity(game_root.players).despawn_descendants();
+    commands.entity(game_root.enemies).despawn_descendants();
+    commands.entity(game_root.projectiles).despawn_descendants();
+    commands.entity(game_root.vfx).despawn_descendants();
+}
+
+fn root(name: impl Into<Cow<'static, str>>) -> impl EntityCommand<World> {
+    let name = name.into();
+
+    move |mut entity: EntityWorldMut| {
+        entity.insert((Name::new(name), SpatialBundle::default()));
     }
 }
 

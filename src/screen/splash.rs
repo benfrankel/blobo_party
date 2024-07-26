@@ -23,10 +23,7 @@ pub(super) fn plugin(app: &mut App) {
         LoadingState::new(Screen::Splash.bevy()).load_collection::<TitleScreenAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Splash.bevy()));
-    app.add_systems(
-        StateFlush,
-        Screen::Splash.on_edge(exit_splash, enter_splash),
-    );
+    app.add_systems(StateFlush, Screen::Splash.on_enter(enter_splash));
     app.add_systems(
         Update,
         Screen::Splash.on_update((
@@ -43,13 +40,9 @@ fn enter_splash(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands.spawn_with(splash_screen).set_parent(ui_root.body);
 }
 
-fn exit_splash(mut commands: Commands, ui_root: Res<UiRoot>) {
-    commands.entity(ui_root.body).despawn_descendants();
-}
-
 fn splash_screen(mut entity: EntityWorldMut) {
     entity
-        .add(widget::column_center)
+        .add(Style::COLUMN_CENTER.div())
         .insert(Name::new("SplashScreen"))
         .with_children(|children| {
             children.spawn_with(splash_image);

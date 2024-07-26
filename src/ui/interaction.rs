@@ -45,7 +45,7 @@ impl<C: Component + Clone + Reflect + FromReflect + TypePath + GetTypeRegistrati
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            apply_interaction_table::<C>.in_set(UpdateSet::SyncLate),
+            apply_interaction_table::<C>.in_set(UpdateSet::RecordInput),
         );
     }
 }

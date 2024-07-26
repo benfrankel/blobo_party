@@ -23,10 +23,7 @@ pub(super) fn plugin(app: &mut App) {
         LoadingState::new(Screen::Loading.bevy()).load_collection::<PlayingAssets>(),
     );
     app.add_plugins(ProgressPlugin::new(Screen::Loading.bevy()));
-    app.add_systems(
-        StateFlush,
-        Screen::Loading.on_edge(exit_loading, enter_loading),
-    );
+    app.add_systems(StateFlush, Screen::Loading.on_enter(enter_loading));
     app.add_systems(
         Update,
         // TODO: This is kinda silly. Find a better way later.
@@ -89,13 +86,9 @@ fn enter_loading(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands.spawn_with(loading_screen).set_parent(ui_root.body);
 }
 
-fn exit_loading(mut commands: Commands, ui_root: Res<UiRoot>) {
-    commands.entity(ui_root.body).despawn_descendants();
-}
-
 fn loading_screen(mut entity: EntityWorldMut) {
     entity
-        .add(widget::column_center)
+        .add(Style::COLUMN_CENTER.div())
         .insert(Name::new("LoadingScreen"))
         .with_children(|children| {
             children.spawn_with(loading_text);

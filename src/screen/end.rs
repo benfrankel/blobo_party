@@ -64,14 +64,13 @@ fn enter_end(mut commands: Commands, ui_root: Res<UiRoot>) {
     );
 }
 
-fn exit_end(mut commands: Commands, ui_root: Res<UiRoot>) {
+fn exit_end(mut commands: Commands) {
     commands.remove_resource::<InputMap<EndScreenAction>>();
-    commands.entity(ui_root.body).despawn_descendants();
 }
 
 fn end_screen(mut entity: EntityWorldMut) {
     entity
-        .add(widget::column_mid)
+        .add(Style::COLUMN_MID.div())
         .insert(Name::new("EndScreen"))
         .with_children(|children| {
             children.spawn_with(end_text);

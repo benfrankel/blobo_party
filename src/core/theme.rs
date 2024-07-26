@@ -71,6 +71,7 @@ pub enum ThemeColor {
     Popup,
     Indicator,
     CardBorder,
+    Overlay,
 }
 
 impl ThemeColor {
