@@ -4,6 +4,7 @@ use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
+use crate::screen::fade_out;
 use crate::screen::playing::PlayingMenu;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -100,8 +101,9 @@ fn continue_button(mut entity: EntityWorldMut) {
 fn restart_button(mut entity: EntityWorldMut) {
     entity
         .add(widget::menu_button("Restart"))
-        // TODO: Fade out?
-        .insert(On::<Pointer<Click>>::run(Screen::refresh));
+        .insert(On::<Pointer<Click>>::run(|mut commands: Commands| {
+            commands.spawn_with(fade_out(Screen::Playing));
+        }));
 }
 
 fn quit_to_title_button(mut entity: EntityWorldMut) {
