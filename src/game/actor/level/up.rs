@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 use crate::core::UpdateSet;
-use crate::game::level::xp::Xp;
-use crate::game::level::Level;
-use crate::game::level::LevelConfig;
+use crate::game::actor::level::xp::Xp;
+use crate::game::actor::level::Level;
+use crate::game::actor::level::LevelConfig;
 use crate::util::prelude::*;
 
 // TODO: System that enters level up menu on LevelUp event.

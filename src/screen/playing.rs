@@ -8,10 +8,10 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::camera::CameraRoot;
 use crate::core::pause::Pause;
+use crate::game::actor::level::xp::IsXpBarFill;
+use crate::game::actor::level::IsLevelIndicator;
 use crate::game::actor::player::player;
 use crate::game::card::deck::deck_display;
-use crate::game::level::xp::IsXpBarFill;
-use crate::game::level::IsLevelIndicator;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::GameRoot;
 use crate::screen::fade_in;

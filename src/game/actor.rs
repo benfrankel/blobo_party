@@ -3,6 +3,7 @@ pub mod enemy;
 pub mod facing;
 pub mod faction;
 pub mod health;
+pub mod level;
 pub mod movement;
 pub mod player;
 
@@ -21,15 +22,15 @@ use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
+use crate::game::actor::level::xp::Xp;
+use crate::game::actor::level::xp::XpReward;
+use crate::game::actor::level::Level;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::OldMovementController;
 use crate::game::card::deck::Deck;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
-use crate::game::level::xp::Xp;
-use crate::game::level::xp::XpReward;
-use crate::game::level::Level;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
 
@@ -42,6 +43,7 @@ pub(super) fn plugin(app: &mut App) {
         facing::plugin,
         faction::plugin,
         health::plugin,
+        level::plugin,
         movement::plugin,
         player::plugin,
     ));

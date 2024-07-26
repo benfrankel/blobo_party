@@ -4,9 +4,9 @@ use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
+use crate::game::actor::level::Level;
+use crate::game::actor::level::LevelConfig;
 use crate::game::combat::death::OnDeath;
-use crate::game::level::Level;
-use crate::game::level::LevelConfig;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 

@@ -5,10 +5,10 @@ use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::game::actor::health::HealthConfig;
+use crate::game::actor::level::LevelConfig;
 use crate::game::actor::ActorConfig;
 use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
-use crate::game::level::LevelConfig;
 use crate::game::music::MusicConfig;
 use crate::game::wave::WaveConfig;
 use crate::screen::fade_in;

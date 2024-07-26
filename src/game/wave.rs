@@ -8,7 +8,7 @@ use serde::Serialize;
 use crate::core::camera::CameraRoot;
 use crate::core::UpdateSet;
 use crate::game::actor::enemy::enemy;
-use crate::game::level::Level;
+use crate::game::actor::level::Level;
 use crate::game::music::beat::on_beat;
 use crate::screen::Screen;
 use crate::util::prelude::*;
