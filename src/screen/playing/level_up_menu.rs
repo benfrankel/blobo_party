@@ -10,6 +10,8 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 // TODO: Deck actions in deck.rs, but disabled by default. Enable them during this menu.
+// TODO: Random card selection to add to deck.
+// TODO: Helpful message if the player is at deck capacity.
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,
@@ -32,7 +34,7 @@ fn open_level_up_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 }
 
 fn level_up_overlay(mut entity: EntityWorldMut) {
-    entity.add(widget::blocking_overlay).insert((
+    entity.add(widget::overlay).insert((
         Name::new("LevelUpOverlay"),
         ZIndex::Global(1),
         StateScope::<PlayingMenu>::default(),

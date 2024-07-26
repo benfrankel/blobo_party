@@ -154,6 +154,7 @@ fn card(key: impl Into<String>, active: bool) -> impl EntityCommand {
         let icon = r!(config.card_icon_map.get(&card.icon_key)).clone();
         let name = format!("Card(\"{}\")", card.name);
         let height = config.card_height;
+        let tooltip_text = format!("{}\n\n{}", card.name, card.description);
 
         world
             .entity_mut(entity)
@@ -168,6 +169,12 @@ fn card(key: impl Into<String>, active: bool) -> impl EntityCommand {
                     ..default()
                 },
                 ThemeColor::CardBorder.target::<BorderColor>(),
+                Interaction::default(),
+                Tooltip {
+                    text: tooltip_text,
+                    side: TooltipSide::Top,
+                    offset: Vec2::ZERO,
+                },
             ))
             .with_children(|children| {
                 children.spawn_with(background).with_children(|children| {

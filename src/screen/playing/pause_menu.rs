@@ -23,7 +23,7 @@ fn open_pause_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 }
 
 fn pause_overlay(mut entity: EntityWorldMut) {
-    entity.add(widget::blocking_overlay).insert((
+    entity.add(widget::overlay).insert((
         Name::new("PauseOverlay"),
         ZIndex::Global(1),
         ThemeColor::Overlay.target::<BackgroundColor>(),

@@ -54,7 +54,8 @@ impl FromWorld for TooltipRoot {
                             font: FONT_HANDLE,
                             ..default()
                         },
-                    ),
+                    )
+                    .with_text_justify(JustifyText::Center),
                     // TODO: Adjustable font sizes in ThemeConfig
                     DynamicFontSize::new(Px(16.0)),
                     ThemeColorForText(vec![ThemeColor::BodyText]),
@@ -85,10 +86,12 @@ pub struct Tooltip {
 impl Configure for Tooltip {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, show_tooltip_on_hover.in_set(UpdateSet::SyncLate));
+        app.add_systems(Update, show_tooltip_on_hover.in_set(UpdateSet::RecordInput));
     }
 }
 
+// TODO: Set text in an early system, then set position in a late system.
+//       That way the tooltip can use its own calculated size to support centering.
 fn show_tooltip_on_hover(
     window_root: Res<WindowRoot>,
     window_query: Query<&Window>,
@@ -97,20 +100,25 @@ fn show_tooltip_on_hover(
     mut text_query: Query<&mut Text>,
     interaction_query: Query<(&Interaction, &Tooltip, &GlobalTransform, &Node)>,
 ) {
-    let window = r!(window_query.get(window_root.primary));
     let (mut visibility, mut style) = r!(container_query.get_mut(tooltip_root.container));
     let mut text = r!(text_query.get_mut(tooltip_root.text));
+    let window = r!(window_query.get(window_root.primary));
+    let width = window.width();
+    let height = window.height();
 
     for (interaction, tooltip, gt, node) in &interaction_query {
+        // Skip nodes that are not hovered.
         if matches!(interaction, Interaction::None) {
             *visibility = Visibility::Hidden;
             continue;
         }
 
-        let rect = node.logical_rect(gt);
+        // Set the tooltip text and make it visible.
+        *visibility = Visibility::Inherited;
+        text.sections[0].value.clone_from(&tooltip.text);
 
-        let width = window.width();
-        let height = window.height();
+        // Get the left, right, top, bottom of the target node.
+        let rect = node.logical_rect(gt);
         let (left, right, top, bottom) = (
             rect.min.x + tooltip.offset.x,
             rect.max.x + tooltip.offset.x,
@@ -118,14 +126,15 @@ fn show_tooltip_on_hover(
             rect.max.y + tooltip.offset.y,
         );
 
-        *visibility = Visibility::Inherited;
-        text.sections[0].value.clone_from(&tooltip.text);
+        // Set the left, right, top, bottom of the tooltip node.
         (style.left, style.right, style.top, style.bottom) = match tooltip.side {
             TooltipSide::Left => (Auto, Px(width - left), Auto, Px(height - bottom)),
             TooltipSide::Right => (Px(right), Auto, Auto, Px(height - bottom)),
             TooltipSide::Top => (Px(left), Auto, Auto, Px(height - top)),
             TooltipSide::Bottom => (Px(left), Auto, Px(bottom), Auto),
         };
+
+        // Exit early (because there's only one tooltip).
         return;
     }
 }
