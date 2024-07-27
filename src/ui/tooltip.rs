@@ -91,7 +91,6 @@ impl Configure for Tooltip {
                 update_tooltip_text,
             )
                 .in_set(UpdateSet::SyncLate)
-                .after(detect_tooltip_hover)
                 .run_if(on_event::<TooltipHover>()),
         );
         app.add_systems(
@@ -184,12 +183,11 @@ struct TooltipHover(Option<Entity>);
 impl Configure for TooltipHover {
     fn configure(app: &mut App) {
         app.add_event::<TooltipHover>();
-        app.add_systems(Update, detect_tooltip_hover.in_set(UpdateSet::SyncLate));
+        app.add_systems(Update, detect_tooltip_hover.in_set(UpdateSet::RecordInput));
     }
 }
 
 fn detect_tooltip_hover(
-    entities: &Entities,
     mut events: EventWriter<TooltipHover>,
     tooltip_root: Res<TooltipRoot>,
     tooltip_query: Query<&Selection>,
@@ -206,15 +204,13 @@ fn detect_tooltip_hover(
             continue;
         }
 
-        // Show tooltip.
+        // Hovering something new: Update tooltip.
         if selection.0 != entity {
             events.send(TooltipHover(Some(entity)));
         }
         return;
     }
 
-    // Hide tooltip.
-    if entities.contains(selection.0) {
-        events.send(TooltipHover(None));
-    }
+    // Not hovering anything: Hide tooltip.
+    events.send(TooltipHover(None));
 }
