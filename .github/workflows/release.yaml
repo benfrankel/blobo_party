@@ -156,7 +156,9 @@ jobs:
 
       - name: Add assets to package
         run: |
-          rm -rf '${{ env.ASSETS_DIR }}'/**/*.{aseprite,wav} '${{ env.ASSETS_DIR }}/mockup'
+          find '${{ env.ASSETS_DIR }}' -type f -path '*.aseprite' -exec rm -f {} \;
+          find '${{ env.ASSETS_DIR }}' -type f -path '*.wav' -exec rm -f {} \;
+          rm -rf '${{ env.ASSETS_DIR }}/mockup'
           cp -r '${{ env.ASSETS_DIR }}' '${{ env.OUT_DIR }}' || true # Ignore error if there's nothing to copy
 
       - name: Add web content to package (Web)
