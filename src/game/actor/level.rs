@@ -9,7 +9,7 @@ use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(ConfigHandle<LevelConfig>, Level, IsLevelIndicator)>();
+    app.configure::<(ConfigHandle<LevelConfig>, Level, IsLevelDisplay)>();
 
     app.add_plugins((up::plugin, xp::plugin));
 }
@@ -54,9 +54,9 @@ impl Configure for Level {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct IsLevelIndicator;
+pub struct IsLevelDisplay;
 
-impl Configure for IsLevelIndicator {
+impl Configure for IsLevelDisplay {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.add_systems(Update, update_level_indicator.in_set(UpdateSet::SyncLate));
@@ -64,7 +64,7 @@ impl Configure for IsLevelIndicator {
 }
 
 fn update_level_indicator(
-    mut indicator_query: Query<(&mut Text, &Selection), With<IsLevelIndicator>>,
+    mut indicator_query: Query<(&mut Text, &Selection), With<IsLevelDisplay>>,
     level_query: Query<&Level>,
 ) {
     for (mut text, selection) in &mut indicator_query {
@@ -72,8 +72,6 @@ fn update_level_indicator(
         let level = level.current + level.up;
         let level = level.to_string();
 
-        for section in &mut text.sections {
-            section.value.clone_from(&level);
-        }
+        text.sections[1].value.clone_from(&level);
     }
 }

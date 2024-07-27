@@ -3,7 +3,7 @@ use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 
 use crate::game::actor::level::xp::IsXpBarFill;
-use crate::game::actor::level::IsLevelIndicator;
+use crate::game::actor::level::IsLevelDisplay;
 use crate::game::card::deck::IsDeckDisplay;
 use crate::game::card::CardConfig;
 use crate::screen::playing::PlayingAssets;
@@ -52,30 +52,34 @@ fn upper_hud(player: Entity) -> impl EntityCommand<World> {
                 },
             ))
             .with_children(|children| {
-                children.spawn_with(level_indicator(player));
+                children.spawn_with(level_display(player));
                 children.spawn_with(xp_bar(player));
             });
     }
 }
 
-fn level_indicator(player: Entity) -> impl EntityCommand<World> {
+fn level_display(player: Entity) -> impl EntityCommand<World> {
+    const TEXT_STYLE: TextStyle = TextStyle {
+        font: FONT_HANDLE,
+        font_size: 32.0,
+        color: Color::WHITE,
+    };
+
     move |mut entity: EntityWorldMut| {
         entity.insert((
-            Name::new("LevelIndicator"),
-            TextBundle::from_section(
-                "",
-                TextStyle {
-                    font: FONT_HANDLE,
-                    font_size: 32.0,
-                    ..default()
-                },
-            )
+            Name::new("LevelDisplay"),
+            TextBundle::from_sections([
+                TextSection::new("Level ", TEXT_STYLE),
+                TextSection::new("", TEXT_STYLE),
+                TextSection::new("/10", TEXT_STYLE),
+            ])
+            .with_no_wrap()
             .with_style(Style {
                 margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-4.0), Val::ZERO),
                 ..default()
             }),
-            ThemeColorForText(vec![ThemeColor::Indicator]),
-            IsLevelIndicator,
+            ThemeColorForText(vec![ThemeColor::Indicator; 3]),
+            IsLevelDisplay,
             Selection(player),
         ));
     }
