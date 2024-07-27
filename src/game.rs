@@ -1,10 +1,10 @@
 //! Game mechanics and content
 
 pub mod actor;
+pub mod audio;
 pub mod card;
 pub mod cleanup;
 pub mod combat;
-pub mod audio;
 pub mod spotlight;
 pub mod sprite;
 pub mod wave;
@@ -24,10 +24,10 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_plugins((
         actor::plugin,
+        audio::plugin,
         card::plugin,
         cleanup::plugin,
         combat::plugin,
-        audio::plugin,
         spotlight::plugin,
         sprite::plugin,
         wave::plugin,
