@@ -41,9 +41,10 @@ fn open_level_up_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 }
 
 fn level_up_overlay(mut entity: EntityWorldMut) {
-    entity.add(widget::overlay).insert((
+    entity.add(widget::blocking_overlay).insert((
         Name::new("LevelUpOverlay"),
         ZIndex::Global(1),
+        ThemeColor::Overlay.target::<BackgroundColor>(),
         StateScope::<PlayingMenu>::default(),
     ));
 }
@@ -109,7 +110,7 @@ fn button_container(mut entity: EntityWorldMut) {
 
 fn ready_button(mut entity: EntityWorldMut) {
     entity
-        .add(widget::menu_button("Ready?"))
+        .add(widget::menu_button("Ready?", Vw(9.0)))
         .insert(On::<Pointer<Click>>::run(PlayingMenu::disable));
 }
 

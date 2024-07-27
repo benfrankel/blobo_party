@@ -23,7 +23,7 @@ fn open_pause_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 }
 
 fn pause_overlay(mut entity: EntityWorldMut) {
-    entity.add(widget::overlay).insert((
+    entity.add(widget::blocking_overlay).insert((
         Name::new("PauseOverlay"),
         ZIndex::Global(1),
         ThemeColor::Overlay.target::<BackgroundColor>(),
@@ -36,7 +36,7 @@ fn pause_menu(mut entity: EntityWorldMut) {
         .insert((
             Name::new("PauseMenu"),
             NodeBundle {
-                style: Style::ABS_COLUMN_CENTER,
+                style: Style::ABS_COLUMN_MID,
                 z_index: ZIndex::Global(2),
                 ..default()
             },
@@ -61,7 +61,7 @@ fn header(mut entity: EntityWorldMut) {
             },
         )
         .with_style(Style {
-            margin: UiRect::new(Val::ZERO, Val::ZERO, Vw(3.5), Vw(0.5)),
+            margin: UiRect::top(Vw(4.5)),
             ..default()
         }),
         DynamicFontSize::new(Vw(5.0)).with_step(8.0),
@@ -75,10 +75,9 @@ fn button_container(mut entity: EntityWorldMut) {
             Name::new("ButtonContainer"),
             NodeBundle {
                 style: Style {
-                    width: Percent(100.0),
                     align_items: AlignItems::Center,
                     flex_direction: FlexDirection::Column,
-                    margin: UiRect::vertical(VMin(9.0)),
+                    margin: UiRect::vertical(VMin(7.0)),
                     row_gap: Vw(2.5),
                     ..default()
                 },
@@ -94,13 +93,13 @@ fn button_container(mut entity: EntityWorldMut) {
 
 fn continue_button(mut entity: EntityWorldMut) {
     entity
-        .add(widget::menu_button("Continue"))
+        .add(widget::menu_button("Continue", Vw(9.0)))
         .insert(On::<Pointer<Click>>::run(PlayingMenu::disable));
 }
 
 fn restart_button(mut entity: EntityWorldMut) {
     entity
-        .add(widget::menu_button("Restart"))
+        .add(widget::menu_button("Restart", Vw(9.0)))
         .insert(On::<Pointer<Click>>::run(|mut commands: Commands| {
             commands.spawn_with(fade_out(Screen::Playing));
         }));
@@ -108,6 +107,6 @@ fn restart_button(mut entity: EntityWorldMut) {
 
 fn quit_to_title_button(mut entity: EntityWorldMut) {
     entity
-        .add(widget::menu_button("Quit to title"))
+        .add(widget::menu_button("Quit to title", Vw(9.0)))
         .insert(On::<Pointer<Click>>::run(Screen::Title.enter()));
 }

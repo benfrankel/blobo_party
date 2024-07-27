@@ -166,6 +166,7 @@ fn lower_hud(player: Entity) -> impl EntityCommand<World> {
                         justify_content: JustifyContent::Center,
                         ..default()
                     },
+                    z_index: ZIndex::Global(2),
                     ..default()
                 },
             ))
