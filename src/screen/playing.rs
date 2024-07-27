@@ -83,6 +83,10 @@ pub struct PlayingAssets {
     pub sfx_level_up: Handle<AudioSource>,
     #[asset(path = "audio/sfx/Projectile Hits Player-02.ogg")]
     pub sfx_hurt: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/UI Hover.ogg")]
+    pub sfx_ui_click: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/UI Click.ogg")]
+    pub sfx_ui_hover: Handle<AudioSource>,
 }
 
 impl Configure for PlayingAssets {

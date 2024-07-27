@@ -1,6 +1,7 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use bevy_mod_picking::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
@@ -15,6 +16,7 @@ use crate::game::card::card;
 use crate::game::card::deck::Deck;
 use crate::game::card::deck::IsDeckDisplay;
 use crate::game::card::CardConfig;
+use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -383,9 +385,12 @@ fn card_select_right(
 }
 
 fn card_swap_left(
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
+    audio.play(assets.sfx_ui_hover.clone());
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.swap(-1);
@@ -393,9 +398,12 @@ fn card_swap_left(
 }
 
 fn card_swap_right(
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
+    audio.play(assets.sfx_ui_hover.clone());
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.swap(1);
@@ -403,9 +411,12 @@ fn card_swap_right(
 }
 
 fn card_discard(
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
+    audio.play(assets.sfx_ui_click.clone());
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.discard();

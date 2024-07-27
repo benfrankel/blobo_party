@@ -126,6 +126,7 @@ impl EntityCommand for CardBackground {
                     pressed: atlas_on,
                     disabled: atlas_off,
                 },
+                InteractionSfx,
             ));
         }
     }

@@ -54,6 +54,7 @@ pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
                     pressed: Offset(Vec2::new(0.0, 2.0)),
                     ..default()
                 },
+                InteractionSfx,
             ))
             .with_children(|parent| {
                 parent.spawn((

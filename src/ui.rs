@@ -18,6 +18,7 @@ pub mod prelude {
     pub use super::font::BOLD_FONT_HANDLE;
     pub use super::font::FONT_HANDLE;
     pub use super::font::THICK_FONT_HANDLE;
+    pub use super::interaction::InteractionSfx;
     pub use super::interaction::InteractionTable;
     pub use super::interaction::IsDisabled;
     pub use super::tooltip::Tooltip;

@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use bevy::reflect::GetTypeRegistration;
+use bevy_kira_audio::prelude::*;
 use bevy_mod_picking::prelude::*;
 
 use crate::animation::offset::Offset;
 use crate::core::UpdateSet;
+use crate::screen::playing::PlayingAssets;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
@@ -15,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         InteractionTable<ThemeColorFor<BackgroundColor>>,
         InteractionTable<TextureAtlas>,
         InteractionTable<Offset>,
+        InteractionSfx,
     )>();
 }
 
@@ -74,5 +77,44 @@ fn apply_interaction_table<C: Component + Clone>(
             }
         }
         .clone();
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct InteractionSfx;
+
+impl Configure for InteractionSfx {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(Update, play_interaction_sfx.in_set(UpdateSet::RecordInput));
+    }
+}
+
+fn play_interaction_sfx(
+    assets: Res<PlayingAssets>,
+    audio: Res<Audio>,
+    interaction_query: Query<
+        (Option<&IsDisabled>, &Interaction),
+        (
+            With<InteractionSfx>,
+            Or<(Changed<Interaction>, Changed<IsDisabled>)>,
+        ),
+    >,
+) {
+    for (is_disabled, interaction) in &interaction_query {
+        if matches!(is_disabled, Some(IsDisabled(true))) {
+            continue;
+        }
+
+        match interaction {
+            Interaction::Hovered => {
+                audio.play(assets.sfx_ui_hover.clone()).with_volume(0.6);
+            },
+            Interaction::Pressed => {
+                audio.play(assets.sfx_ui_click.clone()).with_volume(0.6);
+            },
+            _ => (),
+        }
     }
 }
