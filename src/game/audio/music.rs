@@ -95,7 +95,7 @@ fn update_beat(
     let music = r!(audio_instances.get(&music_handle.0));
 
     let position = music.state().position().unwrap_or(0.0);
-    let real_beats = ((position - config.first_beat) * config.bpm * 8.0 / 60.0) as usize;
+    let real_beats = ((position - config.zeroth_beat) * config.bpm * 8.0 / 60.0) as usize;
 
     beat.this_tick = real_beats.saturating_sub(beat.total);
     beat.total = real_beats;

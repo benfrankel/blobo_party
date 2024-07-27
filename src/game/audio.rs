@@ -16,8 +16,8 @@ pub(super) fn plugin(app: &mut App) {
 pub struct AudioConfig {
     /// The precise beats-per-minute of the music.
     pub bpm: f64,
-    /// The position (in seconds) of the first beat.
-    pub first_beat: f64,
+    /// The position (in seconds) of the zeroth beat.
+    pub zeroth_beat: f64,
 }
 
 impl Config for AudioConfig {

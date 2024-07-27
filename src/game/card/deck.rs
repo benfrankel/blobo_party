@@ -12,13 +12,14 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(Deck, IsDeckDisplay)>();
 }
 
-#[derive(Component, Reflect, Serialize, Deserialize, Default, Clone)]
+#[derive(Component, Reflect, Serialize, Deserialize, Clone)]
 #[reflect(Component)]
+#[serde(default)]
 pub struct Deck {
     #[serde(rename = "cards")]
     pub card_keys: Vec<String>,
-    #[serde(default)]
-    pub active: usize,
+    #[serde(skip)]
+    pub active: isize,
 }
 
 impl Configure for Deck {
@@ -33,11 +34,20 @@ impl Configure for Deck {
     }
 }
 
-impl Deck {
-    pub fn new(cards: impl Into<Vec<String>>) -> Self {
+impl Default for Deck {
+    fn default() -> Self {
         Self {
-            card_keys: cards.into(),
-            active: 0,
+            card_keys: Vec::new(),
+            active: -1,
+        }
+    }
+}
+
+impl Deck {
+    pub fn new(card_keys: impl Into<Vec<String>>) -> Self {
+        Self {
+            card_keys: card_keys.into(),
+            active: -1,
         }
     }
 
@@ -46,10 +56,9 @@ impl Deck {
             return None;
         }
 
-        self.active =
-            (self.active as isize + step).rem_euclid(self.card_keys.len() as isize) as usize;
+        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
 
-        Some(&self.card_keys[self.active])
+        Some(&self.card_keys[self.active as usize])
     }
 
     pub fn swap(&mut self, step: isize) {
@@ -57,10 +66,12 @@ impl Deck {
             return;
         }
 
-        let old = self.active;
-        self.active =
-            (self.active as isize + step).rem_euclid(self.card_keys.len() as isize) as usize;
-        self.card_keys.swap(old, self.active);
+        let old = self.active as usize;
+        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
+
+        if old < self.card_keys.len() {
+            self.card_keys.swap(old, self.active as usize);
+        }
     }
 
     pub fn discard(&mut self) {
@@ -68,14 +79,14 @@ impl Deck {
             return;
         }
 
-        self.card_keys.remove(self.active);
-        if self.active >= self.card_keys.len() {
+        self.card_keys.remove(self.active as usize);
+        if self.active as usize >= self.card_keys.len() {
             self.active = 0;
         }
     }
 
     pub fn add(&mut self, card_key: impl Into<String>) {
-        self.card_keys.insert(self.active, card_key.into());
+        self.card_keys.insert(self.active as usize, card_key.into());
     }
 }
 
@@ -144,7 +155,7 @@ fn populate_deck_display(
 
         commands.entity(entity).with_children(|children| {
             for (i, card_key) in deck.card_keys.iter().enumerate() {
-                children.spawn_with(card(card_key, Some(i == deck.active)));
+                children.spawn_with(card(card_key, Some(i as isize == deck.active)));
             }
         });
     }
