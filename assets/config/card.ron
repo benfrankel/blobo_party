@@ -1,7 +1,7 @@
 
 (
     // Deck:
-    deck_cap: 8,
+    deck_cap: 10,
 
     // Cards:
     card_height: Vw(9.0),

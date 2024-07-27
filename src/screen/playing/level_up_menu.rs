@@ -62,8 +62,8 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                     Name::new("LevelUpMenu"),
                     NodeBundle {
                         style: Style {
-                            height: VMin(60.0),
-                            top: Vw(-2.5),
+                            height: VMin(65.0),
+                            top: Vw(-1.7),
                             align_items: AlignItems::Center,
                             justify_content: JustifyContent::SpaceBetween,
                             flex_direction: FlexDirection::Column,
@@ -120,7 +120,7 @@ fn instructions_container(mut entity: EntityWorldMut) {
                 "You can sort your cards during a level up:",
                 "",
                 "- [b]Select: [r] A/D or Arrow Keys",
-                "- [b]Move:   [r] Shift + A/D",
+                "- [b]Move:   [r] Shift + A/D or Arrow Keys",
                 "- [b]Discard:[r] Delete",
             ]
             .into_iter()
@@ -155,7 +155,7 @@ fn card_options_container(entity: Entity, world: &mut World) {
             NodeBundle {
                 style: Style {
                     width: Vw(55.0),
-                    top: Vw(-1.8),
+                    top: Vw(-1.5),
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::SpaceBetween,
                     ..default()
@@ -206,6 +206,7 @@ fn card_button(key: impl Into<String>) -> impl EntityCommand<World> {
                       mut toggle_query: Query<&mut Style, With<ToggleDisplay>>| {
                     for selection in &deck_display_query {
                         let mut deck = c!(deck_query.get_mut(selection.0));
+                        // TODO: What if deck is at capacity?
                         deck.add(key.clone());
                     }
                     for mut style in &mut toggle_query {
@@ -277,8 +278,8 @@ fn skip_button(mut entity: EntityWorldMut) {
             },
         ),
         Style {
-            height: Vw(8.0),
-            width: Vw(28.0),
+            height: Vw(8.5),
+            width: Vw(25.0),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             ..default()
@@ -292,8 +293,8 @@ fn dance_button(mut entity: EntityWorldMut) {
         On::<Pointer<Click>>::run(PlayingMenu::disable),
         Style {
             display: Display::None,
-            height: Vw(8.0),
-            width: Vw(28.0),
+            height: Vw(8.5),
+            width: Vw(25.0),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             ..default()
