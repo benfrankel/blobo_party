@@ -48,7 +48,8 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
             (actor, game_root.players, camera_root.primary)
         };
 
-        world.entity_mut(entity)
+        world
+            .entity_mut(entity)
             .add(actor)
             .insert((
                 IsPlayer,
@@ -60,10 +61,6 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 HitboxDamage(15.0),
                 HitboxKnockback(5.0),
             ))
-            // TODO: This is for testing movement until it's card-controlled.
-            .add(movement_action)
-            // TODO: This is for testing attack until it's card-controlled.
-            .add(attack_action)
             .set_parent(parent)
             .with_children(|children| {
                 children
@@ -72,6 +69,13 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                     })
                     .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
             });
+
+        // Allow manual movement / attack input in dev builds.
+        #[cfg(feature = "dev")]
+        world
+            .entity_mut(entity)
+            .add(movement_action)
+            .add(attack_action);
 
         r!(world.entity_mut(camera).get_mut::<SmoothFollow>()).target = entity;
     }
