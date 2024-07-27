@@ -13,6 +13,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(
         IsDisabled,
         InteractionTable<ThemeColorFor<BackgroundColor>>,
+        InteractionTable<TextureAtlas>,
         InteractionTable<Offset>,
     )>();
 }

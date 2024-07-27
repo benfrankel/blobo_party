@@ -112,7 +112,7 @@ fn button_container(mut entity: EntityWorldMut) {
 
 fn play_button(mut entity: EntityWorldMut) {
     entity
-        .add(widget::menu_button("Play", Vw(11.0)))
+        .add(widget::menu_button("Play"))
         .insert(On::<Pointer<Click>>::run(
             |mut commands: Commands, progress: Res<ProgressCounter>| {
                 let Progress { done, total } = progress.progress_complete();
@@ -126,7 +126,7 @@ fn play_button(mut entity: EntityWorldMut) {
 }
 
 fn quit_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Quit", Vw(11.0))).insert((
+    entity.add(widget::menu_button("Quit")).insert((
         #[cfg(feature = "web")]
         IsDisabled(true),
         #[cfg(not(feature = "web"))]

@@ -144,7 +144,7 @@ fn populate_deck_display(
 
         commands.entity(entity).with_children(|children| {
             for (i, card_key) in deck.card_keys.iter().enumerate() {
-                children.spawn_with(card(card_key, i == deck.active));
+                children.spawn_with(card(card_key, Some(i == deck.active)));
             }
         });
     }

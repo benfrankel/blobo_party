@@ -23,7 +23,7 @@ pub fn blocking_overlay(mut entity: EntityWorldMut) {
     });
 }
 
-pub fn menu_button(text: impl Into<String>, height: Val) -> impl EntityCommand<World> {
+pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
     let text = text.into();
     move |mut entity: EntityWorldMut| {
         entity
@@ -31,7 +31,7 @@ pub fn menu_button(text: impl Into<String>, height: Val) -> impl EntityCommand<W
                 Name::new(format!("Button(\"{}\")", text)),
                 ButtonBundle {
                     style: Style {
-                        height,
+                        height: Vw(11.0),
                         width: Vw(38.0),
                         align_items: AlignItems::Center,
                         justify_content: JustifyContent::Center,

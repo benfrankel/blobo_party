@@ -88,22 +88,46 @@ pub struct CardBackground {
     #[serde(skip)]
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     #[serde(skip)]
-    active: bool,
+    active: Option<bool>,
 }
 
 impl EntityCommand for CardBackground {
     fn apply(self, id: Entity, world: &mut World) {
+        let atlas_off = TextureAtlas {
+            layout: self.texture_atlas_layout.clone(),
+            index: 0,
+        };
+        let atlas_on = TextureAtlas {
+            layout: self.texture_atlas_layout,
+            index: 1,
+        };
+        let atlas = if matches!(self.active, Some(true)) {
+            &atlas_on
+        } else {
+            &atlas_off
+        }
+        .clone();
+
         world.entity_mut(id).insert((
             Name::new("CardBackground"),
             ImageBundle {
                 image: UiImage::new(self.texture),
                 ..default()
             },
-            TextureAtlas {
-                layout: self.texture_atlas_layout,
-                index: if self.active { 1 } else { 0 },
-            },
+            atlas,
         ));
+
+        if self.active.is_none() {
+            world.entity_mut(id).insert((
+                Interaction::default(),
+                InteractionTable {
+                    normal: atlas_off.clone(),
+                    hovered: atlas_on.clone(),
+                    pressed: atlas_on,
+                    disabled: atlas_off,
+                },
+            ));
+        }
     }
 }
 
@@ -143,7 +167,7 @@ pub struct Card {
     pub action_config: CardActionConfig, // TODO: Naming
 }
 
-fn card(key: impl Into<String>, active: bool) -> impl EntityCommand {
+pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand {
     let key = key.into();
 
     move |entity: Entity, world: &mut World| {
