@@ -1,10 +1,10 @@
 
 (
     // Deck:
-    deck_cap: 18,
+    deck_cap: 8,
 
     // Cards:
-    card_height: Px(96.0),
+    card_height: Vw(9.0),
     card_background_map: {
         "yellow": CardBackground (
             texture: "image/card/yellow_card.png",

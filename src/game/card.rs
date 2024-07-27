@@ -179,6 +179,7 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
         let icon = r!(config.card_icon_map.get(&card.icon_key)).clone();
         let name = format!("Card(\"{}\")", card.name);
         let height = config.card_height;
+        let border_width = height / 18.0;
         let tooltip_text = format!("{}\n\n{}", card.name, card.description);
 
         world
@@ -188,7 +189,7 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
                 NodeBundle {
                     style: Style {
                         height,
-                        border: UiRect::all(Px(4.0)),
+                        border: UiRect::all(border_width),
                         ..default()
                     },
                     ..default()

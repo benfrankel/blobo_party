@@ -1,9 +1,11 @@
 use bevy::ecs::system::EntityCommand;
+use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 
 use crate::game::actor::level::xp::IsXpBarFill;
 use crate::game::actor::level::IsLevelIndicator;
 use crate::game::card::deck::IsDeckDisplay;
+use crate::game::card::CardConfig;
 use crate::screen::playing::PlayingAssets;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -180,11 +182,15 @@ fn lower_hud(player: Entity) -> impl EntityCommand<World> {
 
 fn deck_display(player: Entity) -> impl EntityCommand {
     move |entity: Entity, world: &mut World| {
+        let config = SystemState::<ConfigRef<CardConfig>>::new(world).get(world);
+        let config = r!(config.get());
+        let column_gap = config.card_height / 18.0 * -1.0;
+
         world.entity_mut(entity).insert((
             Name::new("DeckDisplay"),
             NodeBundle {
                 style: Style {
-                    column_gap: Px(-4.0),
+                    column_gap,
                     ..default()
                 },
                 ..default()
@@ -195,15 +201,19 @@ fn deck_display(player: Entity) -> impl EntityCommand {
     }
 }
 
-fn arrow(mut entity: EntityWorldMut) {
-    let texture = entity.world().resource::<PlayingAssets>().arrow.clone();
+fn arrow(entity: Entity, world: &mut World) {
+    let config = SystemState::<ConfigRef<CardConfig>>::new(world).get(world);
+    let config = r!(config.get());
+    let height = config.card_height / 18.0 * 5.0;
+    let margin = config.card_height / 18.0 * 2.0;
+    let texture = world.resource::<PlayingAssets>().arrow.clone();
 
-    entity.insert((
+    world.entity_mut(entity).insert((
         Name::new("Arrow"),
         ImageBundle {
             style: Style {
-                height: Px(20.0),
-                margin: UiRect::horizontal(Px(8.0)),
+                height,
+                margin: UiRect::horizontal(margin),
                 ..default()
             },
             image: UiImage::new(texture),
