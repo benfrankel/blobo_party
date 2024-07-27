@@ -12,7 +12,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(Deck, IsDeckDisplay)>();
 }
 
-#[derive(Component, Reflect, Serialize, Deserialize, Clone)]
+#[derive(Component, Reflect, Serialize, Deserialize, Clone, Default)]
 #[reflect(Component)]
 #[serde(default)]
 pub struct Deck {
@@ -31,15 +31,6 @@ impl Configure for Deck {
                 .in_set(UpdateSet::PlayCards)
                 .run_if(on_full_beat(2)),
         );
-    }
-}
-
-impl Default for Deck {
-    fn default() -> Self {
-        Self {
-            card_keys: Vec::new(),
-            active: -1,
-        }
     }
 }
 

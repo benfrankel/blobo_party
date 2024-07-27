@@ -28,6 +28,7 @@ use crate::game::actor::level::Level;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::OldMovementController;
+use crate::game::audio::music::Beat;
 use crate::game::card::deck::Deck;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
@@ -106,7 +107,9 @@ pub struct Actor {
 }
 
 impl EntityCommand for Actor {
-    fn apply(self, id: Entity, world: &mut World) {
+    fn apply(mut self, id: Entity, world: &mut World) {
+        self.deck.active += world.resource::<Beat>().total as isize - 1;
+
         world
             .entity_mut(id)
             .insert((
