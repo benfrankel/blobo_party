@@ -4,7 +4,7 @@ pub mod actor;
 pub mod card;
 pub mod cleanup;
 pub mod combat;
-pub mod music;
+pub mod audio;
 pub mod spotlight;
 pub mod sprite;
 pub mod wave;
@@ -27,7 +27,7 @@ pub(super) fn plugin(app: &mut App) {
         card::plugin,
         cleanup::plugin,
         combat::plugin,
-        music::plugin,
+        audio::plugin,
         spotlight::plugin,
         sprite::plugin,
         wave::plugin,

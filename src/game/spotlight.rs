@@ -9,13 +9,13 @@ use rand::Rng as _;
 use serde::Deserialize;
 use serde::Serialize;
 
-use super::cleanup::DespawnRadiusSq;
 use crate::core::camera::CameraRoot;
 use crate::core::pause::Pause;
 use crate::core::PostColorSet;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
-use crate::game::music::beat::on_beat;
+use crate::game::audio::music::on_beat;
+use crate::game::cleanup::DespawnRadiusSq;
 use crate::game::GameRoot;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;

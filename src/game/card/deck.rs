@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
-use super::CardConfig;
 use crate::core::UpdateSet;
+use crate::game::audio::music::on_full_beat;
 use crate::game::card::card;
-use crate::game::music::beat::on_full_beat;
+use crate::game::card::CardConfig;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

@@ -7,9 +7,9 @@ use pyri_state::prelude::*;
 use crate::game::actor::health::HealthConfig;
 use crate::game::actor::level::LevelConfig;
 use crate::game::actor::ActorConfig;
+use crate::game::audio::AudioConfig;
 use crate::game::card::CardConfig;
 use crate::game::combat::projectile::ProjectileConfig;
-use crate::game::music::MusicConfig;
 use crate::game::wave::WaveConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
@@ -32,7 +32,7 @@ pub(super) fn plugin(app: &mut App) {
             CardConfig::progress.track_progress(),
             HealthConfig::progress.track_progress(),
             LevelConfig::progress.track_progress(),
-            MusicConfig::progress.track_progress(),
+            AudioConfig::progress.track_progress(),
             ProjectileConfig::progress.track_progress(),
             WaveConfig::progress.track_progress(),
         )),

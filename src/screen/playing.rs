@@ -4,6 +4,7 @@ pub mod pause_menu;
 
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+use bevy_kira_audio::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
 use pyri_state::prelude::*;
@@ -11,6 +12,8 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::pause::Pause;
 use crate::game::actor::player::player;
+use crate::game::audio::music::pause_music;
+use crate::game::audio::music::start_music;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::wave::wave;
 use crate::game::GameRoot;
@@ -21,7 +24,10 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(StateFlush, Screen::Playing.on_enter(enter_playing));
+    app.add_systems(
+        StateFlush,
+        Screen::Playing.on_edge(pause_music, (enter_playing, start_music)),
+    );
 
     app.configure::<(PlayingAssets, PlayingAction, PlayingMenu)>();
 
@@ -68,6 +74,9 @@ pub struct PlayingAssets {
     pub spotlight: Handle<Image>,
     #[asset(path = "image/vfx/spotlight_lamp.png")]
     pub spotlight_lamp: Handle<Image>,
+
+    #[asset(path = "audio/music/Menu Theme.ogg")]
+    pub music: Handle<AudioSource>,
 }
 
 impl Configure for PlayingAssets {

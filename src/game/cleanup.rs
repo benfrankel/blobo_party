@@ -7,8 +7,8 @@ use crate::core::camera::CameraRoot;
 use crate::core::pause::Pause;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
+use crate::game::audio::music::on_beat;
 use crate::game::combat::hit::OnHit;
-use crate::game::music::beat::on_beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

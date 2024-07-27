@@ -3,8 +3,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
-use crate::game::music::beat::on_beat;
-use crate::game::music::beat::Beat;
+use crate::game::audio::music::on_beat;
+use crate::game::audio::music::Beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
