@@ -56,7 +56,7 @@ fn double_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &Dou
     for (mut attack, mut controller, double_beat) in &mut attack_query {
         attack.power = double_beat.0.power;
         attack.force = double_beat.0.force;
-        attack.projectile = double_beat.0.projectile.clone();
+        attack.projectile_key = double_beat.0.projectile_key.clone();
 
         controller.fire = true;
     }

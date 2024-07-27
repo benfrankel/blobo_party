@@ -3,7 +3,9 @@
         "quarter_note": Projectile(
             name: "Quarter Note",
 
-            texture_path: "image/projectile/quarter_note.png",
+            texture: "image/projectile/quarter_note.png",
+            spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            spawn_sfx_volume: 0.5,
 
             lifetime: 1,
             radius: 3.0,
@@ -14,7 +16,9 @@
         "double_beat": Projectile(
             name: "Double Beat",
 
-            texture_path: "image/projectile/quarter_note.png",
+            texture: "image/projectile/quarter_note.png",
+            spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            spawn_sfx_volume: 0.5,
 
             lifetime: 2,
             radius: 3.0,

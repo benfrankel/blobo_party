@@ -77,6 +77,12 @@ pub struct PlayingAssets {
 
     #[asset(path = "audio/music/Menu Theme.ogg")]
     pub music: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/Restart_1.ogg")]
+    pub sfx_restart: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/Level Up_1.ogg")]
+    pub sfx_level_up: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/Projectile Hits Player-02.ogg")]
+    pub sfx_hurt: Handle<AudioSource>,
 }
 
 impl Configure for PlayingAssets {

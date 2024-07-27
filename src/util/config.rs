@@ -79,12 +79,12 @@ fn apply_config<C: Config>(world: &mut World, mut reader: Local<ManualEventReade
 
 #[derive(SystemParam)]
 pub struct ConfigRef<'w, C: Config> {
-    handle: Res<'w, ConfigHandle<C>>,
+    handle: Option<Res<'w, ConfigHandle<C>>>,
     assets: Res<'w, Assets<C>>,
 }
 
 impl<C: Config> ConfigRef<'_, C> {
     pub fn get(&self) -> Option<&C> {
-        self.assets.get(&self.handle.0)
+        self.handle.as_ref().and_then(|x| self.assets.get(&x.0))
     }
 }

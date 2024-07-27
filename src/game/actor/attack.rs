@@ -8,7 +8,6 @@ use serde::Serialize;
 use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
 use crate::game::combat::projectile::projectile;
-use crate::game::GameLayer;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -31,7 +30,8 @@ pub struct Attack {
     /// The relative distance to spawn projectiles from.
     pub offset: f32,
     /// The key of the projectile to attack with.
-    pub projectile: Option<String>,
+    #[serde(rename = "projectile")]
+    pub projectile_key: Option<String>,
 }
 
 impl Configure for Attack {
@@ -48,7 +48,7 @@ impl Default for Attack {
             force: 1.0,
             color: Color::WHITE,
             offset: 5.0,
-            projectile: None,
+            projectile_key: None,
         }
     }
 }
@@ -63,23 +63,17 @@ fn apply_attack(
         &Faction,
     )>,
 ) {
-    for (attack, controller, gt, velocity, faction) in &attack_query {
+    for (attack, controller, gt, velocity, &faction) in &attack_query {
         if !controller.fire || controller.aim == Vec2::ZERO {
             continue;
         }
-        let projectile_key = c!(attack.projectile.as_ref());
+        let projectile_key = c!(attack.projectile_key.as_ref());
 
         let translation = gt.translation();
         // Spawn projectile at an initial distance away from attacker.
         let pos = translation.xy() + attack.offset * controller.aim;
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
-
-        let mut target_layers = LayerMask::ALL;
-        // Projectiles cannot collide with each other.
-        target_layers.remove(GameLayer::Projectile);
-        // Projectiles cannot collide with their owner's layer.
-        target_layers.remove(faction.layer());
 
         // Projectiles get a boost if the actor is moving in the same direction.
         let aligned_speed = velocity
@@ -93,14 +87,12 @@ fn apply_attack(
         commands
             .spawn_with(projectile(
                 projectile_key,
+                faction,
                 attack.power,
                 attack.force * controller.aim * speed_force,
                 attack.color,
             ))
-            .insert((
-                Transform::from_translation(translation),
-                CollisionLayers::new(GameLayer::Projectile, target_layers),
-            ));
+            .insert(Transform::from_translation(translation));
     }
 }
 

@@ -5,7 +5,6 @@ use pyri_state::prelude::*;
 use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::audio::AudioConfig;
-use crate::screen::playing::PlayingAssets;
 use crate::screen::Screen;
 use crate::util::prelude::*;
 
@@ -21,7 +20,6 @@ impl Configure for MusicHandle {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.init_resource::<Self>();
-        app.add_systems(Startup, spawn_music);
         app.add_systems(
             StateFlush,
             Pause.on_edge(
@@ -31,16 +29,6 @@ impl Configure for MusicHandle {
             ),
         );
     }
-}
-
-fn spawn_music(mut commands: Commands, audio: Res<Audio>, assets: Res<PlayingAssets>) {
-    let handle = audio
-        .play(assets.music.clone())
-        .with_volume(0.9)
-        .loop_until(126.1)
-        .paused()
-        .handle();
-    commands.insert_resource(MusicHandle(handle));
 }
 
 pub fn start_music(
@@ -95,7 +83,8 @@ fn update_beat(
     let music = r!(audio_instances.get(&music_handle.0));
 
     let position = music.state().position().unwrap_or(0.0);
-    let real_beats = ((position - config.zeroth_beat) * config.bpm * 8.0 / 60.0) as usize;
+    let real_beats =
+        ((position - config.music_zeroth_beat) * config.music_bpm * 8.0 / 60.0) as usize;
 
     beat.this_tick = real_beats.saturating_sub(beat.total);
     beat.total = real_beats;

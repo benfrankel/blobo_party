@@ -1,9 +1,11 @@
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 // TODO: System that enters level up menu on LevelUp event.
@@ -21,6 +23,9 @@ impl Configure for LevelUp {
         app.add_systems(
             Update,
             (
+                play_level_up_sfx
+                    .in_set(UpdateSet::Update)
+                    .run_if(on_event::<Self>()),
                 update_level_up_from_xp.in_set(UpdateSet::TriggerLevelUp),
                 // TODO: Only run if not in level up menu.
                 trigger_level_up.in_set(UpdateSet::TriggerLevelUp),
@@ -65,4 +70,8 @@ fn trigger_level_up(
         level.current += 1;
         level_up_events.send(LevelUp(entity));
     }
+}
+
+fn play_level_up_sfx(audio: Res<Audio>, assets: Res<PlayingAssets>) {
+    audio.play(assets.sfx_level_up.clone()).with_volume(0.8);
 }

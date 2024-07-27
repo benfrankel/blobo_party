@@ -1,10 +1,12 @@
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use bevy_mod_picking::prelude::*;
 use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
 use crate::screen::fade_out;
+use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
@@ -106,9 +108,12 @@ fn continue_button(mut entity: EntityWorldMut) {
 
 fn restart_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Restart")).insert((
-        On::<Pointer<Click>>::run(|mut commands: Commands| {
-            commands.spawn_with(fade_out(Screen::Playing));
-        }),
+        On::<Pointer<Click>>::run(
+            |mut commands: Commands, audio: Res<Audio>, assets: Res<PlayingAssets>| {
+                audio.play(assets.sfx_restart.clone()).with_volume(0.7);
+                commands.spawn_with(fade_out(Screen::Playing));
+            },
+        ),
         Style {
             height: Vw(9.0),
             width: Vw(38.0),
