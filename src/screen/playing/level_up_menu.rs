@@ -62,7 +62,7 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                     Name::new("LevelUpMenu"),
                     NodeBundle {
                         style: Style {
-                            height: VMin(65.0),
+                            height: VMin(63.0),
                             top: Vw(-1.7),
                             align_items: AlignItems::Center,
                             justify_content: JustifyContent::SpaceBetween,

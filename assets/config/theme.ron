@@ -28,6 +28,6 @@
         // CardBorder
         Srgba(Srgba(red: 0.071, green: 0.082, blue: 0.133, alpha: 1.000)),
         // Overlay
-        Srgba(Srgba(red: 0.161, green: 0.157, blue: 0.231, alpha: 0.970)),
+        Srgba(Srgba(red: 0.061, green: 0.057, blue: 0.231, alpha: 0.600)),
     )),
 )
