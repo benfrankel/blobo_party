@@ -205,7 +205,7 @@ fn arrow(entity: Entity, world: &mut World) {
     let config = SystemState::<ConfigRef<CardConfig>>::new(world).get(world);
     let config = r!(config.get());
     let height = config.card_height / 18.0 * 5.0;
-    let margin = config.card_height / 18.0 * 2.0;
+    let margin = config.card_height / 18.0;
     let texture = world.resource::<PlayingAssets>().arrow.clone();
 
     world.entity_mut(entity).insert((

@@ -19,8 +19,7 @@ use crate::screen::playing::PlayingMenu;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
-// TODO: Random card selection to add to deck.
-// TODO: Helpful message if the player is at deck capacity.
+// TODO: Helpful message if the player is at deck capacity?
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,
@@ -34,7 +33,7 @@ pub(super) fn plugin(app: &mut App) {
             .run_if(on_event::<LevelUp>()),
     );
 
-    app.configure::<LevelUpMenuAction>();
+    app.configure::<(LevelUpMenuAction, ToggleDisplay)>();
 }
 
 fn open_level_up_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
@@ -64,7 +63,7 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                     NodeBundle {
                         style: Style {
                             height: VMin(60.0),
-                            top: Vw(-1.5),
+                            top: Vw(-2.5),
                             align_items: AlignItems::Center,
                             justify_content: JustifyContent::SpaceBetween,
                             flex_direction: FlexDirection::Column,
@@ -77,6 +76,7 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                 ))
                 .with_children(|children| {
                     children.spawn_with(header);
+                    children.spawn_with(instructions_container);
                     children.spawn_with(card_options_container);
                     children.spawn_with(button_container);
                 });
@@ -98,6 +98,42 @@ fn header(mut entity: EntityWorldMut) {
         DynamicFontSize::new(Vw(4.0)).with_step(8.0),
         ThemeColorForText(vec![ThemeColor::BodyText]),
     ));
+}
+
+fn instructions_container(mut entity: EntityWorldMut) {
+    entity
+        .insert((
+            Name::new("InstructionsContainer"),
+            NodeBundle {
+                style: Style {
+                    display: Display::None,
+                    flex_direction: FlexDirection::Column,
+                    row_gap: Vh(2.3),
+                    ..default()
+                },
+                ..default()
+            },
+            ToggleDisplay,
+        ))
+        .with_children(|children| {
+            for (i, text) in [
+                "You can sort your cards during a level up:",
+                "",
+                "- [b]Select: [r] A/D or Arrow Keys",
+                "- [b]Move:   [r] Shift + A/D",
+                "- [b]Discard:[r] Delete",
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                children.spawn((
+                    Name::new(format!("InstructionsParagraph{}", i)),
+                    TextBundle::from_sections(parse_rich(text)),
+                    DynamicFontSize::new(Vw(3.0)).with_step(8.0),
+                    ThemeColorForText(vec![ThemeColor::BodyText]),
+                ));
+            }
+        });
 }
 
 fn card_options_container(entity: Entity, world: &mut World) {
@@ -126,6 +162,7 @@ fn card_options_container(entity: Entity, world: &mut World) {
                 },
                 ..default()
             },
+            ToggleDisplay,
         ))
         .with_children(|children| {
             for key in card_keys {
@@ -161,12 +198,24 @@ fn card_button(key: impl Into<String>) -> impl EntityCommand<World> {
     let key = key.into();
 
     move |mut entity: EntityWorldMut| {
-        entity.add(card(key, None)).insert((
+        entity.add(card(key.clone(), None)).insert((
             Interaction::default(),
-            On::<Pointer<Click>>::run(|| {
-                // TODO: Add card to deck, then run the same logic as the skip button.
-                println!("Click!");
-            }),
+            On::<Pointer<Click>>::run(
+                move |deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
+                      mut deck_query: Query<&mut Deck>,
+                      mut toggle_query: Query<&mut Style, With<ToggleDisplay>>| {
+                    for selection in &deck_display_query {
+                        let mut deck = c!(deck_query.get_mut(selection.0));
+                        deck.add(key.clone());
+                    }
+                    for mut style in &mut toggle_query {
+                        style.display = match style.display {
+                            Display::None => Display::Flex,
+                            _ => Display::None,
+                        };
+                    }
+                },
+            ),
         ));
     }
 }
@@ -211,15 +260,22 @@ fn button_container(mut entity: EntityWorldMut) {
         .insert((Name::new("ButtonContainer"), NodeBundle::default()))
         .with_children(|children| {
             children.spawn_with(skip_button);
-            children.spawn_with(ready_button);
+            children.spawn_with(dance_button);
         });
 }
 
 fn skip_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Skip")).insert((
-        // TODO: Hide this button + the card options container,
-        //       and show the ready button + the instructions container.
-        On::<Pointer<Click>>::run(PlayingMenu::disable),
+        On::<Pointer<Click>>::run(
+            move |mut toggle_query: Query<&mut Style, With<ToggleDisplay>>| {
+                for mut style in &mut toggle_query {
+                    style.display = match style.display {
+                        Display::None => Display::Flex,
+                        _ => Display::None,
+                    };
+                }
+            },
+        ),
         Style {
             height: Vw(8.0),
             width: Vw(28.0),
@@ -227,11 +283,12 @@ fn skip_button(mut entity: EntityWorldMut) {
             justify_content: JustifyContent::Center,
             ..default()
         },
+        ToggleDisplay,
     ));
 }
 
-fn ready_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Ready?")).insert((
+fn dance_button(mut entity: EntityWorldMut) {
+    entity.add(widget::menu_button("Dance~")).insert((
         On::<Pointer<Click>>::run(PlayingMenu::disable),
         Style {
             display: Display::None,
@@ -241,6 +298,7 @@ fn ready_button(mut entity: EntityWorldMut) {
             justify_content: JustifyContent::Center,
             ..default()
         },
+        ToggleDisplay,
     ));
 }
 
@@ -350,5 +408,17 @@ fn card_discard(
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.discard();
+    }
+}
+
+/// A marker component for entities that should toggle between
+/// `Display::None` and `Display::Flexbox` to swap sub-menus.
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+struct ToggleDisplay;
+
+impl Configure for ToggleDisplay {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
     }
 }

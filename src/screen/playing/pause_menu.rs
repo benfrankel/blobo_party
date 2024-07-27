@@ -77,7 +77,7 @@ fn button_container(mut entity: EntityWorldMut) {
                 style: Style {
                     align_items: AlignItems::Center,
                     flex_direction: FlexDirection::Column,
-                    margin: UiRect::vertical(VMin(7.0)),
+                    margin: UiRect::top(VMin(6.0)),
                     row_gap: Vw(2.5),
                     ..default()
                 },
