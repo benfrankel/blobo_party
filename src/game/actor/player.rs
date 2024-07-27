@@ -57,8 +57,8 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 FaceCursor,
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
-                HitboxDamage(2.0),
-                HitboxKnockback(3.0),
+                HitboxDamage(15.0),
+                HitboxKnockback(5.0),
             ))
             // TODO: This is for testing movement until it's card-controlled.
             .add(movement_action)
