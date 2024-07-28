@@ -5,6 +5,7 @@ use pyri_state::prelude::*;
 use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::audio::AudioConfig;
+use crate::screen::playing::PlayingAssets;
 use crate::screen::Screen;
 use crate::util::prelude::*;
 
@@ -36,17 +37,22 @@ pub fn stop_music(
     mut audio_instances: ResMut<Assets<AudioInstance>>,
 ) {
     let music = r!(audio_instances.get_mut(&music_handle.0));
-    music.seek_to(0.0);
-    music.pause(AudioTween::default());
+    music.stop(AudioTween::default());
 }
 
 pub fn start_music(
-    music_handle: Res<MusicHandle>,
-    mut audio_instances: ResMut<Assets<AudioInstance>>,
+    config: ConfigRef<AudioConfig>,
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
+    mut music_handle: ResMut<MusicHandle>,
 ) {
-    let music = r!(audio_instances.get_mut(&music_handle.0));
-    music.seek_to(0.0);
-    music.resume(AudioTween::default());
+    let config = r!(config.get());
+    music_handle.0 = audio
+        .play(assets.music.clone())
+        .with_volume(config.music_volume)
+        .loop_from(config.music_loop_start)
+        .loop_until(config.music_loop_end)
+        .handle();
 }
 
 pub fn pause_music(

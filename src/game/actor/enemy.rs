@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use crate::game::actor::facing::FacePlayer;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::ActorConfig;
+use crate::game::combat::death::DespawnOnDeath;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
 use crate::util::prelude::*;
@@ -41,6 +42,8 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand<World> {
                 Faction::Enemy,
                 CollisionLayers::new(GameLayer::Enemy, LayerMask::ALL),
                 FacePlayer,
+                // TODO: Despawn when death animation is finished, instead.
+                DespawnOnDeath,
             ))
             .set_parent(parent);
     }

@@ -40,8 +40,15 @@ impl Configure for DespawnOnDeath {
     }
 }
 
-fn despawn_on_death(trigger: Trigger<OnDeath>, mut despawn: ResMut<LateDespawn>) {
-    despawn.recursive(r!(trigger.get_entity()));
+fn despawn_on_death(
+    trigger: Trigger<OnDeath>,
+    despawn_query: Query<(), With<DespawnOnDeath>>,
+    mut despawn: ResMut<LateDespawn>,
+) {
+    let entity = r!(trigger.get_entity());
+    if despawn_query.contains(entity) {
+        despawn.recursive(entity);
+    }
 }
 
 #[derive(Component, Reflect)]

@@ -51,7 +51,7 @@ fn pause_menu(mut entity: EntityWorldMut) {
         });
 }
 
-const HEADER: &str = "Paused :)";
+const HEADER: &str = "Paused :|";
 
 fn header(mut entity: EntityWorldMut) {
     entity.insert((
@@ -133,7 +133,9 @@ fn restart_button(mut entity: EntityWorldMut) {
 
 fn quit_to_title_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Quit to title")).insert((
-        On::<Pointer<Click>>::run(Screen::Title.enter()),
+        On::<Pointer<Click>>::run(|mut commands: Commands| {
+            commands.spawn_with(fade_out(Screen::Title));
+        }),
         Style {
             height: Vw(9.0),
             width: Vw(38.0),

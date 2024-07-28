@@ -7,6 +7,7 @@ use pyri_state::prelude::*;
 use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::actor::level::up::LevelUp;
+use crate::game::actor::level::IsLevelDisplay;
 use crate::game::actor::level::Level;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
@@ -21,7 +22,7 @@ pub(super) fn plugin(app: &mut App) {
         PlayingMenu::Victory.on_edge(Pause::disable, (Pause::enable_default, open_victory_menu)),
     );
 
-    app.init_resource::<EndlessMode>();
+    app.configure::<EndlessMode>();
 
     app.add_systems(
         Update,
@@ -32,26 +33,38 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-#[derive(Default, Resource)]
+pub fn detect_victory(
+    level_display_query: Query<&Selection, With<IsLevelDisplay>>,
+    level_query: Query<&Level>,
+    endless_mode: Res<EndlessMode>,
+) -> bool {
+    let selection = r!(false, level_display_query.get_single());
+    let level = r!(false, level_query.get(selection.0));
+
+    !endless_mode.0 && level.current >= 10
+}
+
+#[derive(Resource, Reflect, Default)]
+#[reflect(Resource)]
 pub struct EndlessMode(bool);
+
+impl Configure for EndlessMode {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.init_resource::<Self>();
+        app.add_systems(StateFlush, Screen::Playing.on_enter(reset_endless_mode));
+    }
+}
+
+fn reset_endless_mode(mut endless_mode: ResMut<EndlessMode>) {
+    endless_mode.0 = false;
+}
 
 fn open_victory_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands
         .spawn_with(victory_overlay)
         .set_parent(ui_root.body);
     commands.spawn_with(victory_menu).set_parent(ui_root.body);
-}
-
-pub fn detect_victory(level_query: Query<&Level>, endless_mode: Res<EndlessMode>) -> bool {
-    if endless_mode.0 {
-        return false;
-    }
-
-    if let Some(level) = level_query.iter().last() {
-        return level.current >= 10;
-    }
-
-    false
 }
 
 fn victory_overlay(mut entity: EntityWorldMut) {
@@ -123,10 +136,6 @@ fn button_container(mut entity: EntityWorldMut) {
         });
 }
 
-pub fn reset_endless_mode(mut endless_mode: ResMut<EndlessMode>) {
-    endless_mode.0 = false;
-}
-
 fn keep_playing_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Keep Playing")).insert((
         On::<Pointer<Click>>::run(
@@ -165,7 +174,9 @@ fn restart_button(mut entity: EntityWorldMut) {
 
 fn quit_to_title_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Quit to title")).insert((
-        On::<Pointer<Click>>::run(Screen::Title.enter()),
+        On::<Pointer<Click>>::run(|mut commands: Commands| {
+            commands.spawn_with(fade_out(Screen::Title));
+        }),
         Style {
             height: Vw(9.0),
             width: Vw(38.0),

@@ -30,7 +30,6 @@ use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::OldMovementController;
 use crate::game::audio::music::Beat;
 use crate::game::card::deck::Deck;
-use crate::game::combat::death::DespawnOnDeath;
 use crate::game::combat::hit::Hurtbox;
 use crate::game::sprite::SpriteAnimation;
 use crate::util::prelude::*;
@@ -142,8 +141,7 @@ impl EntityCommand for Actor {
                     AttackController::default(),
                     self.health,
                     Hurtbox,
-                    // TODO: Death animation instead, despawn when it's finished.
-                    DespawnOnDeath,
+                    // TODO: Death animation.
                 ),
                 // Inventory:
                 (Level::default(), Xp::default(), self.xp_reward, self.deck),

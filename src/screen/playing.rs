@@ -22,7 +22,6 @@ use crate::game::wave::wave;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::playing::hud::playing_hud;
-use crate::screen::playing::victory_menu::reset_endless_mode;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -30,7 +29,7 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,
-        Screen::Playing.on_edge(stop_music, (enter_playing, start_music, reset_endless_mode)),
+        Screen::Playing.on_edge(stop_music, (enter_playing, start_music)),
     );
 
     app.configure::<(PlayingAssets, PlayingAction, PlayingMenu)>();
@@ -127,15 +126,18 @@ impl Configure for PlayingAction {
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(
             StateFlush,
-            PlayingMenu::Pause
-                .toggle()
-                .in_set(ResolveStateSet::<PlayingMenu>::Compute)
-                .run_if(
-                    Screen::Playing
-                        .will_exit()
-                        .and_then(not(PlayingMenu::LevelUp.will_exit()))
-                        .and_then(action_just_pressed(Self::TogglePause)),
-                ),
+            (
+                Screen::Playing.on_exit(PlayingMenu::disable),
+                PlayingMenu::Pause
+                    .toggle()
+                    .in_set(ResolveStateSet::<PlayingMenu>::Compute)
+                    .run_if(
+                        PlayingMenu::is_disabled
+                            .or_else(PlayingMenu::Pause.will_exit())
+                            .and_then(Screen::Playing.will_enter())
+                            .and_then(action_just_pressed(Self::TogglePause)),
+                    ),
+            ),
         );
     }
 }

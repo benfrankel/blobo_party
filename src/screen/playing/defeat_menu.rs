@@ -5,8 +5,8 @@ use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
-use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
+use crate::game::combat::death::OnDeath;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
@@ -15,27 +15,30 @@ use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
+    app.observe(detect_defeat);
+
     app.add_systems(
         StateFlush,
         PlayingMenu::Defeat.on_edge(Pause::disable, (Pause::enable_default, open_defeat_menu)),
     );
+}
 
-    app.add_systems(
-        Update,
-        PlayingMenu::Defeat
-            .enter()
-            .in_set(UpdateSet::SyncLate)
-            .run_if(detect_defeat),
-    );
+fn detect_defeat(
+    trigger: Trigger<OnDeath>,
+    player_query: Query<(), With<IsPlayer>>,
+    mut playing_menu: NextMut<PlayingMenu>,
+) {
+    let entity = r!(trigger.get_entity());
+    if !player_query.contains(entity) {
+        return;
+    }
+
+    playing_menu.enter(PlayingMenu::Defeat);
 }
 
 fn open_defeat_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
     commands.spawn_with(defeat_overlay).set_parent(ui_root.body);
     commands.spawn_with(defeat_menu).set_parent(ui_root.body);
-}
-
-pub fn detect_defeat(player_query: Query<Entity, With<IsPlayer>>) -> bool {
-    player_query.is_empty()
 }
 
 fn defeat_overlay(mut entity: EntityWorldMut) {
@@ -126,7 +129,9 @@ fn restart_button(mut entity: EntityWorldMut) {
 
 fn quit_to_title_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Quit to title")).insert((
-        On::<Pointer<Click>>::run(Screen::Title.enter()),
+        On::<Pointer<Click>>::run(|mut commands: Commands| {
+            commands.spawn_with(fade_out(Screen::Title));
+        }),
         Style {
             height: Vw(9.0),
             width: Vw(38.0),
