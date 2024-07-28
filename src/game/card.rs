@@ -7,6 +7,7 @@ use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::actor::faction::Faction;
 use crate::game::card::action::CardAction;
 use crate::game::card::action::CardActionKey;
 use crate::game::card::action::CardActionMap;
@@ -20,7 +21,7 @@ pub mod deck;
 pub mod movement;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<ConfigHandle<CardConfig>>();
+    app.configure::<(ConfigHandle<CardConfig>, OnPlayCard)>();
 
     app.add_plugins((
         action::plugin,
@@ -179,7 +180,7 @@ pub struct Card {
     #[serde(default = "one")]
     pub play_sfx_volume: f64,
     #[serde(rename = "action")]
-    action_key: CardActionKey,
+    pub action_key: CardActionKey,
     #[serde(skip)]
     pub action: CardAction,
     pub action_modifier: CardActionModifier,
@@ -231,4 +232,33 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
                 });
             });
     }
+}
+
+/// An observable event triggered when a card is played.
+#[derive(Event)]
+pub struct OnPlayCard(pub String);
+
+impl Configure for OnPlayCard {
+    fn configure(app: &mut App) {
+        app.observe(play_card);
+    }
+}
+
+fn play_card(
+    trigger: Trigger<OnPlayCard>,
+    mut commands: Commands,
+    config: ConfigRef<CardConfig>,
+    audio: Res<Audio>,
+    faction_query: Query<&Faction>,
+) {
+    let entity = r!(trigger.get_entity());
+    let config = r!(config.get());
+    let card = r!(config.card_map.get(&trigger.event().0));
+    let faction = r!(faction_query.get(entity));
+
+    if let (Faction::Player, Some(play_sfx)) = (faction, card.play_sfx.clone()) {
+        audio.play(play_sfx).with_volume(card.play_sfx_volume);
+    }
+
+    commands.run_system_with_input(card.action.0, (entity, card.action_modifier.clone()));
 }

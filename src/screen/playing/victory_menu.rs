@@ -9,6 +9,7 @@ use crate::core::UpdateSet;
 use crate::game::actor::level::up::LevelUp;
 use crate::game::actor::level::IsLevelDisplay;
 use crate::game::actor::level::Level;
+use crate::game::stats::Stats;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
@@ -76,8 +77,11 @@ fn victory_overlay(mut entity: EntityWorldMut) {
     ));
 }
 
-fn victory_menu(mut entity: EntityWorldMut) {
-    entity
+fn victory_menu(entity: Entity, world: &mut World) {
+    let stats = *world.resource::<Stats>();
+
+    world
+        .entity_mut(entity)
         .add(Style::ABS_COLUMN_CENTER.div())
         .insert((
             Name::new("VictoryMenuContainer"),
@@ -102,7 +106,7 @@ fn victory_menu(mut entity: EntityWorldMut) {
                 ))
                 .with_children(|children| {
                     children.spawn_with(header);
-                    children.spawn_with(body);
+                    children.spawn_with(stats);
                     children.spawn_with(button_container);
                 });
         });
@@ -127,59 +131,6 @@ fn header(mut entity: EntityWorldMut) {
         DynamicFontSize::new(Vw(5.0)).with_step(8.0),
         ThemeColorForText(vec![ThemeColor::BodyText]),
     ));
-}
-
-fn body(mut entity: EntityWorldMut) {
-    entity
-        .insert((
-            Name::new("Body"),
-            NodeBundle {
-                style: Style {
-                    display: Display::Grid,
-                    grid_template_columns: RepeatedGridTrack::auto(2),
-                    row_gap: Vw(1.2),
-                    column_gap: Vw(2.5),
-                    ..default()
-                },
-                ..default()
-            },
-        ))
-        .with_children(|children| {
-            // TODO: Real stats.
-            for (i, text) in [
-                "[b]125",
-                "seconds partied",
-                "[b]23",
-                "blobos impressed",
-                "[b]125",
-                "dances performed",
-                "[b]241",
-                "notes played",
-                "[b]45",
-                "rests taken",
-            ]
-            .into_iter()
-            .enumerate()
-            {
-                children.spawn((
-                    Name::new("BodySpan"),
-                    TextBundle::from_sections(parse_rich(text)).with_style(Style {
-                        justify_self: if i % 2 == 0 {
-                            JustifySelf::End
-                        } else {
-                            JustifySelf::Start
-                        },
-                        ..default()
-                    }),
-                    DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                    ThemeColorForText(vec![if i % 2 == 0 {
-                        ThemeColor::Indicator
-                    } else {
-                        ThemeColor::BodyText
-                    }]),
-                ));
-            }
-        });
 }
 
 fn button_container(mut entity: EntityWorldMut) {

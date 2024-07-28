@@ -1,13 +1,11 @@
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
-use crate::game::actor::faction::Faction;
 use crate::game::audio::music::on_full_beat;
 use crate::game::card::card;
-use crate::game::card::CardConfig;
+use crate::game::card::OnPlayCard;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -83,25 +81,13 @@ impl Deck {
     }
 }
 
-fn play_card_from_deck(
-    mut commands: Commands,
-    config: ConfigRef<CardConfig>,
-    audio: Res<Audio>,
-    mut deck_query: Query<(Entity, &Faction, &mut Deck)>,
-) {
-    let config = r!(config.get());
-
-    for (entity, &faction, mut deck) in &mut deck_query {
+fn play_card_from_deck(mut commands: Commands, mut deck_query: Query<(Entity, &mut Deck)>) {
+    for (entity, mut deck) in &mut deck_query {
         let card_key = c!(deck.advance(1));
-        let card = c!(config.card_map.get(card_key));
 
-        if let (Faction::Player, Some(play_sfx)) = (faction, card.play_sfx.clone()) {
-            audio.play(play_sfx).with_volume(card.play_sfx_volume);
-        }
-
-        let action = card.action;
-        let action_modifier = card.action_modifier.clone();
-        commands.run_system_with_input(action.0, (entity, action_modifier));
+        commands
+            .entity(entity)
+            .trigger(OnPlayCard(card_key.clone()));
     }
 }
 

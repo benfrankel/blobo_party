@@ -1,4 +1,3 @@
-mod end;
 mod loading;
 pub mod playing;
 mod splash;
@@ -23,7 +22,6 @@ pub fn plugin(app: &mut App) {
         title::plugin,
         loading::plugin,
         playing::plugin,
-        end::plugin,
     ));
 }
 
@@ -36,7 +34,6 @@ pub enum Screen {
     Title,
     Loading,
     Playing,
-    End,
 }
 
 impl Configure for Screen {

@@ -8,6 +8,7 @@ pub mod combat;
 pub mod ground;
 pub mod spotlight;
 pub mod sprite;
+pub mod stats;
 pub mod wave;
 
 use std::borrow::Cow;
@@ -32,6 +33,7 @@ pub(super) fn plugin(app: &mut App) {
         ground::plugin,
         spotlight::plugin,
         sprite::plugin,
+        stats::plugin,
         wave::plugin,
     ));
 }

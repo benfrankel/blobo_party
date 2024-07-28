@@ -18,6 +18,7 @@ use crate::game::audio::music::start_music;
 use crate::game::audio::music::stop_music;
 use crate::game::ground::ground;
 use crate::game::spotlight::spotlight_lamp_spawner;
+use crate::game::stats::Stats;
 use crate::game::wave::wave;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
@@ -42,8 +43,16 @@ pub(super) fn plugin(app: &mut App) {
     ));
 }
 
-fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<UiRoot>) {
+fn enter_playing(
+    mut commands: Commands,
+    game_root: Res<GameRoot>,
+    ui_root: Res<UiRoot>,
+    mut stats: ResMut<Stats>,
+) {
     commands.spawn_with(fade_in);
+
+    // Reset stats.
+    *stats = default();
 
     // TODO: Character select screen.
     // Spawn player.
@@ -54,18 +63,18 @@ fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<
         .spawn_with(wave(player))
         .set_parent(game_root.enemies);
 
-    // Spawn VFX.
-    commands
-        .spawn_with(spotlight_lamp_spawner)
-        .set_parent(game_root.vfx);
-
     // Spawn UI.
     commands
         .spawn_with(playing_hud(player))
         .set_parent(ui_root.body);
 
-    // Spawn Background.
+    // Spawn background.
     commands.spawn_with(ground).set_parent(game_root.background);
+
+    // Spawn VFX.
+    commands
+        .spawn_with(spotlight_lamp_spawner)
+        .set_parent(game_root.vfx);
 }
 
 #[derive(AssetCollection, Resource, Reflect, Default)]

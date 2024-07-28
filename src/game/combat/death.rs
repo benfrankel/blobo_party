@@ -8,7 +8,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(IsDead, DespawnOnDeath, DeathSfx)>();
 }
 
-/// An observable event on an actor's death.
+/// An observable event triggered when an actor dies.
 /// Remember to filter out `IsDead` entities before triggering this event.
 #[derive(Event)]
 pub struct OnDeath;

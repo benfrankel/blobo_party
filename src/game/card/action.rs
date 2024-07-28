@@ -81,8 +81,8 @@ impl FromWorld for CardActionMap {
 #[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Copy, Clone)]
 pub enum CardActionKey {
     Step,
-    Heal,
     Attack,
+    Heal,
 }
 
 /// A newtyped `SystemId` with a `Default` impl.
