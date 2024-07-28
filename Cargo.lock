@@ -1508,12 +1508,14 @@ dependencies = [
  "iyes_progress",
  "lazy-regex",
  "leafwing-input-manager",
+ "log",
  "pyri_state",
  "rand",
  "ron",
  "serde",
  "strum",
  "tap",
+ "tracing",
 ]
 
 [[package]]

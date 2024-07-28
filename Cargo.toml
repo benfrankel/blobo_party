@@ -48,6 +48,10 @@ interpolation = "0.3"
 iyes_progress = "0.12"
 lazy-regex = { version = "3", features = ["lite"] }
 leafwing-input-manager = "0.14"
+log = { version = "0.4", features = [
+    "max_level_debug",
+    "release_max_level_warn",
+] }
 #noise = "0.8"
 pyri_state = { version = "0.2", default-features = false, features = [
     "bevy_app",
@@ -60,6 +64,10 @@ ron = "0.8"
 serde = "1"
 strum = { version = "0.26", features = ["derive"] }
 tap = "1"
+tracing = { version = "0.1", features = [
+    "max_level_debug",
+    "release_max_level_warn",
+] }
 
 [patch.crates-io]
 # TODO: Workaround for https://github.com/NiklasEi/bevy_asset_loader/issues/219.
