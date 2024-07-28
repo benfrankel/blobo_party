@@ -1,11 +1,13 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 
 use crate::core::UpdateSet;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Hitbox, Hurtbox, OnHit)>();
+    app.configure::<(Hitbox, Hurtbox, OnHit, HurtSfx)>();
 }
 
 #[derive(Component, Reflect)]
@@ -51,4 +53,28 @@ fn trigger_hit(
             }
         }
     }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct HurtSfx;
+
+impl Configure for HurtSfx {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.observe(play_hurt_sfx);
+    }
+}
+
+fn play_hurt_sfx(
+    trigger: Trigger<OnHit>,
+    hurt_query: Query<(), With<HurtSfx>>,
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
+) {
+    if !hurt_query.contains(trigger.event().1) {
+        return;
+    }
+
+    audio.play(assets.sfx_hurt.clone()).with_volume(0.6);
 }

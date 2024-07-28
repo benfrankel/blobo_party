@@ -15,6 +15,7 @@ use crate::game::actor::movement::input::movement_action;
 use crate::game::actor::ActorConfig;
 use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
+use crate::game::combat::hit::HurtSfx;
 use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
@@ -60,6 +61,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 Hitbox,
                 HitboxDamage(15.0),
                 HitboxKnockback(5.0),
+                HurtSfx,
             ))
             .set_parent(parent)
             .with_children(|children| {
