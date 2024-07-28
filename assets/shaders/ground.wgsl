@@ -47,7 +47,7 @@ fn fragment(in: VertexOutput) -> @location(0) vec4<f32> {
     let saturated_color = blend_towards(contrasted_color, rgb_to_grayscale(contrasted_color), SATURATION_FACTOR); 
     let brightened_color = blend_towards(saturated_color, vec3f(0.0), BRIGHTNESS); 
 
-    let final_color = brightened_color * select(1.0, cos(input.time), ANIMATE_SHADER);
+    let final_color = brightened_color * select(1.0, cos(input.time * 0.5), ANIMATE_SHADER);
 
     return vec4<f32>(final_color, SPACE_COLOR_ALPHA);
 }
