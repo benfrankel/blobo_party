@@ -5,8 +5,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
+use crate::game::actor::health::Health;
 use crate::game::card::attack::AimTowardsFacing;
-use crate::game::card::attack::DoubleBeat;
+use crate::game::card::attack::AttackOnBeat;
 use crate::game::card::movement::MoveTowardsFacing;
 use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
@@ -31,33 +32,41 @@ impl FromWorld for CardActionMap {
         Self(
             [
                 (
-                    CardActionKey::Rest,
-                    world.register_system(|_: In<(Entity, CardActionConfig)>, _: &mut World| {}),
-                ),
-                (
                     CardActionKey::Step,
                     world.register_system(
-                        |In((entity, config)): In<(Entity, CardActionConfig)>,
+                        |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
                             r!(world.get_entity_mut(entity)).insert(RemoveOnBeat::bundle(
                                 MoveTowardsFacing,
-                                config.remove_on_beat,
+                                modifier.remove_on_beat,
                             ));
                         },
                     ),
                 ),
                 (
-                    CardActionKey::DoubleBeat,
+                    CardActionKey::Attack,
                     world.register_system(
-                        |In((entity, config)): In<(Entity, CardActionConfig)>,
+                        |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
                             r!(world.get_entity_mut(entity)).insert((
                                 RemoveOnBeat::bundle(
-                                    DoubleBeat(config.attack.clone()),
-                                    config.remove_on_beat,
+                                    AttackOnBeat(modifier.attack.clone()),
+                                    modifier.remove_on_beat,
                                 ),
-                                RemoveOnBeat::bundle(AimTowardsFacing, config.remove_on_beat),
+                                RemoveOnBeat::bundle(AimTowardsFacing, modifier.remove_on_beat),
                             ));
+                        },
+                    ),
+                ),
+                (
+                    CardActionKey::Heal,
+                    world.register_system(
+                        |In((entity, modifier)): In<(Entity, CardActionModifier)>,
+                         world: &mut World| {
+                            let mut entity = r!(world.get_entity_mut(entity));
+                            let mut health = r!(entity.get_mut::<Health>());
+                            health.current += modifier.heal_flat;
+                            health.current += modifier.heal_percent / 100.0 * health.max;
                         },
                     ),
                 ),
@@ -69,18 +78,17 @@ impl FromWorld for CardActionMap {
     }
 }
 
-#[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Copy, Clone, Default)]
+#[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Copy, Clone)]
 pub enum CardActionKey {
-    #[default]
-    Rest,
     Step,
-    DoubleBeat,
+    Heal,
+    Attack,
 }
 
-/// A newtyped `SystemId<Entity>` with a `Default` impl.
+/// A newtyped `SystemId` with a `Default` impl.
 #[derive(Reflect, Copy, Clone)]
 #[reflect(Default)]
-pub struct CardAction(#[reflect(ignore)] pub SystemId<(Entity, CardActionConfig)>);
+pub struct CardAction(#[reflect(ignore)] pub SystemId<(Entity, CardActionModifier)>);
 
 impl Default for CardAction {
     fn default() -> Self {
@@ -90,13 +98,12 @@ impl Default for CardAction {
 
 #[derive(Default, Reflect, Serialize, Deserialize, Clone)]
 #[serde(default)]
-pub struct CardActionConfig {
+pub struct CardActionModifier {
     /// Remove component after this many eighth-beats.
-    #[serde(default)]
     remove_on_beat: usize,
     /// Remove component when this timer finishes.
-    #[serde(default)]
     remove_on_timer: Timer,
-    #[serde(default)]
     attack: Attack,
+    heal_percent: f32,
+    heal_flat: f32,
 }

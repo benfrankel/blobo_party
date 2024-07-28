@@ -8,9 +8,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::game::card::action::CardAction;
-use crate::game::card::action::CardActionConfig;
 use crate::game::card::action::CardActionKey;
 use crate::game::card::action::CardActionMap;
+use crate::game::card::action::CardActionModifier;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
@@ -162,6 +162,7 @@ impl EntityCommand for CardIcon {
     }
 }
 
+// TODO: `min_level` field before the card can be offered in the level up menu.
 #[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Card {
     pub name: String,
@@ -177,11 +178,11 @@ pub struct Card {
     pub play_sfx: Option<Handle<AudioSource>>,
     #[serde(default = "one")]
     pub play_sfx_volume: f64,
-    #[serde(rename = "action", default)]
+    #[serde(rename = "action")]
     action_key: CardActionKey,
     #[serde(skip)]
     pub action: CardAction,
-    pub action_config: CardActionConfig, // TODO: Naming
+    pub action_modifier: CardActionModifier,
 }
 
 fn one() -> f64 {

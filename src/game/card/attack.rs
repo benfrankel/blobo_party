@@ -9,7 +9,7 @@ use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(AimTowardsFacing, DoubleBeat)>();
+    app.configure::<(AimTowardsFacing, AttackOnBeat)>();
 }
 
 #[derive(Component, Reflect)]
@@ -37,26 +37,26 @@ fn apply_aim_towards_facing(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct DoubleBeat(pub Attack);
+pub struct AttackOnBeat(pub Attack);
 
-impl Configure for DoubleBeat {
+impl Configure for AttackOnBeat {
     fn configure(app: &mut App) {
         app.configure::<RemoveOnBeat<Self>>();
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            double_beat
+            attack_on_beat
                 .in_set(UpdateSet::RecordInput)
                 .run_if(on_beat(4)),
         );
     }
 }
 
-fn double_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &DoubleBeat)>) {
-    for (mut attack, mut controller, double_beat) in &mut attack_query {
-        attack.power = double_beat.0.power;
-        attack.force = double_beat.0.force;
-        attack.projectile_key = double_beat.0.projectile_key.clone();
+fn attack_on_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &AttackOnBeat)>) {
+    for (mut attack, mut controller, attack_on_beat) in &mut attack_query {
+        attack.power = attack_on_beat.0.power;
+        attack.force = attack_on_beat.0.force;
+        attack.projectile_key = attack_on_beat.0.projectile_key.clone();
 
         controller.fire = true;
     }

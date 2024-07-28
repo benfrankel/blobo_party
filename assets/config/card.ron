@@ -40,25 +40,32 @@
         ),
     },
     card_icon_map: {
-        // TODO: Long-duration notes are stronger versions of short-duration notes (more damage and knockback, maybe less speed).
-        "eighth_note": CardIcon(texture: "image/card/icon/eighth_note.png"),
-        //"quarter_note": CardIcon(texture: "image/card/icon/quarter_note.png"),
-        //"half_note": CardIcon(texture: "image/card/icon/half_note.png"),
-        //"whole_note": CardIcon(texture: "image/card/icon/whole_note.png"),
-        "pair": CardIcon(texture: "image/card/icon/pair.png"),
-        "major_chord": CardIcon(texture: "image/card/icon/major_chord.png"),
-        "cluster_chord": CardIcon(texture: "image/card/icon/cluster_chord.png"),
-        "rest": CardIcon(texture: "image/card/icon/rest.png"),
-        "sharp_flat": CardIcon(texture: "image/card/icon/sharp_flat.png"),
-        "natural": CardIcon(texture: "image/card/icon/natural.png"),
-        "fermata": CardIcon(texture: "image/card/icon/fermata.png"),
-        "bass_clef": CardIcon(texture: "image/card/icon/bass_clef.png"),
-
         "step": CardIcon(texture: "image/card/icon/step.png"),
         "splits": CardIcon(texture: "image/card/icon/splits.png"),
         "ballet": CardIcon(texture: "image/card/icon/ballet.png"),
         "moonwalk": CardIcon(texture: "image/card/icon/moonwalk.png"),
+        "cartwheel": CardIcon(texture: "image/card/icon/cartwheel.png"),
+
+        "eighth_note": CardIcon(texture: "image/card/icon/eighth_note.png"),
+        "quarter_note": CardIcon(texture: "image/card/icon/quarter_note.png"),
+        "half_note": CardIcon(texture: "image/card/icon/half_note.png"),
+        "whole_note": CardIcon(texture: "image/card/icon/whole_note.png"),
+        "pair": CardIcon(texture: "image/card/icon/pair.png"),
+        //"triplet": CardIcon(texture: "image/card/icon/triplet.png"),
+        "chord": CardIcon(texture: "image/card/icon/chord.png"),
+        "cluster": CardIcon(texture: "image/card/icon/cluster.png"),
+
+        "eighth_rest": CardIcon(texture: "image/card/icon/eighth_rest.png"),
+        "quarter_rest": CardIcon(texture: "image/card/icon/quarter_rest.png"),
+        "half_rest": CardIcon(texture: "image/card/icon/half_rest.png"),
+        "whole_rest": CardIcon(texture: "image/card/icon/whole_rest.png"),
+
+        "sharp_flat": CardIcon(texture: "image/card/icon/sharp_flat.png"),
+        "natural": CardIcon(texture: "image/card/icon/natural.png"),
+        "fermata": CardIcon(texture: "image/card/icon/fermata.png"),
+        "bass_clef": CardIcon(texture: "image/card/icon/bass_clef.png"),
     },
+    // TODO: Write descriptions.
     card_map: {
         "step": Card(
             name: "Basic Step",
@@ -69,11 +76,11 @@
             // TODO: "Movement card" sfx.
             play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             action: Step,
-            action_config: CardActionConfig(
+            action_modifier: CardActionModifier(
                 remove_on_beat: 8,
             ),
         ),
-        "splits": Card(
+        /*"splits": Card(
             name: "Splits",
             description: "Split in two!",
             background: "blue",
@@ -81,8 +88,58 @@
 
             // TODO: "Movement card" sfx.
             play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
-            action_config: CardActionConfig(
+            action_modifier: CardActionModifier(
                 remove_on_beat: 16,
+            ),
+        ),*/
+        // TODO: Add other movement cards.
+
+        "eighth_note": Card(
+            name: "Eighth Note",
+            description: "",
+            background: "pink",
+            icon: "eighth_note",
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 0,
+                attack: Attack(projectile: Some("eighth_note")),
+            ),
+        ),
+        "quarter_note": Card(
+            name: "Quarter Note",
+            description: "",
+            background: "pink",
+            icon: "quarter_note",
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 0,
+                attack: Attack(projectile: Some("quarter_note")),
+            ),
+        ),
+        "half_note": Card(
+            name: "Half Note",
+            description: "",
+            background: "pink",
+            icon: "half_note",
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 0,
+                attack: Attack(projectile: Some("half_note")),
+            ),
+        ),
+        "whole_note": Card(
+            name: "Whole Note",
+            description: "",
+            background: "pink",
+            icon: "whole_note",
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 0,
+                attack: Attack(projectile: Some("whole_note")),
             ),
         ),
         "pair": Card(
@@ -91,25 +148,70 @@
             background: "pink",
             icon: "pair",
 
-            action: DoubleBeat,
-            action_config: CardActionConfig(
+            action: Attack,
+            action_modifier: CardActionModifier(
                 remove_on_beat: 4,
-                attack: Attack (
-                    power: 2.0,
-                    force: 4.0,
-                    projectile: Some("quarter_note"),
-                ),
+                attack: Attack(projectile: Some("eighth_note")),
             ),
         ),
-        "major_chord": Card(
+        /*"major_chord": Card(
             name: "Major Chord",
-            description: "Notes that move apart synchronously",
+            description: "",
             background: "pink",
-            icon: "major_chord",
+            icon: "chord",
 
-            action_config: CardActionConfig(
+            action_modifier: CardActionModifier(
                 remove_on_beat: 16,
+                attack: Attack(projectile: Some("eighth_note")),
             ),
+        ),
+        "cluster_chord": Card(
+            name: "Cluster Chord",
+            description: "",
+            background: "pink",
+            icon: "chord",
+
+            action_modifier: CardActionModifier(
+                remove_on_beat: 16,
+                attack: Attack(projectile: Some("whole_note")),
+            ),
+        ),*/
+
+        "eighth_rest": Card(
+            name: "Eighth Rest",
+            description: "Heal a little bit",
+            background: "green",
+            icon: "eighth_rest",
+
+            action: Heal,
+            action_modifier: CardActionModifier(heal_flat: 5),
+        ),
+        "quarter_rest": Card(
+            name: "Quarter Rest",
+            description: "Heal 25% health",
+            background: "green",
+            icon: "quarter_rest",
+
+            action: Heal,
+            action_modifier: CardActionModifier(heal_percent: 25),
+        ),
+        "half_rest": Card(
+            name: "Half Rest",
+            description: "Heal 50% health",
+            background: "green",
+            icon: "half_rest",
+
+            action: Heal,
+            action_modifier: CardActionModifier(heal_percent: 50),
+        ),
+        "whole_rest": Card(
+            name: "Whole Rest",
+            description: "Heal 100% health",
+            background: "green",
+            icon: "whole_rest",
+
+            action: Heal,
+            action_modifier: CardActionModifier(heal_percent: 100),
         ),
     }
 )

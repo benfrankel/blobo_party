@@ -100,8 +100,8 @@ fn play_card_from_deck(
         }
 
         let action = card.action;
-        let action_config = card.action_config.clone();
-        commands.run_system_with_input(action.0, (entity, action_config));
+        let action_modifier = card.action_modifier.clone();
+        commands.run_system_with_input(action.0, (entity, action_modifier));
     }
 }
 

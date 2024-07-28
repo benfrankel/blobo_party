@@ -1,5 +1,19 @@
 (
+    // TODO: Tune stats for each projectile.
     projectiles: {
+        "eighth_note": Projectile(
+            name: "Eighth Note",
+
+            texture: "image/projectile/eighth_note.png",
+            spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            spawn_sfx_volume: 0.5,
+
+            lifetime: 1,
+            radius: 3.0,
+            speed: 20.0,
+            damage: 2.0,
+            knockback: 0.5,
+        ),
         "quarter_note": Projectile(
             name: "Quarter Note",
 
@@ -13,18 +27,31 @@
             damage: 2.0,
             knockback: 0.5,
         ),
-        "double_beat": Projectile(
-            name: "Double Beat",
+        "half_note": Projectile(
+            name: "Half Note",
 
-            texture: "image/projectile/quarter_note.png",
+            texture: "image/projectile/half_note.png",
             spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             spawn_sfx_volume: 0.5,
 
-            lifetime: 2,
+            lifetime: 1,
             radius: 3.0,
-            speed: 25.0,
-            damage: 3.0,
-            knockback: 0.6,
+            speed: 20.0,
+            damage: 2.0,
+            knockback: 0.5,
+        ),
+        "whole_note": Projectile(
+            name: "Whole Note",
+
+            texture: "image/projectile/whole_note.png",
+            spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            spawn_sfx_volume: 0.5,
+
+            lifetime: 1,
+            radius: 3.0,
+            speed: 20.0,
+            damage: 2.0,
+            knockback: 0.5,
         ),
     },
 )

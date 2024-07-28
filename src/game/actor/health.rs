@@ -50,10 +50,7 @@ impl Configure for Health {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.observe(lose_health_on_damage);
-        app.add_systems(
-            Update,
-            trigger_death_from_health.in_set(UpdateSet::TriggerDeath),
-        );
+        app.add_systems(Update, check_health.in_set(UpdateSet::TriggerDeath));
     }
 }
 
@@ -75,14 +72,15 @@ fn lose_health_on_damage(trigger: Trigger<OnDamage>, mut health_query: Query<&mu
     health.current -= trigger.event().0;
 }
 
-fn trigger_death_from_health(
+fn check_health(
     mut commands: Commands,
-    health_query: Query<(Entity, &Health), (Changed<Health>, Without<IsDead>)>,
+    mut health_query: Query<(Entity, &mut Health), (Changed<Health>, Without<IsDead>)>,
 ) {
-    for (entity, health) in &health_query {
+    for (entity, mut health) in &mut health_query {
         if health.current <= 0.0 {
             commands.entity(entity).trigger(OnDeath);
         }
+        health.current = health.current.clamp(0.0, health.max);
     }
 }
 
