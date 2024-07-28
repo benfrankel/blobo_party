@@ -16,7 +16,6 @@ use crate::game::card::card;
 use crate::game::card::deck::Deck;
 use crate::game::card::deck::IsDeckDisplay;
 use crate::game::card::CardConfig;
-use crate::screen::playing::victory_menu::detect_victory;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
 use crate::ui::prelude::*;
@@ -33,7 +32,7 @@ pub(super) fn plugin(app: &mut App) {
         PlayingMenu::LevelUp
             .enter()
             .in_set(UpdateSet::SyncLate)
-            .run_if(on_event::<LevelUp>().and_then(not(detect_victory))),
+            .run_if(on_event::<LevelUp>()),
     );
 
     app.configure::<(LevelUpMenuAction, ToggleDisplay)>();

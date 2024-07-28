@@ -6,6 +6,7 @@ use crate::core::UpdateSet;
 use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
+use crate::screen::playing::victory_menu::EndlessMode;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
 use crate::util::prelude::*;
@@ -62,15 +63,24 @@ fn update_level_up_from_xp(
 fn trigger_level_up(
     mut level_up_events: EventWriter<LevelUp>,
     mut level_query: Query<(Entity, &mut Level)>,
+    endless_mode: Res<EndlessMode>,
+    mut playing_menu: NextMut<PlayingMenu>,
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
 ) {
     for (entity, mut level) in &mut level_query {
         if level.up == 0 {
             continue;
         }
 
-        level.up -= 1;
-        level.current += 1;
-        level_up_events.send(LevelUp(entity));
+        if !endless_mode.0 && level.current + 1 == 10 {
+            playing_menu.enter(PlayingMenu::Victory);
+            audio.play(assets.sfx_level_up.clone()).with_volume(0.8);
+        } else {
+            level.up -= 1;
+            level.current += 1;
+            level_up_events.send(LevelUp(entity));
+        }
     }
 }
 

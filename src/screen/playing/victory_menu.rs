@@ -5,10 +5,6 @@ use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
-use crate::core::UpdateSet;
-use crate::game::actor::level::up::LevelUp;
-use crate::game::actor::level::IsLevelDisplay;
-use crate::game::actor::level::Level;
 use crate::game::stats::Stats;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
@@ -24,30 +20,11 @@ pub(super) fn plugin(app: &mut App) {
     );
 
     app.configure::<EndlessMode>();
-
-    app.add_systems(
-        Update,
-        PlayingMenu::Victory
-            .enter()
-            .in_set(UpdateSet::SyncLate)
-            .run_if(on_event::<LevelUp>().and_then(detect_victory)),
-    );
-}
-
-pub fn detect_victory(
-    level_display_query: Query<&Selection, With<IsLevelDisplay>>,
-    level_query: Query<&Level>,
-    endless_mode: Res<EndlessMode>,
-) -> bool {
-    let selection = r!(false, level_display_query.get_single());
-    let level = r!(false, level_query.get(selection.0));
-
-    !endless_mode.0 && level.current >= 10
 }
 
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
-pub struct EndlessMode(bool);
+pub struct EndlessMode(pub bool);
 
 impl Configure for EndlessMode {
     fn configure(app: &mut App) {
