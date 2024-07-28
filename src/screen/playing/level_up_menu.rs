@@ -58,7 +58,10 @@ fn level_up_overlay(mut entity: EntityWorldMut) {
 fn level_up_menu(mut entity: EntityWorldMut) {
     entity
         .add(Style::ABS_COLUMN_CENTER.div())
-        .insert(Name::new("LevelUpMenuContainer"))
+        .insert((
+            Name::new("LevelUpMenuContainer"),
+            StateScope::<PlayingMenu>::default(),
+        ))
         .with_children(|children| {
             children
                 .spawn((
@@ -75,7 +78,6 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                         z_index: ZIndex::Global(2),
                         ..default()
                     },
-                    StateScope::<PlayingMenu>::default(),
                 ))
                 .with_children(|children| {
                     children.spawn_with(header);

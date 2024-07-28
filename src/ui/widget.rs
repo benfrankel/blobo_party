@@ -24,6 +24,13 @@ pub fn blocking_overlay(mut entity: EntityWorldMut) {
 }
 
 pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
+    menu_button_with_font_size(text, Vw(4.0))
+}
+
+pub fn menu_button_with_font_size(
+    text: impl Into<String>,
+    font_size: Val,
+) -> impl EntityCommand<World> {
     let text = text.into();
     move |mut entity: EntityWorldMut| {
         entity
@@ -66,7 +73,7 @@ pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
                             ..default()
                         },
                     ),
-                    DynamicFontSize::new(Vw(4.0)).with_step(8.0),
+                    DynamicFontSize::new(font_size).with_step(8.0),
                     ThemeColorForText(vec![ThemeColor::PrimaryText]),
                 ));
             });
