@@ -17,7 +17,7 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(Facing, FacePlayer, FaceCursor, FacingIndicator)>();
 }
 
-#[derive(Component, Reflect)]
+#[derive(Component, Reflect, Clone)]
 #[reflect(Component)]
 pub struct Facing(pub Dir2);
 

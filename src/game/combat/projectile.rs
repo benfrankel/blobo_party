@@ -10,7 +10,12 @@ use bevy_tweening::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::actor::attack::Attack;
+use crate::game::actor::attack::AttackController;
+use crate::game::actor::facing::Facing;
 use crate::game::actor::faction::Faction;
+use crate::game::card::attack::AimTowardsFacing;
+use crate::game::card::attack::AttackOnBeat;
 use crate::game::cleanup::DespawnOnHit;
 use crate::game::cleanup::DespawnOnTimer;
 use crate::game::cleanup::DespawnRadiusSq;
@@ -97,6 +102,7 @@ pub fn projectile(
     power: f32,
     force: Vec2,
     color: impl Into<Color>,
+    child_projectiles: Option<(Attack, Facing)>,
 ) -> impl EntityCommand {
     let key = key.into();
     let color = color.into();
@@ -123,8 +129,8 @@ pub fn projectile(
                 .with_volume(projectile.spawn_sfx_volume);
         }
 
-        world
-            .entity_mut(entity)
+        let mut entity = world.entity_mut(entity);
+        entity
             .insert((
                 Name::new(projectile.name.replace(' ', "")),
                 // Appearance:
@@ -171,5 +177,16 @@ pub fn projectile(
                 ),
             ))
             .set_parent(parent);
+
+        if let Some((attack, facing)) = child_projectiles {
+            entity.insert((
+                AttackOnBeat(attack.clone()),
+                AimTowardsFacing,
+                AttackController::default(),
+                facing,
+                faction,
+                attack,
+            ));
+        }
     }
 }

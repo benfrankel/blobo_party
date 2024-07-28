@@ -8,6 +8,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
+use crate::game::actor::facing::Facing;
 use crate::game::actor::faction::Faction;
 use crate::game::combat::projectile::projectile;
 use crate::util::prelude::*;
@@ -34,9 +35,11 @@ pub struct Attack {
     /// The key of the projectile to attack with.
     #[serde(rename = "projectile")]
     pub projectile_key: Option<String>,
-    /// Optional list of facing offsets for multiple shots
+    /// Optional list of facing offsets for multiple shots.
     #[serde(default)]
     pub multi_shot: Option<MultiShot>,
+    #[serde(default)]
+    pub child_projectile: Option<ChildProjectile>,
 }
 
 impl Configure for Attack {
@@ -55,13 +58,25 @@ impl Default for Attack {
             offset: 5.0,
             projectile_key: None,
             multi_shot: None,
+            child_projectile: None,
         }
     }
 }
 
-// Way to specify a projectile fires multiple shots, one for each offset
+// Way to specify a projectile fires multiple shots, one for each offset.
 #[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
 pub struct MultiShot(pub Vec<f32>);
+
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+pub struct ChildProjectile {
+    // The direction child projectiles will go. The first entry is relative to the parent projectile's velocity and any additional
+    // entries are treated as multishots of the first entry, so their directions are relative to the first projectile.
+    // i.e., [0.25, 0.5] would fire one shot to the left of the parent and one shot to the right because 0.5 is "behind" relative to the first child.
+    pub offsets: Vec<f32>,
+    /// The key of the child projectiles.
+    #[serde(rename = "projectile")]
+    pub projectile_key: Option<String>,
+}
 
 fn apply_attack(
     mut commands: Commands,
@@ -85,6 +100,7 @@ fn apply_attack(
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
 
+        // Handle creating multiple shots based off controller's aim
         let mut shots = vec![controller.aim];
         if let Some(additional_shots) = &attack.multi_shot {
             for offset in additional_shots.0.iter() {
@@ -92,6 +108,23 @@ fn apply_attack(
                 shots.push(controller.aim.rotate(shot_angle));
             }
         }
+
+        // Setup any child projectiles that the current attack's projectile will create
+        let child_projectiles = if let Some(child) = &attack.child_projectile {
+            if let Some((primary, multi_shots)) = child.offsets.split_first() {
+                let facing_direction = controller.aim.rotate(Vec2::from_angle(primary * TAU));
+                let mut child_attack = attack.clone();
+                child_attack.child_projectile = None;
+                child_attack.multi_shot = Some(MultiShot((*multi_shots).into()));
+                child_attack.projectile_key = child.projectile_key.clone();
+
+                Some((child_attack, Facing(c!(Dir2::new(facing_direction)))))
+            } else {
+                None
+            }
+        } else {
+            None
+        };
 
         for shot in shots.iter() {
             // Projectiles get a boost if the actor is moving in the same direction.
@@ -110,13 +143,14 @@ fn apply_attack(
                     attack.power,
                     attack.force * *shot * speed_force,
                     attack.color,
+                    child_projectiles.clone(),
                 ))
                 .insert(Transform::from_translation(translation));
         }
     }
 }
 
-#[derive(Component, Reflect, Default)]
+#[derive(Component, Reflect, Default, Clone)]
 #[reflect(Component)]
 pub struct AttackController {
     pub aim: Vec2,
