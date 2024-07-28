@@ -6,8 +6,10 @@ use bevy::render::render_resource::ShaderType;
 use bevy::sprite::Material2d;
 use bevy::sprite::Material2dPlugin;
 use bevy::sprite::MaterialMesh2dBundle;
+use bevy::time::Stopwatch;
 use pyri_state::prelude::*;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::audio::music::on_full_beat;
 use crate::screen::Screen;
@@ -26,6 +28,7 @@ const GROUND_SNAP: Vec2 = Vec2::splat(GROUND_SNAP_INTERVAL);
 pub struct Ground {
     material: Handle<GroundMaterial>,
     mesh: Handle<Mesh>,
+    animation_stopwatch: Stopwatch,
 }
 
 impl Configure for Ground {
@@ -36,10 +39,10 @@ impl Configure for Ground {
         app.add_systems(
             Update,
             Screen::Playing.on_update((
-                update_background,
+                update_background.run_if(Pause::is_disabled),
                 update_background_beat
                     .in_set(UpdateSet::Update)
-                    .run_if(on_full_beat(8)),
+                    .run_if(on_full_beat(2)),
             )),
         );
     }
@@ -53,8 +56,13 @@ impl FromWorld for Ground {
         let mesh = world
             .resource_mut::<Assets<Mesh>>()
             .add(Rectangle::default());
+        let animation_stopwatch = Stopwatch::new();
 
-        Self { material, mesh }
+        Self {
+            material,
+            mesh,
+            animation_stopwatch,
+        }
     }
 }
 
@@ -97,6 +105,7 @@ pub fn ground(mut entity: EntityWorldMut) {
 
 fn update_background(
     mut ground_material: ResMut<Assets<GroundMaterial>>,
+    mut ground: ResMut<Ground>,
     camera_query: Query<&Transform, (With<IsDefaultUiCamera>, Without<Handle<GroundMaterial>>)>,
     mut ground_query: Query<&mut Transform, With<Handle<GroundMaterial>>>,
     time: Res<Time>,
@@ -107,10 +116,11 @@ fn update_background(
                 let translation = ((camera_transform.translation.truncate() / GROUND_SNAP).floor()
                     * GROUND_SNAP)
                     .extend(GROUND_Z_INDEX);
+                ground.animation_stopwatch.tick(time.delta());
                 ground_transform.translation = translation;
                 material.uniforms.camera_x = translation.x;
                 material.uniforms.camera_y = translation.y;
-                material.uniforms.time = time.elapsed_seconds();
+                material.uniforms.time = ground.animation_stopwatch.elapsed_secs();
             }
         }
     }

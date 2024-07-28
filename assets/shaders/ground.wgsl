@@ -11,8 +11,8 @@ struct GroundShader {
 var<uniform> input: GroundShader;
 
 const ZOOM:f32 = 180.0;
-const USE_BEAT_INPUT: bool = false;
-const ANIMATE_SHADER: bool = false;
+const USE_BEAT_INPUT: bool = true;
+const ANIMATE_SHADER: bool = true;
 const GRID_LINE_COLOR: vec4f = vec4f(0.0);
 const SPACE_COLOR_ALPHA: f32 = 0.3;
 const CAMERA_OFFSET: f32 = 0.001953 / 2.0; // This number works well for tiling but I haven't figured out why yet, DON'T CHANGE IT
