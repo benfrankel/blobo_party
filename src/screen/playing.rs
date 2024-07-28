@@ -154,7 +154,7 @@ impl Configure for PlayingAction {
 #[derive(State, Eq, PartialEq, Clone, Debug, Reflect)]
 #[state(after(Screen), before(Pause), entity_scope, log_flush)]
 #[reflect(Resource)]
-enum PlayingMenu {
+pub enum PlayingMenu {
     Pause,
     LevelUp,
     Victory,

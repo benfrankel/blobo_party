@@ -1,14 +1,15 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use pyri_state::prelude::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
 use crate::screen::playing::PlayingAssets;
+use crate::screen::playing::PlayingMenu;
 use crate::util::prelude::*;
 
-// TODO: System that enters level up menu on LevelUp event.
 pub(super) fn plugin(app: &mut App) {
     app.configure::<LevelUp>();
 }
@@ -27,8 +28,9 @@ impl Configure for LevelUp {
                     .in_set(UpdateSet::Update)
                     .run_if(on_event::<Self>()),
                 update_level_up_from_xp.in_set(UpdateSet::TriggerLevelUp),
-                // TODO: Only run if not in level up menu.
-                trigger_level_up.in_set(UpdateSet::TriggerLevelUp),
+                trigger_level_up
+                    .in_set(UpdateSet::TriggerLevelUp)
+                    .run_if(PlayingMenu::is_disabled),
             )
                 .chain(),
         );
