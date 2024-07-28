@@ -19,6 +19,7 @@ pub(super) fn plugin(app: &mut App) {
         ThemeColorFor<UiImage>,
         ThemeColorFor<BackgroundColor>,
         ThemeColorFor<BorderColor>,
+        ThemeColorFor<Outline>,
         ThemeColorForText,
     )>();
 }
@@ -158,5 +159,11 @@ impl ColorMut for BackgroundColor {
 impl ColorMut for BorderColor {
     fn color_mut(&mut self) -> &mut Color {
         &mut self.0
+    }
+}
+
+impl ColorMut for Outline {
+    fn color_mut(&mut self) -> &mut Color {
+        &mut self.color
     }
 }

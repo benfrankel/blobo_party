@@ -124,6 +124,11 @@ impl EntityCommand for CardBackground {
                 image: UiImage::new(self.texture),
                 ..default()
             },
+            Outline {
+                width: Vw(0.4),
+                ..default()
+            },
+            ThemeColor::CardBorder.target::<Outline>(),
             atlas,
         ));
 
