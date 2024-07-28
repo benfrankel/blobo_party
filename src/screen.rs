@@ -1,3 +1,4 @@
+mod intro;
 mod loading;
 pub mod playing;
 mod splash;
@@ -20,6 +21,7 @@ pub fn plugin(app: &mut App) {
     app.add_plugins((
         splash::plugin,
         title::plugin,
+        intro::plugin,
         loading::plugin,
         playing::plugin,
     ));
@@ -32,6 +34,7 @@ pub enum Screen {
     #[default]
     Splash,
     Title,
+    Intro,
     Loading,
     Playing,
 }

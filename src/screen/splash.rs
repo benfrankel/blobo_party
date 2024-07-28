@@ -3,13 +3,11 @@ use bevy::core::FrameCount;
 use bevy::prelude::*;
 use bevy::render::texture::ImageLoaderSettings;
 use bevy::render::texture::ImageSampler;
-use bevy_asset_loader::prelude::*;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::screen::fade_in;
 use crate::screen::fade_out;
-use crate::screen::title::TitleScreenAssets;
 use crate::screen::Screen;
 use crate::screen::FADE_IN_SECS;
 use crate::ui::prelude::*;
@@ -19,9 +17,6 @@ use crate::util::time::wait;
 pub(super) fn plugin(app: &mut App) {
     embedded_asset!(app, "splash/splash.png");
 
-    app.add_loading_state(
-        LoadingState::new(Screen::Splash.bevy()).load_collection::<TitleScreenAssets>(),
-    );
     app.add_plugins(ProgressPlugin::new(Screen::Splash.bevy()));
     app.add_systems(StateFlush, Screen::Splash.on_enter(enter_splash));
     app.add_systems(

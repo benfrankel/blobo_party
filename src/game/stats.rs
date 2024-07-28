@@ -119,7 +119,7 @@ impl EntityCommand for Stats {
             .with_children(|children| {
                 for (i, text) in stats.into_iter().enumerate() {
                     children.spawn((
-                        Name::new("StatsSpan"),
+                        Name::new(format!("StatsSpan{}", i)),
                         TextBundle::from_sections(parse_rich(&text)).with_style(Style {
                             justify_self: if i % 2 == 0 {
                                 JustifySelf::End

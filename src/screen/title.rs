@@ -1,57 +1,15 @@
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
 use bevy_mod_picking::prelude::*;
-use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::game::actor::health::HealthConfig;
-use crate::game::actor::level::LevelConfig;
-use crate::game::actor::ActorConfig;
-use crate::game::audio::AudioConfig;
-use crate::game::card::CardConfig;
-use crate::game::combat::projectile::ProjectileConfig;
-use crate::game::wave::WaveConfig;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
-use crate::screen::playing::PlayingAssets;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_loading_state(
-        LoadingState::new(Screen::Title.bevy()).load_collection::<PlayingAssets>(),
-    );
-    app.add_plugins(ProgressPlugin::new(Screen::Title.bevy()));
     app.add_systems(StateFlush, Screen::Title.on_enter(enter_title));
-    app.add_systems(
-        Update,
-        // TODO: This is kinda silly. Find a better way later.
-        Screen::Title.on_update((
-            ActorConfig::progress.track_progress(),
-            CardConfig::progress.track_progress(),
-            HealthConfig::progress.track_progress(),
-            LevelConfig::progress.track_progress(),
-            AudioConfig::progress.track_progress(),
-            ProjectileConfig::progress.track_progress(),
-            WaveConfig::progress.track_progress(),
-        )),
-    );
-
-    app.configure::<TitleScreenAssets>();
-}
-
-const TITLE: &str = "Blobo Party!";
-
-#[derive(AssetCollection, Resource, Reflect, Default)]
-#[reflect(Resource)]
-pub struct TitleScreenAssets {}
-
-impl Configure for TitleScreenAssets {
-    fn configure(app: &mut App) {
-        app.register_type::<Self>();
-        app.init_collection::<Self>();
-    }
 }
 
 fn enter_title(mut commands: Commands, ui_root: Res<UiRoot>) {
@@ -64,16 +22,18 @@ fn title_screen(mut entity: EntityWorldMut) {
         .add(Style::COLUMN_MID.div())
         .insert(Name::new("TitleScreen"))
         .with_children(|children| {
-            children.spawn_with(title_text);
+            children.spawn_with(header);
             children.spawn_with(button_container);
         });
 }
 
-fn title_text(mut entity: EntityWorldMut) {
+const HEADER: &str = "Blobo Party!";
+
+fn header(mut entity: EntityWorldMut) {
     entity.insert((
-        Name::new("TitleText"),
+        Name::new("Header"),
         TextBundle::from_section(
-            TITLE,
+            HEADER,
             TextStyle {
                 font: BOLD_FONT_HANDLE,
                 ..default()
@@ -113,16 +73,9 @@ fn button_container(mut entity: EntityWorldMut) {
 fn play_button(mut entity: EntityWorldMut) {
     entity
         .add(widget::menu_button("Play"))
-        .insert(On::<Pointer<Click>>::run(
-            |mut commands: Commands, progress: Res<ProgressCounter>| {
-                let Progress { done, total } = progress.progress_complete();
-                commands.spawn_with(fade_out(if done >= total {
-                    Screen::Playing
-                } else {
-                    Screen::Loading
-                }));
-            },
-        ));
+        .insert(On::<Pointer<Click>>::run(|mut commands: Commands| {
+            commands.spawn_with(fade_out(Screen::Intro));
+        }));
 }
 
 fn quit_button(mut entity: EntityWorldMut) {
