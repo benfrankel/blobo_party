@@ -3,6 +3,7 @@ use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy::utils::HashMap;
+use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -64,6 +65,9 @@ impl Config for CardConfig {
 
         for card in self.card_map.values_mut() {
             card.action = *c!(card_action_map.0.get(&card.action_key));
+            if !card.play_sfx_path.is_empty() {
+                card.play_sfx = Some(asset_server.load(&card.play_sfx_path));
+            }
         }
     }
 
@@ -75,6 +79,11 @@ impl Config for CardConfig {
                 .card_icon_map
                 .values()
                 .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
+            && self.card_map.values().all(|x| {
+                !x.play_sfx
+                    .as_ref()
+                    .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x))
+            })
     }
 }
 
@@ -161,11 +170,22 @@ pub struct Card {
     pub background_key: String,
     #[serde(rename = "icon")]
     pub icon_key: String,
+
+    #[serde(rename = "play_sfx", default)]
+    play_sfx_path: String,
+    #[serde(skip)]
+    pub play_sfx: Option<Handle<AudioSource>>,
+    #[serde(default = "one")]
+    pub play_sfx_volume: f64,
     #[serde(rename = "action", default)]
     action_key: CardActionKey,
     #[serde(skip)]
     pub action: CardAction,
     pub action_config: CardActionConfig, // TODO: Naming
+}
+
+fn one() -> f64 {
+    1.0
 }
 
 pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand {

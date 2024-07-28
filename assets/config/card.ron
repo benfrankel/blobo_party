@@ -42,7 +42,7 @@
     card_icon_map: {
         "step": CardIcon(texture: "image/card/step.png"),
         "double_beat": CardIcon(texture: "image/card/double_beat.png"),
-        "counter_point": CardIcon(texture: "image/card/counter_point.png"),
+        "major_chord": CardIcon(texture: "image/card/major_chord.png"),
         "splits": CardIcon(texture: "image/card/splits.png"),
     },
     card_map: {
@@ -51,9 +51,24 @@
             description: "A-one and a-two and a-step.",
             background: "blue",
             icon: "step",
+
+            // TODO: "Movement card" sfx.
+            play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             action: Step,
             action_config: CardActionConfig(
                 remove_on_beat: 8,
+            ),
+        ),
+        "splits": Card(
+            name: "Splits",
+            description: "Split in two!",
+            background: "blue",
+            icon: "splits",
+
+            // TODO: "Movement card" sfx.
+            play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            action_config: CardActionConfig(
+                remove_on_beat: 16,
             ),
         ),
         "double_beat": Card(
@@ -61,6 +76,7 @@
             description: "Two beats, rapid fire!",
             background: "pink",
             icon: "double_beat",
+
             action: DoubleBeat,
             action_config: CardActionConfig(
                 remove_on_beat: 4,
@@ -71,21 +87,12 @@
                 ),
             ),
         ),
-        "counter_point": Card(
-            name: "Counter Point",
+        "major_chord": Card(
+            name: "Major Chord",
             description: "Notes that move apart synchronously",
             background: "pink",
-            icon: "counter_point",
-            action_config: CardActionConfig(
-                remove_on_beat: 16,
-            ),
-        ),
-        "splits": Card(
-            name: "Splits",
-            description: "Split in two!",
-            background: "blue",
-            icon: "splits",
-            modifier: 1.0,
+            icon: "major_chord",
+
             action_config: CardActionConfig(
                 remove_on_beat: 16,
             ),
