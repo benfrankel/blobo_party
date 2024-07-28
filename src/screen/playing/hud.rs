@@ -48,6 +48,7 @@ fn upper_hud(player: Entity) -> impl EntityCommand<World> {
                         column_gap: Px(16.0),
                         ..default()
                     },
+                    z_index: ZIndex::Global(2),
                     ..default()
                 },
             ))
