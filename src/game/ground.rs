@@ -42,7 +42,7 @@ impl Configure for Ground {
                 update_background.run_if(Pause::is_disabled),
                 update_background_beat
                     .in_set(UpdateSet::Update)
-                    .run_if(on_full_beat(2)),
+                    .run_if(on_full_beat(4)),
             )),
         );
     }

@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
 use crate::core::UpdateSet;
+use crate::game::audio::music::on_full_beat;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
@@ -27,6 +28,23 @@ pub struct Hurtbox;
 impl Configure for Hurtbox {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
+
+        app.add_systems(
+            Update,
+            readd_hurtbox
+                .in_set(UpdateSet::SyncEarly)
+                .run_if(on_full_beat(2)),
+        );
+    }
+}
+
+fn readd_hurtbox(
+    mut commands: Commands,
+    hitbox_query: Query<Entity, (With<Hitbox>, Without<Hurtbox>)>,
+) {
+    for entity in &hitbox_query {
+        let mut entity = c!(commands.get_entity(entity));
+        entity.insert(Hurtbox);
     }
 }
 

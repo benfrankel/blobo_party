@@ -6,10 +6,12 @@ use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
 use crate::game::actor::health::Health;
+use crate::game::actor::player::IsPlayer;
 use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::AttackOnBeat;
 use crate::game::card::movement::MoveTowardsFacing;
 use crate::game::cleanup::RemoveOnBeat;
+use crate::game::combat::hit::Hurtbox;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -36,10 +38,16 @@ impl FromWorld for CardActionMap {
                     world.register_system(
                         |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
-                            r!(world.get_entity_mut(entity)).insert(RemoveOnBeat::bundle(
+                            let mut entity = r!(world.get_entity_mut(entity));
+                            entity.insert(RemoveOnBeat::bundle(
                                 MoveTowardsFacing,
                                 modifier.remove_on_beat,
                             ));
+
+                            // TODO: Remove player check if we decide immunity should apply to all
+                            if entity.contains::<IsPlayer>() && modifier.immune_during_action {
+                                entity.remove::<Hurtbox>();
+                            }
                         },
                     ),
                 ),
@@ -104,6 +112,8 @@ pub struct CardActionModifier {
     /// Remove component when this timer finishes.
     remove_on_timer: Timer,
     attack: Attack,
+    // if true, actor is immune while performing this action
+    immune_during_action: bool,
     heal_percent: f32,
     heal_flat: f32,
 }
