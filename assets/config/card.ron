@@ -73,8 +73,7 @@
             background: "blue",
             icon: "step",
 
-            // TODO: "Movement card" sfx.
-            play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            play_sfx: "audio/sfx/Movement.ogg",
             action: Step,
             action_modifier: CardActionModifier(
                 remove_on_beat: 8,
@@ -86,8 +85,7 @@
             background: "blue",
             icon: "splits",
 
-            // TODO: "Movement card" sfx.
-            play_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
+            play_sfx: "audio/sfx/Movement.ogg",
             action_modifier: CardActionModifier(
                 remove_on_beat: 16,
             ),
