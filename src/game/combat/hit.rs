@@ -68,13 +68,13 @@ impl Configure for HurtSfx {
 
 fn play_hurt_sfx(
     trigger: Trigger<OnHit>,
-    hurt_query: Query<(), With<HurtSfx>>,
+    sfx_query: Query<(), With<HurtSfx>>,
     audio: Res<Audio>,
     assets: Res<PlayingAssets>,
 ) {
-    if !hurt_query.contains(trigger.event().1) {
+    if !sfx_query.contains(trigger.event().1) {
         return;
     }
 
-    audio.play(assets.sfx_hurt.clone()).with_volume(0.6);
+    audio.play(assets.sfx_hurt.clone()).with_volume(1.0);
 }

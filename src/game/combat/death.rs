@@ -1,9 +1,11 @@
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(IsDead, DespawnOnDeath)>();
+    app.configure::<(IsDead, DespawnOnDeath, DeathSfx)>();
 }
 
 /// An observable event on an actor's death.
@@ -40,4 +42,29 @@ impl Configure for DespawnOnDeath {
 
 fn despawn_on_death(trigger: Trigger<OnDeath>, mut despawn: ResMut<LateDespawn>) {
     despawn.recursive(r!(trigger.get_entity()));
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct DeathSfx;
+
+impl Configure for DeathSfx {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.observe(play_death_sfx);
+    }
+}
+
+fn play_death_sfx(
+    trigger: Trigger<OnDeath>,
+    sfx_query: Query<(), With<DeathSfx>>,
+    audio: Res<Audio>,
+    assets: Res<PlayingAssets>,
+) {
+    let entity = r!(trigger.get_entity());
+    if !sfx_query.contains(entity) {
+        return;
+    }
+
+    audio.play(assets.sfx_restart.clone()).with_volume(1.0);
 }
