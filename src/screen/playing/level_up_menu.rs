@@ -118,26 +118,68 @@ fn instructions_container(mut entity: EntityWorldMut) {
                 },
                 ..default()
             },
-            ToggleDisplay,
+            ToggleDisplay(Display::Flex),
         ))
         .with_children(|children| {
-            for (i, text) in [
-                "You can sort your cards during a level up:",
-                "",
-                "- [b]Select: [r] A/D or Arrow Keys",
-                "- [b]Move:   [r] Shift + A/D or Arrow Keys",
-                "- [b]Discard:[r] Delete",
-            ]
-            .into_iter()
-            .enumerate()
-            {
-                children.spawn((
-                    Name::new(format!("InstructionsParagraph{}", i)),
-                    TextBundle::from_sections(parse_rich(text)),
-                    DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                    ThemeColorForText(vec![ThemeColor::BodyText]),
-                ));
-            }
+            children.spawn((
+                Name::new("FirstLine"),
+                TextBundle::from_sections(parse_rich("You can sort your cards during a level up:")),
+                DynamicFontSize::new(Vw(3.0)).with_step(8.0),
+                ThemeColorForText(vec![ThemeColor::BodyText]),
+            ));
+
+            children.spawn((
+                Name::new("Blank"),
+                TextBundle::from_sections(parse_rich("")),
+                DynamicFontSize::new(Vw(3.0)).with_step(8.0),
+                ThemeColorForText(vec![ThemeColor::BodyText]),
+            ));
+
+            children
+                .spawn((
+                    Name::new("InstructionsGrid"),
+                    NodeBundle {
+                        style: Style {
+                            display: Display::Grid,
+                            grid_template_columns: RepeatedGridTrack::auto(2),
+                            row_gap: Vw(1.2),
+                            column_gap: Vw(2.5),
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .with_children(|children| {
+                    for (i, text) in [
+                        "[b]Select",
+                        "A/D (or Arrow Keys)",
+                        "[b]Move",
+                        "Shift + A/D (or Arrow Keys)",
+                        "[b]Discard",
+                        "Delete",
+                    ]
+                    .into_iter()
+                    .enumerate()
+                    {
+                        children.spawn((
+                            Name::new(format!("Span{}", i)),
+                            TextBundle::from_sections(parse_rich(text)).with_style(Style {
+                                justify_self: if i % 2 == 0 {
+                                    JustifySelf::End
+                                } else {
+                                    JustifySelf::Start
+                                },
+                                ..default()
+                            }),
+                            DynamicFontSize::new(Vw(3.0)).with_step(8.0),
+                            ThemeColorForText(vec![if i % 2 == 0 {
+                                ThemeColor::Indicator
+                            } else {
+                                ThemeColor::BodyText
+                            }]),
+                        ));
+                    }
+                });
         });
 }
 
@@ -167,7 +209,7 @@ fn card_options_container(entity: Entity, world: &mut World) {
                 },
                 ..default()
             },
-            ToggleDisplay,
+            ToggleDisplay(Display::Flex),
         ))
         .with_children(|children| {
             for key in card_keys {
@@ -208,15 +250,15 @@ fn card_button(key: impl Into<String>) -> impl EntityCommand<World> {
             On::<Pointer<Click>>::run(
                 move |deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
                       mut deck_query: Query<&mut Deck>,
-                      mut toggle_query: Query<&mut Style, With<ToggleDisplay>>| {
+                      mut toggle_query: Query<(&mut Style, &ToggleDisplay)>| {
                     for selection in &deck_display_query {
                         let mut deck = c!(deck_query.get_mut(selection.0));
                         // TODO: What if deck is at capacity?
                         deck.add(key.clone());
                     }
-                    for mut style in &mut toggle_query {
+                    for (mut style, display) in &mut toggle_query {
                         style.display = match style.display {
-                            Display::None => Display::Flex,
+                            Display::None => display.0,
                             _ => Display::None,
                         };
                     }
@@ -266,17 +308,17 @@ fn button_container(mut entity: EntityWorldMut) {
         .insert((Name::new("ButtonContainer"), NodeBundle::default()))
         .with_children(|children| {
             children.spawn_with(skip_button);
-            children.spawn_with(dance_button);
+            children.spawn_with(ready_button);
         });
 }
 
 fn skip_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Skip")).insert((
         On::<Pointer<Click>>::run(
-            move |mut toggle_query: Query<&mut Style, With<ToggleDisplay>>| {
-                for mut style in &mut toggle_query {
+            move |mut toggle_query: Query<(&mut Style, &ToggleDisplay)>| {
+                for (mut style, display) in &mut toggle_query {
                     style.display = match style.display {
-                        Display::None => Display::Flex,
+                        Display::None => display.0,
                         _ => Display::None,
                     };
                 }
@@ -289,12 +331,12 @@ fn skip_button(mut entity: EntityWorldMut) {
             justify_content: JustifyContent::Center,
             ..default()
         },
-        ToggleDisplay,
+        ToggleDisplay(Display::Flex),
     ));
 }
 
-fn dance_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Dance~")).insert((
+fn ready_button(mut entity: EntityWorldMut) {
+    entity.add(widget::menu_button("Ready")).insert((
         On::<Pointer<Click>>::run(PlayingMenu::disable),
         Style {
             display: Display::None,
@@ -304,7 +346,7 @@ fn dance_button(mut entity: EntityWorldMut) {
             justify_content: JustifyContent::Center,
             ..default()
         },
-        ToggleDisplay,
+        ToggleDisplay(Display::Flex),
     ));
 }
 
@@ -430,7 +472,7 @@ fn card_discard(
 /// `Display::None` and `Display::Flexbox` to swap sub-menus.
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-struct ToggleDisplay;
+struct ToggleDisplay(Display);
 
 impl Configure for ToggleDisplay {
     fn configure(app: &mut App) {
