@@ -1,5 +1,7 @@
 pub mod input;
 
+use std::f32::consts::TAU;
+
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use serde::Deserialize;
@@ -32,6 +34,9 @@ pub struct Attack {
     /// The key of the projectile to attack with.
     #[serde(rename = "projectile")]
     pub projectile_key: Option<String>,
+    /// Optional list of facing offsets for multiple shots
+    #[serde(default)]
+    pub multi_shot: Option<MultiShot>,
 }
 
 impl Configure for Attack {
@@ -49,9 +54,14 @@ impl Default for Attack {
             color: Color::WHITE,
             offset: 5.0,
             projectile_key: None,
+            multi_shot: None,
         }
     }
 }
+
+// Way to specify a projectile fires multiple shots, one for each offset
+#[derive(Reflect, Serialize, Deserialize, Clone, Debug)]
+pub struct MultiShot(pub Vec<f32>);
 
 fn apply_attack(
     mut commands: Commands,
@@ -75,24 +85,34 @@ fn apply_attack(
         // Render projectile above attacker.
         let translation = pos.extend(translation.z + 2.0);
 
-        // Projectiles get a boost if the actor is moving in the same direction.
-        let aligned_speed = velocity
-            .filter(|v| v.0 != Vec2::ZERO)
-            .map(|v| v.dot(controller.aim) / controller.aim.length())
-            .unwrap_or(0.0)
-            .clamp(0.0, 100.0);
-        let speed_force_boost = 0.8;
-        let speed_force = aligned_speed / 100.0 * speed_force_boost + 1.0;
+        let mut shots = vec![controller.aim];
+        if let Some(additional_shots) = &attack.multi_shot {
+            for offset in additional_shots.0.iter() {
+                let shot_angle = Vec2::from_angle(offset * TAU);
+                shots.push(controller.aim.rotate(shot_angle));
+            }
+        }
 
-        commands
-            .spawn_with(projectile(
-                projectile_key,
-                faction,
-                attack.power,
-                attack.force * controller.aim * speed_force,
-                attack.color,
-            ))
-            .insert(Transform::from_translation(translation));
+        for shot in shots.iter() {
+            // Projectiles get a boost if the actor is moving in the same direction.
+            let aligned_speed = velocity
+                .filter(|v| v.0 != Vec2::ZERO)
+                .map(|v| v.dot(*shot) / shot.length())
+                .unwrap_or(0.0)
+                .clamp(0.0, 100.0);
+            let speed_force_boost = 0.8;
+            let speed_force = aligned_speed / 100.0 * speed_force_boost + 1.0;
+
+            commands
+                .spawn_with(projectile(
+                    projectile_key,
+                    faction,
+                    attack.power,
+                    attack.force * *shot * speed_force,
+                    attack.color,
+                ))
+                .insert(Transform::from_translation(translation));
+        }
     }
 }
 

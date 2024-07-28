@@ -57,6 +57,7 @@ fn attack_on_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &
         attack.power = attack_on_beat.0.power;
         attack.force = attack_on_beat.0.force;
         attack.projectile_key = attack_on_beat.0.projectile_key.clone();
+        attack.multi_shot = attack_on_beat.0.multi_shot.clone();
 
         controller.fire = true;
     }
