@@ -82,7 +82,7 @@
                 ],
             ),
 
-            attack: Attack(color: Srgba(Srgba(red: 0.839, green: 0.816, blue: 0.510, alpha: 1.000))),
+            attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
             deck: Deck(cards: ["step", "whole_note", "quarter_rest"]),
         ),
 
