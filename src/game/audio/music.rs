@@ -31,6 +31,15 @@ impl Configure for MusicHandle {
     }
 }
 
+pub fn stop_music(
+    music_handle: Res<MusicHandle>,
+    mut audio_instances: ResMut<Assets<AudioInstance>>,
+) {
+    let music = r!(audio_instances.get_mut(&music_handle.0));
+    music.seek_to(0.0);
+    music.pause(AudioTween::default());
+}
+
 pub fn start_music(
     music_handle: Res<MusicHandle>,
     mut audio_instances: ResMut<Assets<AudioInstance>>,

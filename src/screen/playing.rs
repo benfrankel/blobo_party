@@ -12,8 +12,8 @@ use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::pause::Pause;
 use crate::game::actor::player::player;
-use crate::game::audio::music::pause_music;
 use crate::game::audio::music::start_music;
+use crate::game::audio::music::stop_music;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::wave::wave;
 use crate::game::GameRoot;
@@ -26,7 +26,7 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,
-        Screen::Playing.on_edge(pause_music, (enter_playing, start_music)),
+        Screen::Playing.on_edge(stop_music, (enter_playing, start_music)),
     );
 
     app.configure::<(PlayingAssets, PlayingAction, PlayingMenu)>();
