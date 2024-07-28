@@ -1,17 +1,21 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
+use bevy_mod_picking::prelude::*;
 
 use crate::animation::backup::Backup;
 use crate::animation::offset::Offset;
 use crate::ui::prelude::*;
 
 pub fn overlay(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style::ABS_FILL,
-        z_index: ZIndex::Global(1000),
-        ..default()
-    });
+    entity.insert((
+        NodeBundle {
+            style: Style::ABS_FILL,
+            z_index: ZIndex::Global(1000),
+            ..default()
+        },
+        Pickable::IGNORE,
+    ));
 }
 
 pub fn blocking_overlay(mut entity: EntityWorldMut) {
