@@ -11,8 +11,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
@@ -47,8 +47,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
@@ -71,8 +71,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
@@ -95,8 +95,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
@@ -119,8 +119,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
@@ -143,8 +143,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 16),
-                    SpriteAnimationFrame(index: 1, beats: 16),
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
                 ],
             ),
 
