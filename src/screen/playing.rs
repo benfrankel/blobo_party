@@ -1,6 +1,8 @@
+pub mod defeat_menu;
 pub mod hud;
 pub mod level_up_menu;
 pub mod pause_menu;
+pub mod victory_menu;
 
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
@@ -20,6 +22,7 @@ use crate::game::wave::wave;
 use crate::game::GameRoot;
 use crate::screen::fade_in;
 use crate::screen::playing::hud::playing_hud;
+use crate::screen::playing::victory_menu::reset_endless_mode;
 use crate::screen::Screen;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -27,12 +30,17 @@ use crate::util::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         StateFlush,
-        Screen::Playing.on_edge(stop_music, (enter_playing, start_music)),
+        Screen::Playing.on_edge(stop_music, (enter_playing, start_music, reset_endless_mode)),
     );
 
     app.configure::<(PlayingAssets, PlayingAction, PlayingMenu)>();
 
-    app.add_plugins((level_up_menu::plugin, pause_menu::plugin));
+    app.add_plugins((
+        level_up_menu::plugin,
+        pause_menu::plugin,
+        victory_menu::plugin,
+        defeat_menu::plugin,
+    ));
 }
 
 fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<UiRoot>) {
@@ -138,6 +146,8 @@ impl Configure for PlayingAction {
 enum PlayingMenu {
     Pause,
     LevelUp,
+    Victory,
+    Defeat,
 }
 
 impl Configure for PlayingMenu {
