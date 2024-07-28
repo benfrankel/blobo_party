@@ -14,6 +14,7 @@ use crate::core::pause::Pause;
 use crate::game::actor::player::player;
 use crate::game::audio::music::start_music;
 use crate::game::audio::music::stop_music;
+use crate::game::ground::ground;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::wave::wave;
 use crate::game::GameRoot;
@@ -55,6 +56,9 @@ fn enter_playing(mut commands: Commands, game_root: Res<GameRoot>, ui_root: Res<
     commands
         .spawn_with(playing_hud(player))
         .set_parent(ui_root.body);
+
+    // Spawn Background.
+    commands.spawn_with(ground).set_parent(game_root.background);
 }
 
 #[derive(AssetCollection, Resource, Reflect, Default)]

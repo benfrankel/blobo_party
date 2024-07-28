@@ -5,6 +5,7 @@ pub mod audio;
 pub mod card;
 pub mod cleanup;
 pub mod combat;
+pub mod ground;
 pub mod spotlight;
 pub mod sprite;
 pub mod wave;
@@ -28,6 +29,7 @@ pub(super) fn plugin(app: &mut App) {
         card::plugin,
         cleanup::plugin,
         combat::plugin,
+        ground::plugin,
         spotlight::plugin,
         sprite::plugin,
         wave::plugin,
@@ -41,6 +43,7 @@ pub struct GameRoot {
     pub enemies: Entity,
     pub projectiles: Entity,
     pub vfx: Entity,
+    pub background: Entity,
 }
 
 impl Configure for GameRoot {
@@ -57,12 +60,14 @@ impl FromWorld for GameRoot {
         let enemies = world.spawn_with(root("Enemies")).id();
         let projectiles = world.spawn_with(root("Projectiles")).id();
         let vfx = world.spawn_with(root("Vfx")).id();
+        let background = world.spawn_with(root("Background")).id();
 
         Self {
             players,
             enemies,
             projectiles,
             vfx,
+            background,
         }
     }
 }
@@ -72,6 +77,7 @@ fn clear_game_root(mut commands: Commands, game_root: Res<GameRoot>) {
     commands.entity(game_root.enemies).despawn_descendants();
     commands.entity(game_root.projectiles).despawn_descendants();
     commands.entity(game_root.vfx).despawn_descendants();
+    commands.entity(game_root.background).despawn_descendants();
 }
 
 fn root(name: impl Into<Cow<'static, str>>) -> impl EntityCommand<World> {
