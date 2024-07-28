@@ -19,19 +19,18 @@
             movement: Movement(
                 speed: 80.0,
             ),
+            // TODO: Does this still work or does it get overwritten?
             attack: Attack(
                 power: 2,
                 force: 4,
                 color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000)),
-                // TODO: For testing purposes. This should actually be None.
-                projectile: Some("quarter_note"),
             ),
             health: Health(
                 max: 100,
                 current: 100,
             ),
             deck: Deck(
-                cards: ["step", "double_beat"],
+                cards: ["step", "pair"],
             ),
         ),
     },
@@ -57,7 +56,7 @@
                 color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000)),
             ),
             deck: Deck(
-                cards: ["step", "step", "double_beat"],
+                cards: ["step", "step", "pair"],
             ),
         ),
 
@@ -81,7 +80,7 @@
                 color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000)),
             ),
             deck: Deck(
-                cards: ["step", "double_beat", "double_beat"],
+                cards: ["step", "pair", "pair"],
             ),
         ),
 
@@ -105,7 +104,7 @@
                 color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000)),
             ),
             deck: Deck(
-                cards: ["double_beat"],
+                cards: ["pair"],
             ),
         ),
 
@@ -129,7 +128,7 @@
                 color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000)),
             ),
             deck: Deck(
-                cards: ["step", "double_beat"],
+                cards: ["step", "pair"],
             ),
         ),
 

@@ -6,24 +6,8 @@
     // Cards:
     card_height: Vw(9.0),
     card_background_map: {
-        "yellow": CardBackground (
-            texture: "image/card/yellow_card.png",
-            texture_atlas_grid: TextureAtlasGrid(
-                tile_size: UVec2(16, 16),
-                columns: 2,
-                rows: 1,
-            ),
-        ),
-        "green": CardBackground (
-            texture: "image/card/green_card.png",
-            texture_atlas_grid: TextureAtlasGrid(
-                tile_size: UVec2(16, 16),
-                columns: 2,
-                rows: 1,
-            ),
-        ),
         "blue": CardBackground (
-            texture: "image/card/blue_card.png",
+            texture: "image/card/background/blue.png",
             texture_atlas_grid: TextureAtlasGrid(
                 tile_size: UVec2(16, 16),
                 columns: 2,
@@ -31,7 +15,23 @@
             ),
         ),
         "pink": CardBackground (
-            texture: "image/card/pink_card.png",
+            texture: "image/card/background/pink.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
+        ),
+        "green": CardBackground (
+            texture: "image/card/background/green.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(16, 16),
+                columns: 2,
+                rows: 1,
+            ),
+        ),
+        "yellow": CardBackground (
+            texture: "image/card/background/yellow.png",
             texture_atlas_grid: TextureAtlasGrid(
                 tile_size: UVec2(16, 16),
                 columns: 2,
@@ -40,10 +40,24 @@
         ),
     },
     card_icon_map: {
-        "step": CardIcon(texture: "image/card/step.png"),
-        "double_beat": CardIcon(texture: "image/card/double_beat.png"),
-        "major_chord": CardIcon(texture: "image/card/major_chord.png"),
-        "splits": CardIcon(texture: "image/card/splits.png"),
+        // TODO: Long-duration notes are stronger versions of short-duration notes (more damage and knockback, maybe less speed).
+        "eighth_note": CardIcon(texture: "image/card/icon/eighth_note.png"),
+        //"quarter_note": CardIcon(texture: "image/card/icon/quarter_note.png"),
+        //"half_note": CardIcon(texture: "image/card/icon/half_note.png"),
+        //"whole_note": CardIcon(texture: "image/card/icon/whole_note.png"),
+        "pair": CardIcon(texture: "image/card/icon/pair.png"),
+        "major_chord": CardIcon(texture: "image/card/icon/major_chord.png"),
+        "cluster_chord": CardIcon(texture: "image/card/icon/cluster_chord.png"),
+        "rest": CardIcon(texture: "image/card/icon/rest.png"),
+        "sharp_flat": CardIcon(texture: "image/card/icon/sharp_flat.png"),
+        "natural": CardIcon(texture: "image/card/icon/natural.png"),
+        "fermata": CardIcon(texture: "image/card/icon/fermata.png"),
+        "bass_clef": CardIcon(texture: "image/card/icon/bass_clef.png"),
+
+        "step": CardIcon(texture: "image/card/icon/step.png"),
+        "splits": CardIcon(texture: "image/card/icon/splits.png"),
+        "ballet": CardIcon(texture: "image/card/icon/ballet.png"),
+        "moonwalk": CardIcon(texture: "image/card/icon/moonwalk.png"),
     },
     card_map: {
         "step": Card(
@@ -71,11 +85,11 @@
                 remove_on_beat: 16,
             ),
         ),
-        "double_beat": Card(
-            name: "Double Beat",
+        "pair": Card(
+            name: "Pair",
             description: "Two beats, rapid fire!",
             background: "pink",
-            icon: "double_beat",
+            icon: "pair",
 
             action: DoubleBeat,
             action_config: CardActionConfig(
