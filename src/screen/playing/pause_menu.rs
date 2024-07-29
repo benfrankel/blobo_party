@@ -5,7 +5,6 @@ use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 
 use crate::core::pause::Pause;
-use crate::game::audio::music::MusicHandle;
 use crate::screen::fade_out;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
@@ -110,15 +109,9 @@ fn continue_button(mut entity: EntityWorldMut) {
 fn restart_button(mut entity: EntityWorldMut) {
     entity.add(widget::menu_button("Restart")).insert((
         On::<Pointer<Click>>::run(
-            |mut commands: Commands,
-             audio: Res<Audio>,
-             assets: Res<PlayingAssets>,
-             music_handle: Res<MusicHandle>,
-             mut audio_instances: ResMut<Assets<AudioInstance>>| {
+            |mut commands: Commands, audio: Res<Audio>, assets: Res<PlayingAssets>| {
                 commands.spawn_with(fade_out(Screen::Playing));
                 audio.play(assets.sfx_restart.clone()).with_volume(0.7);
-                let music = r!(audio_instances.get_mut(&music_handle.0));
-                music.seek_to(0.0);
             },
         ),
         Style {

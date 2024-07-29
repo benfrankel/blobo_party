@@ -16,6 +16,7 @@ use crate::core::pause::Pause;
 use crate::game::actor::player::player;
 use crate::game::audio::music::start_music;
 use crate::game::audio::music::stop_music;
+use crate::game::audio::music::Beat;
 use crate::game::ground::ground;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::stats::Stats;
@@ -48,11 +49,13 @@ fn enter_playing(
     game_root: Res<GameRoot>,
     ui_root: Res<UiRoot>,
     mut stats: ResMut<Stats>,
+    mut beat: ResMut<Beat>,
 ) {
     commands.spawn_with(fade_in);
 
-    // Reset stats.
+    // Reset resources.
     *stats = default();
+    *beat = default();
 
     // TODO: Character select screen.
     // Spawn player.
