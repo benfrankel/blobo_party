@@ -76,7 +76,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
                 HitboxDamage(0.0),
-                HitboxKnockback(0.0),
+                HitboxKnockback(150.0, false),
                 HurtSfx(sfx_hurt, 1.8),
                 DeathSfx(sfx_death, 1.0),
             ))

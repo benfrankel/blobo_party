@@ -29,6 +29,6 @@ fn apply_hitbox_damage(
     hitbox_query: Query<&HitboxDamage>,
 ) {
     let &OnHit(hitbox, hurtbox) = trigger.event();
-    let damage = r!(hitbox_query.get(hitbox));
+    let damage = rq!(hitbox_query.get(hitbox));
     commands.entity(hurtbox).trigger(OnDamage(damage.0));
 }

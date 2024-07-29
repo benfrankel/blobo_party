@@ -79,7 +79,7 @@ impl Configure for HurtSfx {
 }
 
 fn play_hurt_sfx(trigger: Trigger<OnHit>, sfx_query: Query<&HurtSfx>, audio: Res<Audio>) {
-    let sfx = r!(sfx_query.get(trigger.event().1));
+    let sfx = rq!(sfx_query.get(trigger.event().1));
     audio
         .play(sfx.0.clone())
         .with_volume(sfx.1)

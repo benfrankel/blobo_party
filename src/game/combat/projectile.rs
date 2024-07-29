@@ -170,7 +170,7 @@ pub fn projectile(
                 (
                     Hitbox,
                     HitboxDamage(power * projectile.damage),
-                    HitboxKnockback(power * projectile.knockback),
+                    HitboxKnockback(power * projectile.knockback, true),
                 ),
                 // TODO: Additional cleanup conditions that could be added: entity cap.
                 // Cleanup:
