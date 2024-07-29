@@ -7,11 +7,12 @@ use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
 use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
-use rand::seq::IteratorRandom as _;
+use rand::prelude::*;
 
 use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::actor::level::up::LevelUp;
+use crate::game::actor::level::Level;
 use crate::game::card::card;
 use crate::game::card::deck::Deck;
 use crate::game::card::deck::IsDeckDisplay;
@@ -183,16 +184,26 @@ fn instructions_container(mut entity: EntityWorldMut) {
 }
 
 fn card_options_container(entity: Entity, world: &mut World) {
-    let config = SystemState::<ConfigRef<CardConfig>>::new(world).get(world);
+    let mut system_state = SystemState::<(
+        ConfigRef<CardConfig>,
+        Query<&Selection, With<IsDeckDisplay>>,
+        Query<&Level>,
+    )>::new(world);
+    let (config, selection_query, level_query) = system_state.get(world);
     let config = r!(config.get());
-    // TODO: Pick cards options from a card pool based on level.
-    let card_keys = config
+    let selection = r!(selection_query.get_single());
+    let level = r!(level_query.get(selection.0));
+    let level = level.current;
+    let card_pool = config
         .card_map
-        .keys()
-        .choose_multiple(&mut rand::thread_rng(), 3)
-        .into_iter()
-        .cloned()
+        .iter()
+        .filter(|(_, card)| card.min_level <= level && level <= card.max_level)
         .collect::<Vec<_>>();
+    let card_keys =
+        r!(card_pool.choose_multiple_weighted(&mut rand::thread_rng(), 3, |(_, card)| card.weight))
+            .into_iter()
+            .map(|(key, _)| (*key).clone())
+            .collect::<Vec<_>>();
 
     world
         .entity_mut(entity)

@@ -168,7 +168,6 @@ impl EntityCommand for CardIcon {
     }
 }
 
-// TODO: `min_level` field before the card can be offered in the level up menu.
 #[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Card {
     pub name: String,
@@ -177,6 +176,15 @@ pub struct Card {
     pub background_key: String,
     #[serde(rename = "icon")]
     pub icon_key: String,
+    /// The earliest level this card will be offered in the level up menu.
+    #[serde(default)]
+    pub min_level: usize,
+    /// The latest level this card will be offered in the level up menu.
+    #[serde(default = "inf")]
+    pub max_level: usize,
+    /// The relative probability of this card being offered in the level up menu.
+    #[serde(default = "one")]
+    pub weight: f64,
 
     #[serde(rename = "play_sfx", default)]
     play_sfx_path: String,
@@ -193,6 +201,10 @@ pub struct Card {
 
 fn one() -> f64 {
     1.0
+}
+
+fn inf() -> usize {
+    usize::MAX
 }
 
 pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand {
