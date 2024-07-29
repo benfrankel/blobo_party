@@ -159,6 +159,7 @@ pub fn projectile(
                     RigidBody::Kinematic,
                     Collider::circle(projectile.radius),
                     CollisionLayers::new(GameLayer::Projectile, target_layers),
+                    Sensor,
                     LockedAxes::ROTATION_LOCKED,
                     LinearVelocity(projectile.speed * force),
                 ),
