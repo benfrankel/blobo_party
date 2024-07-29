@@ -7,6 +7,7 @@ use bevy::prelude::*;
 
 use crate::core::camera::CameraRoot;
 use crate::core::camera::SmoothFollow;
+use crate::core::UpdateSet;
 use crate::game::actor::attack::input::attack_action;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
@@ -17,6 +18,7 @@ use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::death::DeathSfx;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::hit::HurtSfx;
+use crate::game::combat::hit::Immune;
 use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
@@ -24,7 +26,7 @@ use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<IsPlayer>();
+    app.configure::<(IsPlayer, IsImmuneBubble)>();
 }
 
 #[derive(Component, Reflect, Default)]
@@ -41,7 +43,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
     let key = key.into();
 
     move |entity: Entity, world: &mut World| {
-        let (actor, parent, camera, sfx_hurt, sfx_death) = {
+        let (actor, parent, camera, sfx_hurt, sfx_death, bubble_texture) = {
             let (config, game_root, camera_root, assets) = SystemState::<(
                 ConfigRef<ActorConfig>,
                 Res<GameRoot>,
@@ -58,6 +60,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 camera_root.primary,
                 assets.sfx_movement.clone(),
                 assets.sfx_restart.clone(),
+                assets.bubble.clone(),
             )
         };
 
@@ -73,7 +76,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
                 HitboxDamage(0.0),
-                HitboxKnockback(5.0),
+                HitboxKnockback(0.0),
                 HurtSfx(sfx_hurt, 1.8),
                 DeathSfx(sfx_death, 1.0),
             ))
@@ -83,6 +86,17 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                     .spawn_with(FacingIndicator {
                         offset: vec2(6.0, 5.0),
                     })
+                    .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
+                children
+                    .spawn((
+                        SpriteBundle {
+                            transform: Transform::default(),
+                            texture: bubble_texture,
+                            visibility: Visibility::Hidden,
+                            ..default()
+                        },
+                        IsImmuneBubble,
+                    ))
                     .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
             });
 
@@ -94,5 +108,29 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
             .add(attack_action);
 
         r!(world.entity_mut(camera).get_mut::<SmoothFollow>()).target = entity;
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+struct IsImmuneBubble;
+
+impl Configure for IsImmuneBubble {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.add_systems(Update, update_immune_bubble.in_set(UpdateSet::SyncLate));
+    }
+}
+
+fn update_immune_bubble(
+    mut bubble_query: Query<(&mut Visibility, &Parent), With<IsImmuneBubble>>,
+    immune_query: Query<(), With<Immune>>,
+) {
+    for (mut visibility, parent) in &mut bubble_query {
+        *visibility = if immune_query.contains(parent.get()) {
+            Visibility::Inherited
+        } else {
+            Visibility::Hidden
+        };
     }
 }

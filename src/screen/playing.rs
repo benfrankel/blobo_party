@@ -94,6 +94,8 @@ pub struct PlayingAssets {
     pub spotlight: Handle<Image>,
     #[asset(path = "image/vfx/spotlight_lamp.png")]
     pub spotlight_lamp: Handle<Image>,
+    #[asset(path = "image/vfx/bubble.png")]
+    pub bubble: Handle<Image>,
 
     #[asset(path = "audio/music/Menu Theme.ogg")]
     pub music: Handle<AudioSource>,
