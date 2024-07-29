@@ -117,7 +117,7 @@ fn play_interaction_sfx(
             },
             Interaction::Pressed => {
                 audio
-                    .play(assets.sfx_ui_click1.clone())
+                    .play(assets.sfx_ui_click.clone())
                     .with_volume(0.6)
                     .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
             },

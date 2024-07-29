@@ -57,7 +57,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 actor,
                 game_root.players,
                 camera_root.primary,
-                assets.sfx_movement.clone(),
+                assets.sfx_player_hurt.clone(),
                 assets.sfx_restart.clone(),
                 assets.bubble.clone(),
             )

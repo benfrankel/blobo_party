@@ -475,7 +475,7 @@ fn card_discard(
     mut deck_query: Query<&mut Deck>,
 ) {
     audio
-        .play(assets.sfx_ui_click.clone())
+        .play(assets.sfx_ui_click_fail.clone())
         .with_playback_rate(rand::thread_rng().gen_range(0.8..1.4));
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));

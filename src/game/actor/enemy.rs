@@ -39,7 +39,7 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand {
             let config = r!(config.get());
             let actor = r!(config.enemies.get(&key)).clone();
 
-            (actor, game_root.enemies, assets.sfx_kick.clone())
+            (actor, game_root.enemies, assets.sfx_enemy_hurt.clone())
         };
 
         world
