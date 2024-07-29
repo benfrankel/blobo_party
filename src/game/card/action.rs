@@ -37,7 +37,7 @@ impl FromWorld for CardActionMap {
         Self(
             [
                 (
-                    CardActionKey::Step,
+                    CardActionKey::Move,
                     world.register_system(
                         |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
@@ -47,17 +47,19 @@ impl FromWorld for CardActionMap {
                                 modifier.remove_on_beat,
                             ));
 
-                            // Player actor has extra benefits
+                            // Player actor has extra benefits:
                             if entity.contains::<IsPlayer>() {
-                                entity.insert(RemoveOnTimer::bundle(
-                                    HitboxDamage(modifier.hitbox_damage.0),
-                                    Timer::from_seconds(modifier.hitbox_damage.1, TimerMode::Once),
-                                ));
+                                if modifier.contact_damage > 0.0 {
+                                    entity.insert(RemoveOnBeat::bundle(
+                                        HitboxDamage(modifier.contact_damage),
+                                        modifier.contact_beats,
+                                    ));
+                                }
 
-                                if let Some(timer) = modifier.immunity {
+                                if modifier.immunity > 0.0 {
                                     entity.insert(RemoveOnTimer::bundle(
                                         Immune,
-                                        Timer::from_seconds(timer, TimerMode::Once),
+                                        Timer::from_seconds(modifier.immunity, TimerMode::Once),
                                     ));
                                 }
                             }
@@ -88,6 +90,23 @@ impl FromWorld for CardActionMap {
                             let mut health = r!(entity.get_mut::<Health>());
                             health.current += modifier.heal_flat;
                             health.current += modifier.heal_percent / 100.0 * health.max;
+
+                            // Player actor has extra benefits:
+                            if entity.contains::<IsPlayer>() {
+                                if modifier.contact_damage > 0.0 {
+                                    entity.insert(RemoveOnBeat::bundle(
+                                        HitboxDamage(modifier.contact_damage),
+                                        modifier.contact_beats,
+                                    ));
+                                }
+
+                                if modifier.immunity > 0.0 {
+                                    entity.insert(RemoveOnTimer::bundle(
+                                        Immune,
+                                        Timer::from_seconds(modifier.immunity, TimerMode::Once),
+                                    ));
+                                }
+                            }
                         },
                     ),
                 ),
@@ -101,7 +120,7 @@ impl FromWorld for CardActionMap {
 
 #[derive(Reflect, Serialize, Deserialize, Eq, PartialEq, Hash, Copy, Clone)]
 pub enum CardActionKey {
-    Step,
+    Move,
     Attack,
     Heal,
 }
@@ -126,8 +145,9 @@ pub struct CardActionModifier {
     remove_on_timer: Timer,
     attack: Attack,
     movement: Movement,
-    immunity: Option<f32>,
-    hitbox_damage: (f32, f32), // damage, time
+    contact_damage: f32,
+    contact_beats: usize,
     heal_percent: f32,
     heal_flat: f32,
+    immunity: f32,
 }

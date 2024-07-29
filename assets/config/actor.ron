@@ -16,7 +16,6 @@
                 ],
             ),
 
-            movement: Movement(speed: 80.0),
             attack: Attack(color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000))),
             health: Health(max: 100, current: 100),
             deck: Deck(cards: ["step", "pair"]),

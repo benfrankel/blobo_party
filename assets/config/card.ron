@@ -43,8 +43,8 @@
         "step": CardIcon(texture: "image/card/icon/step.png"),
         "splits": CardIcon(texture: "image/card/icon/splits.png"),
         "ballet": CardIcon(texture: "image/card/icon/ballet.png"),
-        "moonwalk": CardIcon(texture: "image/card/icon/moonwalk.png"),
         "cartwheel": CardIcon(texture: "image/card/icon/cartwheel.png"),
+        "moonwalk": CardIcon(texture: "image/card/icon/moonwalk.png"),
 
         "eighth_note": CardIcon(texture: "image/card/icon/eighth_note.png"),
         "quarter_note": CardIcon(texture: "image/card/icon/quarter_note.png"),
@@ -72,33 +72,89 @@
             description: "A-one and a-two and a-step.",
             background: "blue",
             icon: "step",
+            max_level: 4,
             weight: 0.8,
 
-            //play_sfx: "audio/sfx/Movement.ogg",
             play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
-            //play_sfx: "audio/sfx/137105__chaosportal__finger-snap-01.ogg",
-            //play_sfx: "audio/sfx/102130__noirpantalon__hard_subby_kick.ogg",
-            //play_sfx: "audio/sfx/24787__young_daddy__clap-mix2.ogg",
-            action: Step,
+            action: Move,
             action_modifier: CardActionModifier(
-                remove_on_beat: 8,
-                hitbox_damage: (15.0, 0.5),
+                remove_on_beat: 5,
                 movement: Movement(speed: 80.0),
-                immunity: Some(0.5),
+                contact_damage: 8,
+                contact_beats: 5,
+                immunity: 0.15,
             ),
         ),
-        /*"splits": Card(
+        "splits": Card(
             name: "Splits",
             description: "Split in two!",
             background: "blue",
             icon: "splits",
+            weight: 0.3,
 
-            play_sfx: "audio/sfx/Movement.ogg",
+            play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
+            action: Move,
             action_modifier: CardActionModifier(
                 remove_on_beat: 16,
+                movement: Movement(speed: 0),
+                contact_damage: 30,
+                contact_beats: 16,
+                immunity: 1.0,
             ),
-        ),*/
-        // TODO: Add other movement cards.
+        ),
+        "ballet": Card(
+            name: "Pirouette",
+            description: "",
+            background: "blue",
+            icon: "ballet",
+            min_level: 3,
+            weight: 0.8,
+
+            play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
+            action: Move,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 6,
+                movement: Movement(speed: 120.0),
+                contact_damage: 12,
+                contact_beats: 6,
+                immunity: 0.3,
+            ),
+        ),
+        "cartwheel": Card(
+            name: "Cartwheel",
+            description: "Round and round, let the city turn!",
+            background: "blue",
+            icon: "cartwheel",
+            min_level: 5,
+            weight: 0.8,
+
+            play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
+            action: Move,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 4,
+                movement: Movement(speed: 160.0, facing_offset: 0.25),
+                contact_damage: 20,
+                contact_beats: 6,
+                immunity: 0.4,
+            ),
+        ),
+        "moonwalk": Card(
+            name: "Moonwalk",
+            description: "",
+            background: "blue",
+            icon: "moonwalk",
+            min_level: 7,
+
+            play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
+            action: Move,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 8,
+                movement: Movement(speed: 40.0, facing_offset: 0.5),
+                contact_damage: 50,
+                contact_beats: 8,
+                immunity: 0.5,
+            ),
+        ),
 
         "eighth_note": Card(
             name: "Eighth Note",
@@ -200,7 +256,7 @@
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_flat: 5),
+            action_modifier: CardActionModifier(heal_flat: 5, immunity: 0.5),
         ),
         "quarter_rest": Card(
             name: "Quarter Rest",
@@ -212,7 +268,7 @@
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 25),
+            action_modifier: CardActionModifier(heal_percent: 25, immunity: 0.5),
         ),
         "half_rest": Card(
             name: "Half Rest",
@@ -224,7 +280,7 @@
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 50),
+            action_modifier: CardActionModifier(heal_percent: 50, immunity: 0.5),
         ),
         "whole_rest": Card(
             name: "Whole Rest",
@@ -235,7 +291,7 @@
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 100),
+            action_modifier: CardActionModifier(heal_percent: 100, immunity: 0.5),
         ),
     }
 )

@@ -35,8 +35,8 @@ pub struct Movement {
     pub decel: f32,
     /// The max "under control" speed (pixels per second).
     pub speed: f32,
-    /// The offset from facing that the movement will head.
-    pub facing_offset: f32,
+    /// The direction the movement will travel relative to the target direction (full turns).
+    pub direction: f32,
 }
 
 impl Configure for Movement {
@@ -54,10 +54,10 @@ impl Configure for Movement {
 impl Default for Movement {
     fn default() -> Self {
         Self {
-            accel: 1000.0,
+            accel: 2500.0,
             decel: 0.0001,
             speed: 80.0,
-            facing_offset: 0.0,
+            direction: 0.0,
         }
     }
 }
