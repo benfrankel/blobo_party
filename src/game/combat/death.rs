@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use rand::Rng as _;
 
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
@@ -73,5 +74,8 @@ fn play_death_sfx(
         return;
     }
 
-    audio.play(assets.sfx_restart.clone()).with_volume(1.0);
+    audio
+        .play(assets.sfx_restart.clone())
+        .with_volume(1.0)
+        .with_playback_rate(rand::thread_rng().gen_range(0.8..1.4));
 }

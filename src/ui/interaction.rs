@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy::reflect::GetTypeRegistration;
 use bevy_kira_audio::prelude::*;
 use bevy_mod_picking::prelude::*;
+use rand::Rng as _;
 
 use crate::animation::offset::Offset;
 use crate::core::UpdateSet;
@@ -109,10 +110,16 @@ fn play_interaction_sfx(
 
         match interaction {
             Interaction::Hovered => {
-                audio.play(assets.sfx_ui_hover.clone()).with_volume(0.6);
+                audio
+                    .play(assets.sfx_ui_hover.clone())
+                    .with_volume(0.6)
+                    .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
             },
             Interaction::Pressed => {
-                audio.play(assets.sfx_ui_click.clone()).with_volume(0.6);
+                audio
+                    .play(assets.sfx_ui_click.clone())
+                    .with_volume(0.6)
+                    .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
             },
             _ => (),
         }

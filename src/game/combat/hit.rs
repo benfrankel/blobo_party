@@ -1,6 +1,7 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use rand::Rng as _;
 
 use crate::core::UpdateSet;
 use crate::game::cleanup::RemoveOnTimer;
@@ -88,5 +89,8 @@ fn play_hurt_sfx(
         return;
     }
 
-    audio.play(assets.sfx_hurt.clone()).with_volume(1.0);
+    audio
+        .play(assets.sfx_hurt.clone())
+        .with_volume(1.0)
+        .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
 }

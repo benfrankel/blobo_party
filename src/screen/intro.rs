@@ -93,8 +93,8 @@ fn body(mut entity: EntityWorldMut) {
         .with_children(|children| {
             for (i, text) in [
                 "Cards are played to the rhythm,",
-                "use your mouse to aim.",
-                "Show off your moves to impress 'em,",
+                "using your mouse to aim.",
+                "Show off your dance moves with 'em,",
                 "reach [b]Level 10[r] for fame!",
             ]
             .into_iter()

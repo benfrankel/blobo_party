@@ -444,7 +444,9 @@ fn card_swap_left(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
-    audio.play(assets.sfx_ui_hover.clone());
+    audio
+        .play(assets.sfx_ui_hover.clone())
+        .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.swap(-1);
@@ -457,7 +459,9 @@ fn card_swap_right(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
-    audio.play(assets.sfx_ui_hover.clone());
+    audio
+        .play(assets.sfx_ui_hover.clone())
+        .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.swap(1);
@@ -470,7 +474,9 @@ fn card_discard(
     deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
     mut deck_query: Query<&mut Deck>,
 ) {
-    audio.play(assets.sfx_ui_click.clone());
+    audio
+        .play(assets.sfx_ui_click.clone())
+        .with_playback_rate(rand::thread_rng().gen_range(0.8..1.4));
     for selection in &deck_display_query {
         let mut deck = c!(deck_query.get_mut(selection.0));
         deck.discard();
