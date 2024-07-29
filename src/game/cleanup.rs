@@ -17,7 +17,7 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct DespawnOnHit;
+pub struct DespawnOnHit(pub usize);
 
 impl Configure for DespawnOnHit {
     fn configure(app: &mut App) {
@@ -29,11 +29,14 @@ impl Configure for DespawnOnHit {
 fn apply_despawn_on_hit(
     trigger: Trigger<OnHit>,
     mut despawn: ResMut<LateDespawn>,
-    despawn_query: Query<(), With<DespawnOnHit>>,
+    mut despawn_query: Query<&mut DespawnOnHit>,
 ) {
     let hitbox = trigger.event().0;
-    if despawn_query.contains(hitbox) {
+    let mut hits = rq!(despawn_query.get_mut(hitbox));
+    if hits.0 == 0 {
         despawn.recursive(hitbox);
+    } else {
+        hits.0 -= 1;
     }
 }
 

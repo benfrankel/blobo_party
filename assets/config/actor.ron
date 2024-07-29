@@ -64,6 +64,7 @@
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000))),
+            health: Health(current: 10, max: 10),
             deck: Deck(cards: ["step", "step", "pair"]),
         ),
 
@@ -86,6 +87,7 @@
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000))),
+            health: Health(current: 15, max: 15),
             deck: Deck(cards: ["step"]),
         ),
 
@@ -108,7 +110,8 @@
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000))),
-            deck: Deck(cards: ["step", "pair"]),
+            health: Health(current: 25, max: 25),
+            deck: Deck(cards: ["step", "quarter_note"]),
         ),
 
         "green": Actor(
@@ -129,7 +132,8 @@
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000))),
-            deck: Deck(cards: ["pair"]),
+            health: Health(current: 40, max: 40),
+            deck: Deck(cards: ["half_note"]),
         ),
 
         "yellow": Actor(
@@ -151,6 +155,7 @@
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
+            health: Health(current: 60, max: 60),
             deck: Deck(cards: ["step", "whole_note", "quarter_rest"]),
         ),
     },

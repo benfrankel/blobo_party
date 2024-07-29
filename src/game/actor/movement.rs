@@ -3,9 +3,11 @@ pub mod smoke;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
@@ -38,7 +40,12 @@ pub struct Movement {
 impl Configure for Movement {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_movement.in_set(UpdateSet::Update));
+        app.add_systems(
+            Update,
+            apply_movement
+                .in_set(UpdateSet::Update)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 
@@ -79,7 +86,9 @@ impl Configure for MovementController {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            reset_movement_controller.in_set(UpdateSet::SyncEarly),
+            reset_movement_controller
+                .in_set(UpdateSet::SyncEarly)
+                .run_if(Pause::is_disabled),
         );
     }
 }
@@ -99,7 +108,9 @@ impl Configure for OldMovementController {
         app.register_type::<Self>();
         app.add_systems(
             Update,
-            sync_old_movement_controller.in_set(UpdateSet::SyncLate),
+            sync_old_movement_controller
+                .in_set(UpdateSet::SyncLate)
+                .run_if(Pause::is_disabled),
         );
     }
 }

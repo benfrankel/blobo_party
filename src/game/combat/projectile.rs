@@ -88,6 +88,8 @@ pub struct Projectile {
     pub speed: f32,
     pub damage: f32,
     pub knockback: f32,
+    #[serde(default)]
+    pub pierce: usize,
 }
 
 fn one() -> f64 {
@@ -172,7 +174,7 @@ pub fn projectile(
                 // TODO: Additional cleanup conditions that could be added: entity cap.
                 // Cleanup:
                 (
-                    DespawnOnHit,
+                    DespawnOnHit(projectile.pierce),
                     DespawnRadiusSq::new(200.0),
                     DespawnOnTimer(Timer::from_seconds(projectile.lifetime, TimerMode::Once)),
                 ),

@@ -4,9 +4,11 @@ use std::f32::consts::TAU;
 
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::core::pause::Pause;
 use crate::core::UpdateSet;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::faction::Faction;
@@ -45,7 +47,12 @@ pub struct Attack {
 impl Configure for Attack {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_attack.in_set(UpdateSet::Spawn));
+        app.add_systems(
+            Update,
+            apply_attack
+                .in_set(UpdateSet::Spawn)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 
@@ -160,7 +167,12 @@ pub struct AttackController {
 impl Configure for AttackController {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, reset_attack_controller.in_set(UpdateSet::SyncEarly));
+        app.add_systems(
+            Update,
+            reset_attack_controller
+                .in_set(UpdateSet::SyncEarly)
+                .run_if(Pause::is_disabled),
+        );
     }
 }
 

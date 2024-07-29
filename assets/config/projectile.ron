@@ -1,5 +1,4 @@
 (
-    // TODO: Tune stats for each projectile.
     projectiles: {
         "eighth_note": Projectile(
             name: "Eighth Note",
@@ -8,11 +7,11 @@
             spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             spawn_sfx_volume: 0.5,
 
-            lifetime: 1,
+            lifetime: 0.5,
             radius: 3.0,
-            speed: 20.0,
-            damage: 2.0,
-            knockback: 0.5,
+            speed: 80.0,
+            damage: 6.0,
+            knockback: 1.0,
         ),
         "quarter_note": Projectile(
             name: "Quarter Note",
@@ -23,9 +22,10 @@
 
             lifetime: 1,
             radius: 3.0,
-            speed: 20.0,
-            damage: 2.0,
-            knockback: 0.5,
+            speed: 60.0,
+            damage: 12.0,
+            knockback: 3.0,
+            pierce: 2,
         ),
         "half_note": Projectile(
             name: "Half Note",
@@ -34,11 +34,12 @@
             spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             spawn_sfx_volume: 0.5,
 
-            lifetime: 1,
+            lifetime: 2,
             radius: 3.0,
-            speed: 20.0,
-            damage: 2.0,
-            knockback: 0.5,
+            speed: 40.0,
+            damage: 30.0,
+            knockback: 10.0,
+            pierce: 6,
         ),
         "whole_note": Projectile(
             name: "Whole Note",
@@ -47,11 +48,12 @@
             spawn_sfx: "audio/sfx/Projectile Hits Enemy.ogg",
             spawn_sfx_volume: 0.5,
 
-            lifetime: 1,
+            lifetime: 4,
             radius: 3.0,
             speed: 20.0,
-            damage: 2.0,
-            knockback: 0.5,
+            damage: 60.0,
+            knockback: 20.0,
+            pierce: 100,
         ),
     },
 )
