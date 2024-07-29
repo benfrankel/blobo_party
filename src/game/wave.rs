@@ -90,7 +90,7 @@ fn spawn_wave_enemies(
             .filter(|(_, enemy)| enemy.min_level <= level && level <= enemy.max_level)
             .collect::<Vec<_>>();
 
-        let spawn_count = ((level as f32 * config.spawn_count_scale) as usize).clamp(1, spawn_cap);
+        let spawn_count = ((level as f32 * config.spawn_count_scale) as usize).min(spawn_cap);
         spawn_cap = spawn_cap.saturating_sub(spawn_count);
         for _ in 0..spawn_count {
             let enemy_key = c!(enemy_pool.choose_weighted(&mut rng, |(_, enemy)| enemy.weight)).0;
