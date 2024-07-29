@@ -6,6 +6,7 @@ use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
 use crate::game::actor::health::Health;
+use crate::game::actor::movement::Movement;
 use crate::game::actor::player::IsPlayer;
 use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::AttackOnBeat;
@@ -42,7 +43,7 @@ impl FromWorld for CardActionMap {
                          world: &mut World| {
                             let mut entity = r!(world.get_entity_mut(entity));
                             entity.insert(RemoveOnBeat::bundle(
-                                MoveTowardsFacing,
+                                MoveTowardsFacing(modifier.movement),
                                 modifier.remove_on_beat,
                             ));
 
@@ -124,6 +125,7 @@ pub struct CardActionModifier {
     /// Remove component when this timer finishes.
     remove_on_timer: Timer,
     attack: Attack,
+    movement: Movement,
     immunity: Option<f32>,
     hitbox_damage: (f32, f32), // damage, time
     heal_percent: f32,

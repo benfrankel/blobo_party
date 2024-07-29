@@ -79,6 +79,7 @@
             action_modifier: CardActionModifier(
                 remove_on_beat: 8,
                 hitbox_damage: (15.0, 0.5),
+                movement: Movement(speed: 80.0),
                 immunity: Some(0.5),
             ),
         ),
