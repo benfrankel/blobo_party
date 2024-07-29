@@ -23,7 +23,7 @@ pub struct WaveConfig {
     pub spawn_cadence: usize,
     pub min_distance: f32,
     pub max_distance: f32,
-    pub spawn_count_scale: usize,
+    pub spawn_count_scale: f32,
     pub max_spawn_count: usize,
 }
 
@@ -86,7 +86,8 @@ fn spawn_wave_enemies(
             .filter(|(_, enemy)| enemy.min_level <= level && level <= enemy.max_level)
             .collect::<Vec<_>>();
 
-        let spawn_count = (level / config.spawn_count_scale).clamp(1, config.max_spawn_count);
+        let spawn_count =
+            ((level as f32 * config.spawn_count_scale) as usize).clamp(1, config.max_spawn_count);
         for _ in 0..spawn_count {
             let enemy_key = c!(enemy_pool.choose_weighted(&mut rng, |(_, enemy)| enemy.weight)).0;
             let offset =
