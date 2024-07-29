@@ -64,7 +64,7 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000))),
             health: Health(current: 10, max: 10),
-            xp_reward: 5,
+            xp_reward: 6,
             deck: Deck(cards: ["eighth_note", "step"]),
         ),
 
@@ -88,7 +88,7 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000))),
             health: Health(current: 15, max: 15),
-            xp_reward: 10,
+            xp_reward: 12,
             deck: Deck(cards: ["step", "step", "step", "pair"]),
         ),
 
@@ -112,7 +112,7 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000))),
             health: Health(current: 25, max: 25),
-            xp_reward: 15,
+            xp_reward: 17,
             deck: Deck(cards: ["step", "quarter_note", "eighth_rest", "pair"]),
         ),
 
@@ -136,7 +136,7 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000))),
             health: Health(current: 40, max: 40),
-            xp_reward: 20,
+            xp_reward: 22,
             deck: Deck(cards: ["quarter_note", "quarter_note", "quarter_note", "ballet"]),
         ),
 
@@ -160,7 +160,7 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
             health: Health(current: 60, max: 60),
-            xp_reward: 40,
+            xp_reward: 38,
             deck: Deck(cards: ["step", "quarter_rest", "cartwheel", "half_note"]),
         ),
     },

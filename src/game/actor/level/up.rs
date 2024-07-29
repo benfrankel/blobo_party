@@ -95,7 +95,7 @@ fn play_level_up_sfx(audio: Res<Audio>, assets: Res<PlayingAssets>) {
 
 fn heal_on_level_up(mut player_query: Query<&mut Health, With<IsPlayer>>) {
     for mut health in &mut player_query {
-        health.max += 25.0;
+        health.max += 15.0;
         health.current = health.max;
     }
 }
