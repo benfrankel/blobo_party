@@ -92,6 +92,16 @@ pub struct Actor {
     pub texture_atlas_layout: Handle<TextureAtlasLayout>,
     pub sprite_animation: SpriteAnimation,
 
+    /// The earliest level this actor can spawn as an enemy.
+    #[serde(default)]
+    pub min_level: usize,
+    /// The latest level this actor can spawn as an enemy.
+    #[serde(default = "inf")]
+    pub max_level: usize,
+    /// The relative probability of this actor spawning as an enemy.
+    #[serde(default = "one")]
+    pub weight: f64,
+
     #[serde(default)]
     pub movement: Movement,
     #[serde(default)]
@@ -100,9 +110,16 @@ pub struct Actor {
     pub health: Health,
     #[serde(default)]
     pub xp_reward: XpReward,
-
     #[serde(default)]
     pub deck: Deck,
+}
+
+fn inf() -> usize {
+    usize::MAX
+}
+
+fn one() -> f64 {
+    1.0
 }
 
 impl EntityCommand for Actor {

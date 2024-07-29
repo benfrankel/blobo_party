@@ -5,34 +5,4 @@
     max_distance: 200.0,
     spawn_count_scale: 5,
     max_spawn_count: 20,
-    enemies: {
-        "red": [
-            SpawnInfo()
-        ],
-        "pink": [
-            SpawnInfo(
-                condition: [GreaterThan(3)]
-            )
-        ],
-        "yellow": [
-            SpawnInfo(
-                condition: [GreaterThan(5)]
-            )
-        ],
-        "green": [
-            SpawnInfo(
-                condition: [GreaterThan(3)]
-            )
-        ],
-        "blue": [
-            SpawnInfo(
-                condition: [GreaterThan(3)]
-            )
-        ],
-        "purple": [
-            SpawnInfo(
-                condition: [GreaterThan(3)]
-            )
-        ],
-    }
 )

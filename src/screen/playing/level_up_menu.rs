@@ -201,7 +201,6 @@ fn card_options_container(entity: Entity, world: &mut World) {
         .collect::<Vec<_>>();
     let card_keys =
         r!(card_pool.choose_multiple_weighted(&mut rand::thread_rng(), 3, |(_, card)| card.weight))
-            .into_iter()
             .map(|(key, _)| (*key).clone())
             .collect::<Vec<_>>();
 

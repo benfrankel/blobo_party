@@ -1,8 +1,7 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
-use bevy::utils::HashMap;
 use pyri_state::prelude::*;
-use rand::seq::IteratorRandom;
+use rand::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -10,6 +9,7 @@ use crate::core::camera::CameraRoot;
 use crate::core::UpdateSet;
 use crate::game::actor::enemy::enemy;
 use crate::game::actor::level::Level;
+use crate::game::actor::ActorConfig;
 use crate::game::audio::music::on_full_beat;
 use crate::screen::Screen;
 use crate::util::prelude::*;
@@ -25,7 +25,6 @@ pub struct WaveConfig {
     pub max_distance: f32,
     pub spawn_count_scale: usize,
     pub max_spawn_count: usize,
-    pub enemies: HashMap<String, Vec<SpawnInfo>>,
 }
 
 impl Config for WaveConfig {
@@ -33,23 +32,10 @@ impl Config for WaveConfig {
     const EXTENSION: &'static str = "wave.ron";
 }
 
-#[derive(Asset, Reflect, Serialize, Deserialize)]
-pub struct SpawnInfo {
-    #[serde(default)]
-    condition: Vec<SpawnCondition>,
-    #[serde(default)]
-    modifiers: SpawnModifiers,
-}
-
-#[derive(Default, Asset, Reflect, Serialize, Deserialize)]
+#[allow(unused)]
+#[derive(Asset, Reflect, Serialize, Deserialize, Default)]
 struct SpawnModifiers {
     // TODO: Fill out with modifiers to apply to actor on spawn.
-}
-
-#[derive(Reflect, Serialize, Deserialize)]
-enum SpawnCondition {
-    GreaterThan(usize),
-    LessThan(usize),
 }
 
 #[derive(Component, Reflect, Default)]
@@ -73,55 +59,45 @@ impl Configure for Wave {
 fn spawn_wave_enemies(
     mut commands: Commands,
     config: ConfigRef<WaveConfig>,
+    actor_config: ConfigRef<ActorConfig>,
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
     mut wave_query: Query<(&mut Wave, &Selection)>,
     level_query: Query<&Level>,
 ) {
     let config = r!(config.get());
+    let actor_config = r!(actor_config.get());
     let camera_gt = r!(camera_query.get(camera_root.primary));
     let center = camera_gt.translation().xy();
 
+    let mut rng = rand::thread_rng();
     for (mut wave, selection) in &mut wave_query {
         let level = c!(level_query.get(selection.0));
+        let level = level.current;
 
         wave.0 = wave.0.wrapping_add(1);
         if wave.0 % config.spawn_cadence != 0 {
             return;
         }
 
-        let mut rng = rand::thread_rng();
-        let spawn_count = (level.current / config.spawn_count_scale)
-            .max(1)
-            .min(config.max_spawn_count);
-        for _ in 0..spawn_count {
-            let available_actors = config
+        let enemy_pool = actor_config
             .enemies
             .iter()
-            // Flatten each spawn_info with its actor key.
-            .flat_map(|(key, info)| info.iter().map(|info| (key.clone(), info)))
-            .filter(|(_, info)| {
-                info.condition.is_empty() || any_condition_met(&info.condition, &level.current)
-            });
+            .filter(|(_, enemy)| enemy.min_level <= level && level <= enemy.max_level)
+            .collect::<Vec<_>>();
 
-            if let Some((key, _)) = available_actors.choose(&mut rng) {
-                let offset = Annulus::new(config.min_distance, config.max_distance)
-                    .sample_interior(&mut rng);
-                let spawn_point = center + offset;
+        let spawn_count = (level / config.spawn_count_scale).clamp(1, config.max_spawn_count);
+        for _ in 0..spawn_count {
+            let enemy_key = c!(enemy_pool.choose_weighted(&mut rng, |(_, enemy)| enemy.weight)).0;
+            let offset =
+                Annulus::new(config.min_distance, config.max_distance).sample_interior(&mut rng);
+            let spawn_point = center + offset;
 
-                commands
-                    .spawn_with(enemy(key))
-                    .insert(Transform::from_translation(spawn_point.extend(0.0)));
-            }
+            commands
+                .spawn_with(enemy(enemy_key))
+                .insert(Transform::from_translation(spawn_point.extend(0.0)));
         }
     }
-}
-
-fn any_condition_met(conditions: &[SpawnCondition], current_level: &usize) -> bool {
-    conditions.iter().all(|condition| match condition {
-        SpawnCondition::GreaterThan(value) => current_level > value,
-        SpawnCondition::LessThan(value) => current_level < value,
-    })
 }
 
 pub fn wave(player: Entity) -> impl EntityCommand<World> {

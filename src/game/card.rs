@@ -199,12 +199,12 @@ pub struct Card {
     pub action_modifier: CardActionModifier,
 }
 
-fn one() -> f64 {
-    1.0
-}
-
 fn inf() -> usize {
     usize::MAX
+}
+
+fn one() -> f64 {
+    1.0
 }
 
 pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand {
