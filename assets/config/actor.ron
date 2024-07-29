@@ -48,6 +48,7 @@
 
         "red": Actor(
             name: "Lucy",
+            weight: 0.1,
 
             texture: "image/actor/red.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -66,10 +67,12 @@
             deck: Deck(cards: ["step", "step", "pair"]),
         ),
 
-        "yellow": Actor(
-            name: "Lemon",
+        "purple": Actor(
+            name: "Lily",
+            min_level: 2,
+            weight: 0.4,
 
-            texture: "image/actor/yellow.png",
+            texture: "image/actor/purple.png",
             texture_atlas_grid: TextureAtlasGrid(
                 tile_size: UVec2(8, 8),
                 columns: 2,
@@ -82,32 +85,14 @@
                 ],
             ),
 
-            attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
-            deck: Deck(cards: ["step", "whole_note", "quarter_rest"]),
-        ),
-
-        "green": Actor(
-            name: "Jade",
-
-            texture: "image/actor/green.png",
-            texture_atlas_grid: TextureAtlasGrid(
-                tile_size: UVec2(8, 8),
-                columns: 2,
-                rows: 1,
-            ),
-            sprite_animation: SpriteAnimation(
-                frames: [
-                    SpriteAnimationFrame(index: 0, beats: 8),
-                    SpriteAnimationFrame(index: 1, beats: 8),
-                ],
-            ),
-
-            attack: Attack(color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000))),
-            deck: Deck(cards: ["pair"]),
+            attack: Attack(color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000))),
+            deck: Deck(cards: ["step"]),
         ),
 
         "blue": Actor(
             name: "Aqua",
+            min_level: 4,
+            weight: 0.8,
 
             texture: "image/actor/blue.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -126,10 +111,11 @@
             deck: Deck(cards: ["step", "pair"]),
         ),
 
-        "purple": Actor(
-            name: "Lily",
+        "green": Actor(
+            name: "Jade",
+            min_level: 6,
 
-            texture: "image/actor/purple.png",
+            texture: "image/actor/green.png",
             texture_atlas_grid: TextureAtlasGrid(
                 tile_size: UVec2(8, 8),
                 columns: 2,
@@ -142,8 +128,30 @@
                 ],
             ),
 
-            attack: Attack(color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000))),
-            deck: Deck(cards: ["step"]),
+            attack: Attack(color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000))),
+            deck: Deck(cards: ["pair"]),
+        ),
+
+        "yellow": Actor(
+            name: "Lemon",
+            min_level: 8,
+            weight: 1.5,
+
+            texture: "image/actor/yellow.png",
+            texture_atlas_grid: TextureAtlasGrid(
+                tile_size: UVec2(8, 8),
+                columns: 2,
+                rows: 1,
+            ),
+            sprite_animation: SpriteAnimation(
+                frames: [
+                    SpriteAnimationFrame(index: 0, beats: 8),
+                    SpriteAnimationFrame(index: 1, beats: 8),
+                ],
+            ),
+
+            attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
+            deck: Deck(cards: ["step", "whole_note", "quarter_rest"]),
         ),
     },
 )

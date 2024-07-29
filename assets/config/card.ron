@@ -72,6 +72,7 @@
             description: "A-one and a-two and a-step.",
             background: "blue",
             icon: "step",
+            weight: 0.8,
 
             play_sfx: "audio/sfx/Movement.ogg",
             action: Step,
@@ -98,6 +99,7 @@
             description: "",
             background: "pink",
             icon: "eighth_note",
+            max_level: 2,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -110,6 +112,7 @@
             description: "",
             background: "pink",
             icon: "quarter_note",
+            max_level: 4,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -122,6 +125,8 @@
             description: "",
             background: "pink",
             icon: "half_note",
+            min_level: 2,
+            max_level: 6,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -134,6 +139,7 @@
             description: "",
             background: "pink",
             icon: "whole_note",
+            min_level: 4,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -146,6 +152,8 @@
             description: "Two beats, rapid fire!",
             background: "pink",
             icon: "pair",
+            max_level: 4,
+            weight: 0.5,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -181,6 +189,9 @@
             description: "Heal a little bit",
             background: "green",
             icon: "eighth_rest",
+            min_level: 2,
+            max_level: 4,
+            weight: 0.5,
 
             action: Heal,
             action_modifier: CardActionModifier(heal_flat: 5),
@@ -190,6 +201,9 @@
             description: "Heal 25% health",
             background: "green",
             icon: "quarter_rest",
+            min_level: 5,
+            max_level: 8,
+            weight: 0.5,
 
             action: Heal,
             action_modifier: CardActionModifier(heal_percent: 25),
@@ -199,6 +213,9 @@
             description: "Heal 50% health",
             background: "green",
             icon: "half_rest",
+            min_level: 7,
+            max_level: 10,
+            weight: 0.5,
 
             action: Heal,
             action_modifier: CardActionModifier(heal_percent: 50),
@@ -208,6 +225,8 @@
             description: "Heal 100% health",
             background: "green",
             icon: "whole_rest",
+            min_level: 9,
+            weight: 0.5,
 
             action: Heal,
             action_modifier: CardActionModifier(heal_percent: 100),

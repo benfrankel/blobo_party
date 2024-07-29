@@ -82,16 +82,6 @@ impl Config for ActorConfig {
 #[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Actor {
     pub name: String,
-
-    #[serde(rename = "texture")]
-    texture_path: String,
-    #[serde(skip)]
-    pub texture: Handle<Image>,
-    texture_atlas_grid: TextureAtlasGrid,
-    #[serde(skip)]
-    pub texture_atlas_layout: Handle<TextureAtlasLayout>,
-    pub sprite_animation: SpriteAnimation,
-
     /// The earliest level this actor can spawn as an enemy.
     #[serde(default)]
     pub min_level: usize,
@@ -101,6 +91,15 @@ pub struct Actor {
     /// The relative probability of this actor spawning as an enemy.
     #[serde(default = "one")]
     pub weight: f64,
+
+    #[serde(rename = "texture")]
+    texture_path: String,
+    #[serde(skip)]
+    pub texture: Handle<Image>,
+    texture_atlas_grid: TextureAtlasGrid,
+    #[serde(skip)]
+    pub texture_atlas_layout: Handle<TextureAtlasLayout>,
+    pub sprite_animation: SpriteAnimation,
 
     #[serde(default)]
     pub movement: Movement,
