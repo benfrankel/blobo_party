@@ -34,6 +34,8 @@ pub struct Attack {
     pub color: Color,
     /// The relative distance to spawn projectiles from.
     pub offset: f32,
+    /// Whether the attack should play audio.
+    pub muted: bool,
     /// The key of the projectile to attack with.
     #[serde(rename = "projectile")]
     pub projectile_key: Option<String>,
@@ -63,6 +65,7 @@ impl Default for Attack {
             force: 1.0,
             color: Color::WHITE,
             offset: 5.0,
+            muted: false,
             projectile_key: None,
             multi_shot: None,
             child_projectile: None,
@@ -122,6 +125,7 @@ fn apply_attack(
                 let facing_direction = controller.aim.rotate(Vec2::from_angle(primary * TAU));
                 let mut child_attack = attack.clone();
                 child_attack.child_projectile = None;
+                child_attack.muted = true; // Don't let child projectiles play audio
                 child_attack.multi_shot = Some(MultiShot((*multi_shots).into()));
                 child_attack.projectile_key = child.projectile_key.clone();
 
@@ -133,7 +137,7 @@ fn apply_attack(
             None
         };
 
-        for shot in shots.iter() {
+        for (i, shot) in shots.iter().enumerate() {
             // Projectiles get a boost if the actor is moving in the same direction.
             let aligned_speed = velocity
                 .filter(|v| v.0 != Vec2::ZERO)
@@ -149,6 +153,7 @@ fn apply_attack(
                     faction,
                     attack.power,
                     attack.force * *shot * speed_force,
+                    attack.muted || i != 0, // play audio only for first projectile
                     attack.color,
                     child_projectiles.clone(),
                 ))

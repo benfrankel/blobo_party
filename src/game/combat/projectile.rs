@@ -103,6 +103,7 @@ pub fn projectile(
     faction: Faction,
     power: f32,
     force: Vec2,
+    mute: bool,
     color: impl Into<Color>,
     child_projectiles: Option<(Attack, Facing)>,
 ) -> impl EntityCommand {
@@ -125,7 +126,7 @@ pub fn projectile(
             x
         };
 
-        if let (Faction::Player, Some(spawn_sfx)) = (faction, projectile.spawn_sfx) {
+        if let (false, Faction::Player, Some(spawn_sfx)) = (mute, faction, projectile.spawn_sfx) {
             audio
                 .play(spawn_sfx)
                 .with_volume(projectile.spawn_sfx_volume);
