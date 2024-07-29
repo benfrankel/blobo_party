@@ -68,6 +68,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 IsPlayer,
                 Faction::Player,
                 CollisionLayers::new(GameLayer::Player, LayerMask::ALL),
+                ColliderDensity(5.0),
                 FaceCursor,
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
