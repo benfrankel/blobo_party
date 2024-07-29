@@ -12,6 +12,7 @@ use crate::game::actor::enemy::IsEnemy;
 use crate::game::actor::level::Level;
 use crate::game::actor::ActorConfig;
 use crate::game::audio::music::on_full_beat;
+use crate::screen::playing::victory_menu::EndlessMode;
 use crate::screen::Screen;
 use crate::util::prelude::*;
 
@@ -66,6 +67,7 @@ fn spawn_wave_enemies(
     enemy_query: Query<(), With<IsEnemy>>,
     mut wave_query: Query<(&mut Wave, &Selection)>,
     level_query: Query<&Level>,
+    endless_mode: Res<EndlessMode>,
 ) {
     let config = r!(config.get());
     let actor_config = r!(actor_config.get());
@@ -73,6 +75,9 @@ fn spawn_wave_enemies(
     let center = camera_gt.translation().xy();
 
     let mut spawn_cap = config.spawn_cap.saturating_sub(enemy_query.iter().count());
+    if endless_mode.0 {
+        spawn_cap *= 2;
+    }
 
     let mut rng = rand::thread_rng();
     for (mut wave, selection) in &mut wave_query {

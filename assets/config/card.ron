@@ -51,9 +51,10 @@
         "half_note": CardIcon(texture: "image/card/icon/half_note.png"),
         "whole_note": CardIcon(texture: "image/card/icon/whole_note.png"),
         "pair": CardIcon(texture: "image/card/icon/pair.png"),
-        //"triplet": CardIcon(texture: "image/card/icon/triplet.png"),
+        "triplet": CardIcon(texture: "image/card/icon/triplet.png"),
         "chord": CardIcon(texture: "image/card/icon/chord.png"),
         "cluster": CardIcon(texture: "image/card/icon/cluster.png"),
+        "cacophony": CardIcon(texture: "image/card/icon/cacophony.png"),
 
         "eighth_rest": CardIcon(texture: "image/card/icon/eighth_rest.png"),
         "quarter_rest": CardIcon(texture: "image/card/icon/quarter_rest.png"),
@@ -97,9 +98,9 @@
             action_modifier: CardActionModifier(
                 remove_on_beat: 16,
                 movement: Movement(speed: 0),
-                contact_damage: 30,
+                contact_damage: 45,
                 contact_beats: 16,
-                immunity: 1.0,
+                immunity: 0.9,
             ),
         ),
         "ballet": Card(
@@ -133,8 +134,8 @@
             action_modifier: CardActionModifier(
                 remove_on_beat: 4,
                 movement: Movement(speed: 160.0, direction: 0.25),
-                contact_damage: 20,
-                contact_beats: 6,
+                contact_damage: 40,
+                contact_beats: 7,
                 immunity: 0.4,
             ),
         ),
@@ -150,9 +151,9 @@
             action_modifier: CardActionModifier(
                 remove_on_beat: 12,
                 movement: Movement(speed: 50.0, direction: 0.5),
-                contact_damage: 50,
+                contact_damage: 60,
                 contact_beats: 12,
-                immunity: 0.8,
+                immunity: 0.9,
             ),
         ),
 
@@ -223,28 +224,73 @@
                 attack: Attack(projectile: Some("eighth_note")),
             ),
         ),
-        /*"major_chord": Card(
+        "triplet": Card(
+            name: "Triplet",
+            description: "... Three beats, rapid fire!",
+            background: "pink",
+            icon: "triplet",
+            max_level: 4,
+            weight: 0.1,
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 8,
+                attack: Attack(projectile: Some("eighth_note")),
+                attack_on_beat: 3,
+            ),
+        ),
+        "cacophony": Card(
+            name: "Cacophony",
+            description: "How's my volume?",
+            background: "pink",
+            icon: "cacophony",
+            min_level: 4,
+            max_level: 7,
+            weight: 0.1,
+
+            action: Attack,
+            action_modifier: CardActionModifier(
+                remove_on_beat: 6,
+                attack: Attack(
+                    projectile: Some("eighth_note"),
+                    multi_shot: Some(MultiShot([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])),
+                ),
+                attack_on_beat: 2,
+            ),
+        ),
+        "major_chord": Card(
             name: "Major Chord",
             description: "",
             background: "pink",
             icon: "chord",
+            min_level: 6,
 
+            action: Attack,
             action_modifier: CardActionModifier(
-                remove_on_beat: 16,
-                attack: Attack(projectile: Some("eighth_note")),
+                remove_on_beat: 0,
+                attack: Attack(
+                    projectile: Some("whole_note"),
+                    multi_shot: Some(MultiShot([0.05, -0.05])),
+                ),
             ),
         ),
         "cluster_chord": Card(
             name: "Cluster Chord",
             description: "",
             background: "pink",
-            icon: "chord",
+            icon: "cluster",
+            min_level: 8,
+            weight: 0.7,
 
+            action: Attack,
             action_modifier: CardActionModifier(
-                remove_on_beat: 16,
-                attack: Attack(projectile: Some("whole_note")),
+                remove_on_beat: 0,
+                attack: Attack(
+                    projectile: Some("whole_note"),
+                    multi_shot: Some(MultiShot([0.25, 0.375, 0.75])),
+                ),
             ),
-        ),*/
+        ),
 
         "eighth_rest": Card(
             name: "Eighth Rest",
@@ -258,7 +304,7 @@
         ),
         "quarter_rest": Card(
             name: "Quarter Rest",
-            description: "Heal 25% health",
+            description: "Heal a decent amount",
             background: "green",
             icon: "quarter_rest",
             min_level: 4,
@@ -266,11 +312,11 @@
             weight: 0.7,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 25, immunity: 0.8),
+            action_modifier: CardActionModifier(heal_flat: 25, immunity: 0.8),
         ),
         "half_rest": Card(
             name: "Half Rest",
-            description: "Heal 50% health",
+            description: "Heal 25% health",
             background: "green",
             icon: "half_rest",
             min_level: 6,
@@ -278,18 +324,18 @@
             weight: 0.6,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 50, immunity: 0.9),
+            action_modifier: CardActionModifier(heal_percent: 25, immunity: 0.9),
         ),
         "whole_rest": Card(
             name: "Whole Rest",
-            description: "Heal 100% health",
+            description: "Heal 50% health",
             background: "green",
             icon: "whole_rest",
             min_level: 8,
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 100, immunity: 1.0),
+            action_modifier: CardActionModifier(heal_percent: 50, immunity: 1.0),
         ),
     }
 )

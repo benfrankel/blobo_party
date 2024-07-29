@@ -112,6 +112,10 @@ pub struct PlayingAssets {
     pub sfx_ui_click: Handle<AudioSource>,
     #[asset(path = "audio/sfx/UI Click.ogg")]
     pub sfx_ui_hover: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/UI Hover_1.ogg")]
+    pub sfx_ui_click1: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/UI Click_1.ogg")]
+    pub sfx_ui_hover1: Handle<AudioSource>,
     #[asset(path = "audio/sfx/Movement.ogg")]
     pub sfx_movement: Handle<AudioSource>,
 

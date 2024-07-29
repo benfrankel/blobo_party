@@ -5,6 +5,7 @@ use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
 use crate::game::audio::music::on_beat;
+use crate::game::audio::music::Beat;
 use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 
@@ -37,7 +38,7 @@ fn apply_aim_towards_facing(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct AttackOnBeat(pub Attack);
+pub struct AttackOnBeat(pub Attack, pub usize, pub usize);
 
 impl Configure for AttackOnBeat {
     fn configure(app: &mut App) {
@@ -47,13 +48,20 @@ impl Configure for AttackOnBeat {
             Update,
             attack_on_beat
                 .in_set(UpdateSet::RecordInput)
-                .run_if(on_beat(4)),
+                .run_if(on_beat(1)),
         );
     }
 }
 
-fn attack_on_beat(mut attack_query: Query<(&mut Attack, &mut AttackController, &AttackOnBeat)>) {
+fn attack_on_beat(
+    beat: Res<Beat>,
+    mut attack_query: Query<(&mut Attack, &mut AttackController, &AttackOnBeat)>,
+) {
     for (mut attack, mut controller, attack_on_beat) in &mut attack_query {
+        if beat.total % attack_on_beat.1 != attack_on_beat.2 {
+            continue;
+        }
+
         attack.power = attack_on_beat.0.power;
         attack.force = attack_on_beat.0.force;
         attack.projectile_key = attack_on_beat.0.projectile_key.clone();

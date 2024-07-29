@@ -184,7 +184,7 @@ pub fn projectile(
 
         if let Some((attack, facing)) = child_projectiles {
             entity.insert((
-                AttackOnBeat(attack.clone()),
+                AttackOnBeat(attack.clone(), 4, 0),
                 AimTowardsFacing,
                 AttackController::default(),
                 facing,

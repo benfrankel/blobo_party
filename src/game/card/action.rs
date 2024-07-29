@@ -8,6 +8,7 @@ use crate::game::actor::attack::Attack;
 use crate::game::actor::health::Health;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::player::IsPlayer;
+use crate::game::audio::music::Beat;
 use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::AttackOnBeat;
 use crate::game::card::movement::MoveTowardsFacing;
@@ -71,9 +72,14 @@ impl FromWorld for CardActionMap {
                     world.register_system(
                         |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
+                            let beat = world.resource::<Beat>().total;
                             r!(world.get_entity_mut(entity)).insert((
                                 RemoveOnBeat::bundle(
-                                    AttackOnBeat(modifier.attack.clone()),
+                                    AttackOnBeat(
+                                        modifier.attack.clone(),
+                                        modifier.attack_on_beat,
+                                        beat % modifier.attack_on_beat,
+                                    ),
                                     modifier.remove_on_beat,
                                 ),
                                 RemoveOnBeat::bundle(AimTowardsFacing, modifier.remove_on_beat),
@@ -136,7 +142,7 @@ impl Default for CardAction {
     }
 }
 
-#[derive(Default, Reflect, Serialize, Deserialize, Clone)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 #[serde(default)]
 pub struct CardActionModifier {
     /// Remove component after this many eighth-beats.
@@ -144,10 +150,28 @@ pub struct CardActionModifier {
     /// Remove component when this timer finishes.
     remove_on_timer: Timer,
     attack: Attack,
+    attack_on_beat: usize,
     movement: Movement,
     contact_damage: f32,
     contact_beats: usize,
     heal_percent: f32,
     heal_flat: f32,
     immunity: f32,
+}
+
+impl Default for CardActionModifier {
+    fn default() -> Self {
+        Self {
+            remove_on_beat: 0,
+            remove_on_timer: Timer::default(),
+            attack: Attack::default(),
+            attack_on_beat: 4,
+            movement: Movement::default(),
+            contact_damage: 0.0,
+            contact_beats: 0,
+            heal_percent: 0.0,
+            heal_flat: 0.0,
+            immunity: 0.0,
+        }
+    }
 }
