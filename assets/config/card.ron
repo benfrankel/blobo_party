@@ -69,8 +69,8 @@
     // TODO: Write descriptions.
     card_map: {
         "step": Card(
-            name: "Basic Step",
-            description: "A-one and a-two and a-step.",
+            name: "Simple Step",
+            description: "Fancy footwork starts here.",
             background: "blue",
             icon: "step",
             max_level: 4,
@@ -86,9 +86,10 @@
                 immunity: 0.15,
             ),
         ),
+        // TODO: This would fit better as Breakdance if I could draw the icon for it :zany_face:
         "splits": Card(
             name: "Splits",
-            description: "Split in two!",
+            description: "Can a blobo do the splits?",
             background: "blue",
             icon: "splits",
             weight: 0.3,
@@ -105,7 +106,7 @@
         ),
         "ballet": Card(
             name: "Pirouette",
-            description: "",
+            description: "This card is pirouette good.",
             background: "blue",
             icon: "ballet",
             min_level: 3,
@@ -141,7 +142,7 @@
         ),
         "moonwalk": Card(
             name: "Moonwalk",
-            description: "",
+            description: "That's one small step for man...",
             background: "blue",
             icon: "moonwalk",
             min_level: 7,
@@ -260,7 +261,7 @@
         ),
         "major_chord": Card(
             name: "Major Chord",
-            description: "",
+            description: "This card strikes a major chord :)",
             background: "pink",
             icon: "chord",
             min_level: 6,
@@ -276,7 +277,7 @@
         ),
         "cluster_chord": Card(
             name: "Cluster Chord",
-            description: "",
+            description: "It's getting a little clusterphobic in here.",
             background: "pink",
             icon: "cluster",
             min_level: 8,
