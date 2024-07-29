@@ -64,7 +64,8 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.929, green: 0.557, blue: 0.576, alpha: 1.000))),
             health: Health(current: 10, max: 10),
-            deck: Deck(cards: ["step", "step", "pair"]),
+            xp_reward: 5,
+            deck: Deck(cards: ["eighth_note", "step"]),
         ),
 
         "purple": Actor(
@@ -87,7 +88,8 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.694, green: 0.529, blue: 0.788, alpha: 1.000))),
             health: Health(current: 15, max: 15),
-            deck: Deck(cards: ["step"]),
+            xp_reward: 10,
+            deck: Deck(cards: ["step", "step", "step", "pair"]),
         ),
 
         "blue": Actor(
@@ -110,12 +112,14 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.424, green: 0.694, blue: 0.725, alpha: 1.000))),
             health: Health(current: 25, max: 25),
-            deck: Deck(cards: ["step", "quarter_note"]),
+            xp_reward: 15,
+            deck: Deck(cards: ["step", "quarter_note", "eighth_rest", "pair"]),
         ),
 
         "green": Actor(
             name: "Jade",
             min_level: 6,
+            weight: 1.2,
 
             texture: "image/actor/green.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -132,13 +136,14 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.557, green: 0.722, blue: 0.518, alpha: 1.000))),
             health: Health(current: 40, max: 40),
-            deck: Deck(cards: ["half_note"]),
+            xp_reward: 20,
+            deck: Deck(cards: ["quarter_note", "quarter_note", "quarter_note", "ballet"]),
         ),
 
         "yellow": Actor(
             name: "Lemon",
             min_level: 8,
-            weight: 1.5,
+            weight: 1.6,
 
             texture: "image/actor/yellow.png",
             texture_atlas_grid: TextureAtlasGrid(
@@ -155,7 +160,8 @@
 
             attack: Attack(color: Srgba(Srgba(red: 0.827, green: 0.761, blue: 0.537, alpha: 1.000))),
             health: Health(current: 60, max: 60),
-            deck: Deck(cards: ["step", "whole_note", "quarter_rest"]),
+            xp_reward: 40,
+            deck: Deck(cards: ["step", "quarter_rest", "cartwheel", "half_note"]),
         ),
     },
 )

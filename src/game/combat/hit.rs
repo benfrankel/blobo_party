@@ -27,8 +27,8 @@ pub struct Immune;
 
 impl Configure for Immune {
     fn configure(app: &mut App) {
-        app.register_type::<Self>();
         app.configure::<RemoveOnTimer<Self>>();
+        app.register_type::<Self>();
     }
 }
 

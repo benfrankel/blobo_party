@@ -8,6 +8,7 @@ use serde::Serialize;
 use crate::core::camera::CameraRoot;
 use crate::core::UpdateSet;
 use crate::game::actor::enemy::enemy;
+use crate::game::actor::enemy::IsEnemy;
 use crate::game::actor::level::Level;
 use crate::game::actor::ActorConfig;
 use crate::game::audio::music::on_full_beat;
@@ -24,7 +25,7 @@ pub struct WaveConfig {
     pub min_distance: f32,
     pub max_distance: f32,
     pub spawn_count_scale: f32,
-    pub max_spawn_count: usize,
+    pub spawn_cap: usize,
 }
 
 impl Config for WaveConfig {
@@ -62,6 +63,7 @@ fn spawn_wave_enemies(
     actor_config: ConfigRef<ActorConfig>,
     camera_root: Res<CameraRoot>,
     camera_query: Query<&GlobalTransform>,
+    enemy_query: Query<(), With<IsEnemy>>,
     mut wave_query: Query<(&mut Wave, &Selection)>,
     level_query: Query<&Level>,
 ) {
@@ -69,6 +71,8 @@ fn spawn_wave_enemies(
     let actor_config = r!(actor_config.get());
     let camera_gt = r!(camera_query.get(camera_root.primary));
     let center = camera_gt.translation().xy();
+
+    let mut spawn_cap = config.spawn_cap.saturating_sub(enemy_query.iter().count());
 
     let mut rng = rand::thread_rng();
     for (mut wave, selection) in &mut wave_query {
@@ -86,8 +90,8 @@ fn spawn_wave_enemies(
             .filter(|(_, enemy)| enemy.min_level <= level && level <= enemy.max_level)
             .collect::<Vec<_>>();
 
-        let spawn_count =
-            ((level as f32 * config.spawn_count_scale) as usize).clamp(1, config.max_spawn_count);
+        let spawn_count = ((level as f32 * config.spawn_count_scale) as usize).clamp(1, spawn_cap);
+        spawn_cap = spawn_cap.saturating_sub(spawn_count);
         for _ in 0..spawn_count {
             let enemy_key = c!(enemy_pool.choose_weighted(&mut rng, |(_, enemy)| enemy.weight)).0;
             let offset =

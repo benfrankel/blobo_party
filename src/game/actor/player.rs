@@ -14,7 +14,6 @@ use crate::game::actor::facing::FacingIndicator;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::movement::input::movement_action;
 use crate::game::actor::ActorConfig;
-use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::death::DeathSfx;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::hit::HurtSfx;
@@ -75,7 +74,6 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 FaceCursor,
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
-                HitboxDamage(0.0),
                 HitboxKnockback(150.0, false),
                 HurtSfx(sfx_hurt, 1.8),
                 DeathSfx(sfx_death, 1.0),

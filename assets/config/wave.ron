@@ -4,5 +4,5 @@
     min_distance: 150.0,
     max_distance: 180.0,
     spawn_count_scale: 0.5,
-    max_spawn_count: 100,
+    spawn_cap: 8,
 )

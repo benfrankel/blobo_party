@@ -3,9 +3,11 @@ use bevy_kira_audio::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::core::UpdateSet;
+use crate::game::actor::health::Health;
 use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
+use crate::game::actor::player::IsPlayer;
 use crate::screen::playing::victory_menu::EndlessMode;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
@@ -25,13 +27,16 @@ impl Configure for LevelUp {
         app.add_systems(
             Update,
             (
+                heal_on_level_up
+                    .in_set(UpdateSet::Update)
+                    .run_if(on_event::<Self>()),
                 play_level_up_sfx
                     .in_set(UpdateSet::Update)
                     .run_if(on_event::<Self>()),
                 update_level_up_from_xp.in_set(UpdateSet::TriggerLevelUp),
                 trigger_level_up
                     .in_set(UpdateSet::TriggerLevelUp)
-                    .run_if(PlayingMenu::is_disabled),
+                    .run_if(PlayingMenu::will_be_disabled),
             )
                 .chain(),
         );
@@ -86,4 +91,11 @@ fn trigger_level_up(
 
 fn play_level_up_sfx(audio: Res<Audio>, assets: Res<PlayingAssets>) {
     audio.play(assets.sfx_level_up.clone()).with_volume(0.8);
+}
+
+fn heal_on_level_up(mut player_query: Query<&mut Health, With<IsPlayer>>) {
+    for mut health in &mut player_query {
+        health.max += 25.0;
+        health.current = health.max;
+    }
 }

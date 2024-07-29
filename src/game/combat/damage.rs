@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::cleanup::RemoveOnTimer;
+use crate::game::cleanup::RemoveOnBeat;
 use crate::game::combat::hit::OnHit;
 use crate::util::prelude::*;
 
@@ -17,9 +17,9 @@ pub struct HitboxDamage(pub f32);
 
 impl Configure for HitboxDamage {
     fn configure(app: &mut App) {
+        app.configure::<RemoveOnBeat<Self>>();
         app.register_type::<Self>();
         app.observe(apply_hitbox_damage);
-        app.configure::<RemoveOnTimer<Self>>();
     }
 }
 

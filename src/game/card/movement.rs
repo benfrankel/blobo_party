@@ -39,7 +39,7 @@ fn apply_move_towards_facing(
     for (mut movement, mut controller, facing, move_towards_facing) in &mut movement_query {
         *movement = move_towards_facing.0;
 
-        let facing_angle = Vec2::from_angle(movement.direction * TAU);
-        controller.0 += (*facing.0).rotate(facing_angle);
+        let offset = Vec2::from_angle(movement.direction * TAU);
+        controller.0 += (*facing.0).rotate(offset);
     }
 }
