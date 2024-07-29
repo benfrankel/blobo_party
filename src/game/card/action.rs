@@ -11,7 +11,9 @@ use crate::game::card::attack::AimTowardsFacing;
 use crate::game::card::attack::AttackOnBeat;
 use crate::game::card::movement::MoveTowardsFacing;
 use crate::game::cleanup::RemoveOnBeat;
-use crate::game::combat::hit::Hurtbox;
+use crate::game::cleanup::RemoveOnTimer;
+use crate::game::combat::damage::HitboxDamage;
+use crate::game::combat::hit::Immune;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -44,9 +46,19 @@ impl FromWorld for CardActionMap {
                                 modifier.remove_on_beat,
                             ));
 
-                            // TODO: Remove player check if we decide immunity should apply to all
-                            if entity.contains::<IsPlayer>() && modifier.immune_during_action {
-                                entity.remove::<Hurtbox>();
+                            // Player actor has extra benefits
+                            if entity.contains::<IsPlayer>() {
+                                entity.insert(RemoveOnTimer::bundle(
+                                    HitboxDamage(modifier.hitbox_damage.0),
+                                    Timer::from_seconds(modifier.hitbox_damage.1, TimerMode::Once),
+                                ));
+
+                                if let Some(timer) = modifier.immunity {
+                                    entity.insert(RemoveOnTimer::bundle(
+                                        Immune,
+                                        Timer::from_seconds(timer, TimerMode::Once),
+                                    ));
+                                }
                             }
                         },
                     ),
@@ -112,8 +124,8 @@ pub struct CardActionModifier {
     /// Remove component when this timer finishes.
     remove_on_timer: Timer,
     attack: Attack,
-    // if true, actor is immune while performing this action
-    immune_during_action: bool,
+    immunity: Option<f32>,
+    hitbox_damage: (f32, f32), // damage, time
     heal_percent: f32,
     heal_flat: f32,
 }

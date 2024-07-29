@@ -78,7 +78,8 @@
             action: Step,
             action_modifier: CardActionModifier(
                 remove_on_beat: 8,
-                immune_during_action: true,
+                hitbox_damage: (15.0, 0.5),
+                immunity: Some(0.5),
             ),
         ),
         /*"splits": Card(

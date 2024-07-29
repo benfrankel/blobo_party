@@ -60,7 +60,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 FaceCursor,
                 // Contact hitbox was for testing, but it's funny, so I'm leaving it in.
                 Hitbox,
-                HitboxDamage(15.0),
+                HitboxDamage(0.0),
                 HitboxKnockback(5.0),
                 HurtSfx,
                 DeathSfx,

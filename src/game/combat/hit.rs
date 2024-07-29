@@ -3,12 +3,12 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
 use crate::core::UpdateSet;
-use crate::game::audio::music::on_full_beat;
+use crate::game::cleanup::RemoveOnTimer;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Hitbox, Hurtbox, OnHit, HurtSfx)>();
+    app.configure::<(Hitbox, Hurtbox, OnHit, HurtSfx, Immune)>();
 }
 
 #[derive(Component, Reflect)]
@@ -23,28 +23,22 @@ impl Configure for Hitbox {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
+pub struct Immune;
+
+impl Configure for Immune {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+        app.configure::<RemoveOnTimer<Self>>();
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct Hurtbox;
 
 impl Configure for Hurtbox {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-
-        app.add_systems(
-            Update,
-            readd_hurtbox
-                .in_set(UpdateSet::SyncEarly)
-                .run_if(on_full_beat(2)),
-        );
-    }
-}
-
-fn readd_hurtbox(
-    mut commands: Commands,
-    hitbox_query: Query<Entity, (With<Hitbox>, Without<Hurtbox>)>,
-) {
-    for entity in &hitbox_query {
-        let mut entity = c!(commands.get_entity(entity));
-        entity.insert(Hurtbox);
     }
 }
 
@@ -62,7 +56,7 @@ fn trigger_hit(
     mut commands: Commands,
     mut collision_events: EventReader<CollisionStarted>,
     hitbox_query: Query<(), With<Hitbox>>,
-    hurtbox_query: Query<(), With<Hurtbox>>,
+    hurtbox_query: Query<(), (With<Hurtbox>, Without<Immune>)>,
 ) {
     for &CollisionStarted(a, b) in collision_events.read() {
         for (a, b) in [(a, b), (b, a)] {

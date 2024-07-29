@@ -180,7 +180,6 @@ impl<C: Component + TypePath> Configure for RemoveOnTimer<C> {
     }
 }
 
-#[allow(dead_code)]
 impl<C: Component + TypePath> RemoveOnTimer<C> {
     pub fn new(timer: Timer) -> Self {
         Self {
