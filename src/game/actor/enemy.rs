@@ -1,13 +1,16 @@
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
+use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 
 use crate::game::actor::facing::FacePlayer;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::ActorConfig;
+use crate::game::combat::death::DeathSfx;
 use crate::game::combat::death::DespawnOnDeath;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -24,24 +27,30 @@ impl Configure for IsEnemy {
     }
 }
 
-pub fn enemy(key: impl Into<String>) -> impl EntityCommand<World> {
+pub fn enemy(key: impl Into<String>) -> impl EntityCommand {
     let key = key.into();
-    move |mut entity: EntityWorldMut| {
-        let parent = entity.world().resource::<GameRoot>().enemies;
-        let config_handle = entity.world().resource::<ConfigHandle<ActorConfig>>();
-        let config = r!(entity
-            .world()
-            .resource::<Assets<ActorConfig>>()
-            .get(&config_handle.0),);
-        let actor = r!(config.enemies.get(&key)).clone();
+    move |entity: Entity, world: &mut World| {
+        let (actor, parent, sfx_death) = {
+            let (config, game_root, assets) =
+                SystemState::<(ConfigRef<ActorConfig>, Res<GameRoot>, Res<PlayingAssets>)>::new(
+                    world,
+                )
+                .get(world);
+            let config = r!(config.get());
+            let actor = r!(config.enemies.get(&key)).clone();
 
-        entity
+            (actor, game_root.players, assets.sfx_kick.clone())
+        };
+
+        world
+            .entity_mut(entity)
             .add(actor)
             .insert((
                 IsEnemy,
                 Faction::Enemy,
                 CollisionLayers::new(GameLayer::Enemy, LayerMask::ALL),
                 FacePlayer,
+                DeathSfx(sfx_death, 0.5),
                 // TODO: Despawn when death animation is finished, instead.
                 DespawnOnDeath,
             ))

@@ -5,7 +5,6 @@ use rand::Rng as _;
 
 use crate::core::UpdateSet;
 use crate::game::cleanup::RemoveOnTimer;
-use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -70,7 +69,7 @@ fn trigger_hit(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct HurtSfx;
+pub struct HurtSfx(pub Handle<AudioSource>, pub f64);
 
 impl Configure for HurtSfx {
     fn configure(app: &mut App) {
@@ -79,18 +78,10 @@ impl Configure for HurtSfx {
     }
 }
 
-fn play_hurt_sfx(
-    trigger: Trigger<OnHit>,
-    sfx_query: Query<(), With<HurtSfx>>,
-    audio: Res<Audio>,
-    assets: Res<PlayingAssets>,
-) {
-    if !sfx_query.contains(trigger.event().1) {
-        return;
-    }
-
+fn play_hurt_sfx(trigger: Trigger<OnHit>, sfx_query: Query<&HurtSfx>, audio: Res<Audio>) {
+    let sfx = r!(sfx_query.get(trigger.event().1));
     audio
-        .play(assets.sfx_hurt.clone())
-        .with_volume(1.0)
+        .play(sfx.0.clone())
+        .with_volume(sfx.1)
         .with_playback_rate(rand::thread_rng().gen_range(0.7..1.6));
 }

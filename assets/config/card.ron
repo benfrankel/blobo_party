@@ -74,7 +74,11 @@
             icon: "step",
             weight: 0.8,
 
-            play_sfx: "audio/sfx/Movement.ogg",
+            //play_sfx: "audio/sfx/Movement.ogg",
+            play_sfx: "audio/sfx/444407__mootmcnoodles__slap.ogg",
+            //play_sfx: "audio/sfx/137105__chaosportal__finger-snap-01.ogg",
+            //play_sfx: "audio/sfx/102130__noirpantalon__hard_subby_kick.ogg",
+            //play_sfx: "audio/sfx/24787__young_daddy__clap-mix2.ogg",
             action: Step,
             action_modifier: CardActionModifier(
                 remove_on_beat: 8,

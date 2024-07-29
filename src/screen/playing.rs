@@ -107,6 +107,18 @@ pub struct PlayingAssets {
     pub sfx_ui_click: Handle<AudioSource>,
     #[asset(path = "audio/sfx/UI Click.ogg")]
     pub sfx_ui_hover: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/Movement.ogg")]
+    pub sfx_movement: Handle<AudioSource>,
+
+    // CC0 assets from freesound.org:
+    #[asset(path = "audio/sfx/24787__young_daddy__clap-mix2.ogg")]
+    pub sfx_clap: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/102130__noirpantalon__hard_subby_kick.ogg")]
+    pub sfx_kick: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/137105__chaosportal__finger-snap-01.ogg")]
+    pub sfx_snap0: Handle<AudioSource>,
+    #[asset(path = "audio/sfx/444407__mootmcnoodles__slap.ogg")]
+    pub sfx_snap1: Handle<AudioSource>,
 }
 
 impl Configure for PlayingAssets {

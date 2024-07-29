@@ -20,6 +20,7 @@ use crate::game::combat::hit::HurtSfx;
 use crate::game::combat::knockback::HitboxKnockback;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -40,14 +41,24 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
     let key = key.into();
 
     move |entity: Entity, world: &mut World| {
-        let (actor, parent, camera) = {
-            let (config, game_root, camera_root) =
-                SystemState::<(ConfigRef<ActorConfig>, Res<GameRoot>, Res<CameraRoot>)>::new(world)
-                    .get(world);
+        let (actor, parent, camera, sfx_hurt, sfx_death) = {
+            let (config, game_root, camera_root, assets) = SystemState::<(
+                ConfigRef<ActorConfig>,
+                Res<GameRoot>,
+                Res<CameraRoot>,
+                Res<PlayingAssets>,
+            )>::new(world)
+            .get(world);
             let config = r!(config.get());
             let actor = r!(config.players.get(&key)).clone();
 
-            (actor, game_root.players, camera_root.primary)
+            (
+                actor,
+                game_root.players,
+                camera_root.primary,
+                assets.sfx_movement.clone(),
+                assets.sfx_restart.clone(),
+            )
         };
 
         world
@@ -62,8 +73,8 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
                 Hitbox,
                 HitboxDamage(0.0),
                 HitboxKnockback(5.0),
-                HurtSfx,
-                DeathSfx,
+                HurtSfx(sfx_hurt, 1.8),
+                DeathSfx(sfx_death, 1.0),
             ))
             .set_parent(parent)
             .with_children(|children| {

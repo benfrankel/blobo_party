@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use rand::Rng as _;
 
-use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -54,7 +53,7 @@ fn despawn_on_death(
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct DeathSfx;
+pub struct DeathSfx(pub Handle<AudioSource>, pub f64);
 
 impl Configure for DeathSfx {
     fn configure(app: &mut App) {
@@ -63,19 +62,11 @@ impl Configure for DeathSfx {
     }
 }
 
-fn play_death_sfx(
-    trigger: Trigger<OnDeath>,
-    sfx_query: Query<(), With<DeathSfx>>,
-    audio: Res<Audio>,
-    assets: Res<PlayingAssets>,
-) {
+fn play_death_sfx(trigger: Trigger<OnDeath>, sfx_query: Query<&DeathSfx>, audio: Res<Audio>) {
     let entity = r!(trigger.get_entity());
-    if !sfx_query.contains(entity) {
-        return;
-    }
-
+    let sfx = r!(sfx_query.get(entity));
     audio
-        .play(assets.sfx_restart.clone())
-        .with_volume(1.0)
+        .play(sfx.0.clone())
+        .with_volume(sfx.1)
         .with_playback_rate(rand::thread_rng().gen_range(0.8..1.4));
 }
