@@ -4,13 +4,14 @@
 
 pub mod config;
 pub mod late_despawn;
-pub mod macros;
 pub mod patch;
 pub mod selection;
 pub mod texture_atlas_grid;
 pub mod time;
 
 pub mod prelude {
+    pub use tiny_bail::prelude::*;
+
     pub use super::config::Config;
     pub use super::config::ConfigHandle;
     pub use super::config::ConfigRef;
@@ -27,10 +28,6 @@ pub mod prelude {
     pub use super::patch::WorldSpawnWithExt as _;
     pub use super::selection::Selection;
     pub use super::texture_atlas_grid::TextureAtlasGrid;
-    pub use crate::c;
-    pub use crate::cq;
-    pub use crate::r;
-    pub use crate::rq;
 }
 
 use bevy::prelude::*;
