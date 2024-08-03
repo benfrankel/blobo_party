@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use bevy::utils::HashMap;
 use bevy_kira_audio::prelude::*;
+use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -72,19 +73,28 @@ impl Config for CardConfig {
         }
     }
 
-    fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        self.card_background_map
-            .values()
-            .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
-            && self
-                .card_icon_map
-                .values()
-                .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
-            && self.card_map.values().all(|x| {
-                !x.play_sfx
-                    .as_ref()
-                    .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x))
-            })
+    fn count_progress(&self, asset_server: &AssetServer) -> Progress {
+        let mut progress = true.into();
+
+        for card_bg in self.card_background_map.values() {
+            progress += asset_server
+                .is_loaded_with_dependencies(&card_bg.texture)
+                .into();
+        }
+        for card_icon in self.card_icon_map.values() {
+            progress += asset_server
+                .is_loaded_with_dependencies(&card_icon.texture)
+                .into();
+        }
+        for card in self.card_map.values() {
+            progress += (!card
+                .play_sfx
+                .as_ref()
+                .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x)))
+            .into();
+        }
+
+        progress
     }
 }
 

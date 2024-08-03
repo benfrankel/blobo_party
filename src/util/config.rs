@@ -19,21 +19,16 @@ pub trait Config: Asset + Serialize + for<'de> Deserialize<'de> {
         let _ = world;
     }
 
-    fn is_ready(&self, asset_server: &AssetServer) -> bool {
+    fn count_progress(&self, asset_server: &AssetServer) -> Progress {
         let _ = asset_server;
-        true
+        true.into()
     }
 
-    fn progress(
-        asset_server: Res<AssetServer>,
-        config_handle: Res<ConfigHandle<Self>>,
-        config: Res<Assets<Self>>,
-    ) -> Progress {
+    fn progress(config: ConfigRef<Self>, asset_server: Res<AssetServer>) -> Progress {
         config
-            .get(&config_handle.0)
-            .map(|x| x.is_ready(&asset_server))
-            .unwrap_or_default()
-            .into()
+            .get()
+            .map(|x| x.count_progress(&asset_server))
+            .unwrap_or(false.into())
     }
 }
 

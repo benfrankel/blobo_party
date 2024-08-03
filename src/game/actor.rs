@@ -14,6 +14,7 @@ use bevy::math::vec2;
 use bevy::math::vec3;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
+use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -71,11 +72,16 @@ impl Config for ActorConfig {
         }
     }
 
-    fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        self.players
-            .values()
-            .chain(self.enemies.values())
-            .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
+    fn count_progress(&self, asset_server: &AssetServer) -> Progress {
+        let mut progress = true.into();
+
+        for actor in self.players.values().chain(self.enemies.values()) {
+            progress += asset_server
+                .is_loaded_with_dependencies(&actor.texture)
+                .into();
+        }
+
+        progress
     }
 }
 

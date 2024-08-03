@@ -7,6 +7,7 @@ use bevy::prelude::*;
 use bevy::utils::HashMap;
 use bevy_kira_audio::prelude::*;
 use bevy_tweening::*;
+use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -54,15 +55,21 @@ impl Config for ProjectileConfig {
         }
     }
 
-    fn is_ready(&self, asset_server: &AssetServer) -> bool {
-        self.projectiles
-            .values()
-            .all(|x| asset_server.is_loaded_with_dependencies(&x.texture))
-            && self.projectiles.values().all(|x| {
-                !x.spawn_sfx
-                    .as_ref()
-                    .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x))
-            })
+    fn count_progress(&self, asset_server: &AssetServer) -> Progress {
+        let mut progress = true.into();
+
+        for projectile in self.projectiles.values() {
+            progress += asset_server
+                .is_loaded_with_dependencies(&projectile.texture)
+                .into();
+            progress += (!projectile
+                .spawn_sfx
+                .as_ref()
+                .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x)))
+            .into();
+        }
+
+        progress
     }
 }
 
