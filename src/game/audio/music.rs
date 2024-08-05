@@ -108,10 +108,10 @@ fn update_beat(
     let position = rq!(music.state().position());
 
     beat.this_tick = if beat.last_position <= position {
-        count_beats(&config, beat.last_position, position)
+        count_beats(config, beat.last_position, position)
     } else {
-        count_beats(&config, beat.last_position, config.music_loop_end)
-            + count_beats(&config, config.music_loop_start, position)
+        count_beats(config, beat.last_position, config.music_loop_end)
+            + count_beats(config, config.music_loop_start, position)
     };
     beat.total += beat.this_tick;
     beat.last_position = position;
