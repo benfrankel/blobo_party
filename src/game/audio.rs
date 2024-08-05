@@ -16,15 +16,15 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Asset, Reflect, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct AudioConfig {
     pub global_volume: f64,
 
+    pub music_volume: f64,
     /// The precise beats-per-minute of the music.
     pub music_bpm: f64,
     /// The position (in seconds) of the zeroth beat.
     pub music_zeroth_beat: f64,
-    pub music_volume: f64,
-    #[serde(default)]
     pub music_loop_start: f64,
     pub music_loop_end: f64,
 }

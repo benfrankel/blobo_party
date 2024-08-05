@@ -74,6 +74,8 @@ fn unpause_music(
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct Beat {
+    /// The position of the music audio instance last frame.
+    last_position: f64,
     /// The total number of eighth-beats counted.
     pub total: usize,
     /// The number of new eighth-beats finished this tick (usually 0 or 1).
@@ -88,6 +90,13 @@ impl Configure for Beat {
     }
 }
 
+/// A helper function to count how many beats occur in the music between two positions.
+fn count_beats(config: &AudioConfig, lo: f64, hi: f64) -> usize {
+    let lo_beats = (lo - config.music_zeroth_beat).max(0.0) * config.music_bpm * 8.0 / 60.0;
+    let hi_beats = (hi - config.music_zeroth_beat).max(0.0) * config.music_bpm * 8.0 / 60.0;
+    hi_beats as usize - lo_beats as usize
+}
+
 fn update_beat(
     config: ConfigRef<AudioConfig>,
     music_handle: Res<MusicHandle>,
@@ -96,13 +105,16 @@ fn update_beat(
 ) {
     let config = r!(config.get());
     let music = r!(audio_instances.get(&music_handle.0));
+    let position = rq!(music.state().position());
 
-    let position = music.state().position().unwrap_or(0.0);
-    let real_beats =
-        ((position - config.music_zeroth_beat) * config.music_bpm * 8.0 / 60.0) as usize;
-
-    beat.this_tick = real_beats.saturating_sub(beat.total);
-    beat.total = real_beats;
+    beat.this_tick = if beat.last_position <= position {
+        count_beats(&config, beat.last_position, position)
+    } else {
+        count_beats(&config, beat.last_position, config.music_loop_end)
+            + count_beats(&config, config.music_loop_start, position)
+    };
+    beat.total += beat.this_tick;
+    beat.last_position = position;
 }
 
 /// A run condition to run a system every `n` eighth-beats.
