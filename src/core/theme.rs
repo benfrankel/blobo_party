@@ -88,16 +88,6 @@ pub struct ThemeColorFor<C: Component + ColorMut>(
     #[reflect(ignore)] PhantomData<C>,
 );
 
-fn apply_theme_color_for<C: Component + ColorMut>(
-    theme: ConfigRef<ThemeConfig>,
-    mut color_query: Query<(&ThemeColorFor<C>, &mut C)>,
-) {
-    let palette = &r!(theme.get()).colors;
-    for (theme_color, mut color) in &mut color_query {
-        *color.color_mut() = palette[theme_color.0];
-    }
-}
-
 impl<C: Component + ColorMut + TypePath> Configure for ThemeColorFor<C> {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
@@ -105,6 +95,16 @@ impl<C: Component + ColorMut + TypePath> Configure for ThemeColorFor<C> {
             Update,
             apply_theme_color_for::<C>.in_set(UpdateSet::SyncLate),
         );
+    }
+}
+
+fn apply_theme_color_for<C: Component + ColorMut>(
+    theme: ConfigRef<ThemeConfig>,
+    mut color_query: Query<(&ThemeColorFor<C>, &mut C)>,
+) {
+    let palette = &r!(theme.get()).colors;
+    for (theme_color, mut color) in &mut color_query {
+        *color.color_mut() = palette[theme_color.0];
     }
 }
 

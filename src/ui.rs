@@ -1,6 +1,6 @@
 //! Custom UI tools.
 
-#![allow(dead_code, unused_imports)]
+#![allow(dead_code)]
 
 pub mod div;
 pub mod font;
@@ -8,8 +8,10 @@ pub mod interaction;
 pub mod tooltip;
 pub mod widget;
 
+#[allow(unused_imports)]
 pub mod prelude {
     pub use bevy::ui::Val::*;
+    pub use pyri_tooltip::prelude::*;
 
     pub use super::div::StyleExtDiv as _;
     pub use super::font::parse_rich;
@@ -21,7 +23,6 @@ pub mod prelude {
     pub use super::interaction::InteractionSfx;
     pub use super::interaction::InteractionTable;
     pub use super::interaction::IsDisabled;
-    pub use super::tooltip::Tooltip;
     pub use super::widget;
     pub use super::UiRoot;
     pub use crate::core::theme::ThemeColor;
@@ -30,7 +31,6 @@ pub mod prelude {
 }
 
 use bevy::prelude::*;
-use bevy::ui::Val::*;
 use bevy_mod_picking::prelude::*;
 use pyri_state::prelude::*;
 

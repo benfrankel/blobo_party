@@ -11,10 +11,19 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<AttackAction>();
 }
 
-#[derive(Actionlike, Eq, PartialEq, Hash, Copy, Clone, Reflect)]
+#[derive(Eq, PartialEq, Hash, Copy, Clone, Reflect, Debug)]
 enum AttackAction {
     Aim,
     Fire,
+}
+
+impl Actionlike for AttackAction {
+    fn input_control_kind(&self) -> InputControlKind {
+        match self {
+            Self::Aim => InputControlKind::DualAxis,
+            Self::Fire => InputControlKind::Button,
+        }
+    }
 }
 
 impl Configure for AttackAction {
@@ -33,7 +42,8 @@ fn record_attack_action(
     mut action_query: Query<(&ActionState<AttackAction>, &mut AttackController)>,
 ) {
     for (action, mut controller) in &mut action_query {
-        controller.aim += cq!(action.axis_pair(&AttackAction::Aim))
+        controller.aim += action
+            .axis_pair(&AttackAction::Aim)
             .xy()
             .clamp_length_max(1.0);
         controller.fire |= action.just_pressed(&AttackAction::Fire);
@@ -43,10 +53,9 @@ fn record_attack_action(
 pub fn attack_action(mut entity: EntityWorldMut) {
     entity.insert(InputManagerBundle::with_map(
         InputMap::default()
-            .insert(AttackAction::Aim, DualAxis::right_stick())
-            .insert(AttackAction::Aim, VirtualDPad::arrow_keys())
-            .insert(AttackAction::Fire, GamepadButtonType::East)
-            .insert(AttackAction::Fire, VirtualDPad::arrow_keys())
-            .build(),
+            .with_dual_axis(AttackAction::Aim, GamepadStick::RIGHT)
+            .with_dual_axis(AttackAction::Aim, KeyboardVirtualDPad::ARROW_KEYS)
+            .with(AttackAction::Fire, GamepadButtonType::East)
+            .with(AttackAction::Fire, MouseButton::Left),
     ));
 }

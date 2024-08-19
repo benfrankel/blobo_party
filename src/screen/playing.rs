@@ -127,7 +127,7 @@ impl Configure for PlayingAssets {
     }
 }
 
-#[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
+#[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq, Debug)]
 pub enum PlayingAction {
     TogglePause,
 }
@@ -137,11 +137,10 @@ impl Configure for PlayingAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
-                .insert(Self::TogglePause, GamepadButtonType::Start)
-                .insert(Self::TogglePause, KeyCode::Escape)
-                .insert(Self::TogglePause, KeyCode::Tab)
-                .insert(Self::TogglePause, KeyCode::KeyP)
-                .build(),
+                .with(Self::TogglePause, GamepadButtonType::Start)
+                .with(Self::TogglePause, KeyCode::Escape)
+                .with(Self::TogglePause, KeyCode::Tab)
+                .with(Self::TogglePause, KeyCode::KeyP),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());
         app.add_systems(

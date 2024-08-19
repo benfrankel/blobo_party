@@ -11,9 +11,17 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<MovementAction>();
 }
 
-#[derive(Actionlike, Eq, PartialEq, Hash, Copy, Clone, Reflect)]
+#[derive(Eq, PartialEq, Hash, Copy, Clone, Reflect, Debug)]
 enum MovementAction {
     Move,
+}
+
+impl Actionlike for MovementAction {
+    fn input_control_kind(&self) -> InputControlKind {
+        match self {
+            Self::Move => InputControlKind::DualAxis,
+        }
+    }
 }
 
 impl Configure for MovementAction {
@@ -32,7 +40,8 @@ fn record_movement_action(
     mut action_query: Query<(&ActionState<MovementAction>, &mut MovementController)>,
 ) {
     for (action, mut controller) in &mut action_query {
-        controller.0 += cq!(action.axis_pair(&MovementAction::Move))
+        controller.0 += action
+            .axis_pair(&MovementAction::Move)
             .xy()
             .clamp_length_max(1.0);
     }
@@ -41,8 +50,7 @@ fn record_movement_action(
 pub fn movement_action(mut entity: EntityWorldMut) {
     entity.insert(InputManagerBundle::with_map(
         InputMap::default()
-            .insert(MovementAction::Move, DualAxis::left_stick())
-            .insert(MovementAction::Move, VirtualDPad::wasd())
-            .build(),
+            .with_dual_axis(MovementAction::Move, GamepadStick::LEFT)
+            .with_dual_axis(MovementAction::Move, KeyboardVirtualDPad::WASD),
     ));
 }

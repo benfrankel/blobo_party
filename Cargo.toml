@@ -47,7 +47,7 @@ bevy_tweening = "0.11"
 interpolation = "0.3"
 iyes_progress = "0.12"
 lazy-regex = { version = "3", features = ["lite"] }
-leafwing-input-manager = "0.14"
+leafwing-input-manager = "0.15"
 log = { version = "0.4", features = [
     "max_level_debug",
     "release_max_level_warn",
@@ -59,12 +59,13 @@ pyri_state = { version = "0.2", default-features = false, features = [
     "bevy_state",
     "entity_scope",
 ] }
+pyri_tooltip = "0.1"
 rand = { version = "0.8", features = ["small_rng"] }
 ron = "0.8"
 serde = "1"
 strum = { version = "0.26", features = ["derive"] }
 tap = "1"
-tiny_bail = "0.1"
+tiny_bail = "0.3"
 tracing = { version = "0.1", features = [
     "max_level_debug",
     "release_max_level_warn",
@@ -73,7 +74,6 @@ tracing = { version = "0.1", features = [
 [patch.crates-io]
 # TODO: Workaround for https://github.com/NiklasEi/bevy_asset_loader/issues/219.
 bevy_asset_loader = { git = "https://github.com/benfrankel/bevy_asset_loader.git", branch = "direct-depend" }
-bevy_editor_pls = { git = "https://github.com/zhaop/bevy_editor_pls", branch = "bevy-0.14" }
 
 [features]
 default = ["native_dev"]

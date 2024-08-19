@@ -230,7 +230,7 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
         let name = format!("Card(\"{}\")", card.name);
         let height = config.card_height;
         let border_width = height / 18.0;
-        let tooltip_text = format!("{}\n\n{}", card.name, card.description);
+        let tooltip_text = format!("[b]{}\n\n[r]{}", card.name, card.description);
 
         world
             .entity_mut(entity)
@@ -246,12 +246,8 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
                 },
                 ThemeColor::CardBorder.target::<BorderColor>(),
                 Interaction::default(),
-                Tooltip {
-                    text: tooltip_text,
-                    self_anchor: Anchor::TopCenter,
-                    tooltip_anchor: Anchor::BottomCenter,
-                    offset: Vec2::ZERO,
-                },
+                Tooltip::fixed(Anchor::TopCenter, parse_rich(tooltip_text))
+                    .with_justify(JustifyText::Center),
             ))
             .with_children(|children| {
                 children.spawn_with(background).with_children(|children| {

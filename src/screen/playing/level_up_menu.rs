@@ -359,7 +359,7 @@ fn ready_button(mut entity: EntityWorldMut) {
     ));
 }
 
-#[derive(Actionlike, Reflect, Clone, Hash, PartialEq, Eq)]
+#[derive(Actionlike, Eq, PartialEq, Hash, Copy, Clone, Reflect, Debug)]
 pub enum LevelUpMenuAction {
     SelectLeft,
     SelectRight,
@@ -373,24 +373,26 @@ impl Configure for LevelUpMenuAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
-                .insert(Self::SelectLeft, GamepadButtonType::DPadLeft)
-                .insert(Self::SelectLeft, GamepadButtonType::LeftTrigger)
-                .insert(Self::SelectLeft, KeyCode::KeyA)
-                .insert(Self::SelectLeft, KeyCode::ArrowLeft)
-                .insert(Self::SelectRight, GamepadButtonType::DPadRight)
-                .insert(Self::SelectRight, GamepadButtonType::RightTrigger)
-                .insert(Self::SelectRight, KeyCode::KeyD)
-                .insert(Self::SelectRight, KeyCode::ArrowRight)
-                .insert(Self::SwapLeft, GamepadButtonType::LeftTrigger2)
-                .insert_modified(Self::SwapLeft, Modifier::Shift, KeyCode::KeyA)
-                .insert_modified(Self::SwapLeft, Modifier::Shift, KeyCode::ArrowLeft)
-                .insert(Self::SwapRight, GamepadButtonType::RightTrigger2)
-                .insert_modified(Self::SwapRight, Modifier::Shift, KeyCode::KeyD)
-                .insert_modified(Self::SwapRight, Modifier::Shift, KeyCode::ArrowRight)
-                .insert(Self::Discard, GamepadButtonType::West)
-                .insert(Self::Discard, KeyCode::Backspace)
-                .insert(Self::Discard, KeyCode::Delete)
-                .build(),
+                .with(Self::SelectLeft, GamepadButtonType::DPadLeft)
+                .with(Self::SelectLeft, GamepadButtonType::LeftTrigger)
+                .with(Self::SelectLeft, KeyCode::KeyA)
+                .with(Self::SelectLeft, KeyCode::ArrowLeft)
+                .with(Self::SelectRight, GamepadButtonType::DPadRight)
+                .with(Self::SelectRight, GamepadButtonType::RightTrigger)
+                .with(Self::SelectRight, KeyCode::KeyD)
+                .with(Self::SelectRight, KeyCode::ArrowRight)
+                .with(Self::SwapLeft, GamepadButtonType::LeftTrigger2)
+                .with(Self::SwapLeft, ModifierKey::Shift.with(KeyCode::KeyA))
+                .with(Self::SwapLeft, ModifierKey::Shift.with(KeyCode::ArrowLeft))
+                .with(Self::SwapRight, GamepadButtonType::RightTrigger2)
+                .with(Self::SwapRight, ModifierKey::Shift.with(KeyCode::KeyD))
+                .with(
+                    Self::SwapRight,
+                    ModifierKey::Shift.with(KeyCode::ArrowRight),
+                )
+                .with(Self::Discard, GamepadButtonType::West)
+                .with(Self::Discard, KeyCode::Backspace)
+                .with(Self::Discard, KeyCode::Delete),
         );
         app.add_plugins(InputManagerPlugin::<Self>::default());
         // TODO: It'd be better to disable the action outside of `PlayingMenu::LevelUp`, but
