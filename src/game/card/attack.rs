@@ -64,6 +64,7 @@ fn attack_on_beat(
 
         attack.power = attack_on_beat.0.power;
         attack.force = attack_on_beat.0.force;
+        attack.offset = attack_on_beat.0.offset;
         attack.projectile_key = attack_on_beat.0.projectile_key.clone();
         attack.multi_shot = attack_on_beat.0.multi_shot.clone();
         attack.child_projectile = attack_on_beat.0.child_projectile.clone();

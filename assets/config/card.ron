@@ -304,7 +304,11 @@
             max_level: 4,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_flat: 10, immunity: 0.7),
+            action_modifier: CardActionModifier(
+                heal_flat: 10,
+                immunity: 0.5,
+                attack: Attack(projectile: Some("eighth_rest"), offset: 8.0),
+            ),
         ),
         "quarter_rest": Card(
             name: "Quarter Rest",
@@ -316,7 +320,11 @@
             weight: 0.7,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_flat: 30, immunity: 0.8),
+            action_modifier: CardActionModifier(
+                heal_flat: 30,
+                immunity: 0.666,
+                attack: Attack(projectile: Some("quarter_rest"), offset: 8.0),
+            ),
         ),
         "half_rest": Card(
             name: "Half Rest",
@@ -328,7 +336,11 @@
             weight: 0.6,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 25, immunity: 0.9),
+            action_modifier: CardActionModifier(
+                heal_percent: 25,
+                immunity: 0.833,
+                attack: Attack(projectile: Some("half_rest"), offset: 8.0),
+            ),
         ),
         "whole_rest": Card(
             name: "Whole Rest",
@@ -339,7 +351,11 @@
             weight: 0.5,
 
             action: Heal,
-            action_modifier: CardActionModifier(heal_percent: 50, immunity: 1.0),
+            action_modifier: CardActionModifier(
+                heal_percent: 50,
+                immunity: 1.0,
+                attack: Attack(projectile: Some("whole_rest"), offset: 8.0),
+            ),
         ),
     }
 )

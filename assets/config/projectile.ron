@@ -1,5 +1,25 @@
 (
     projectiles: {
+        "eighth_rest": Projectile(
+            name: "Eighth Rest",
+            texture: "image/projectile/eighth_rest.png",
+            lifetime: 0.55,
+        ),
+        "quarter_rest": Projectile(
+            name: "Quarter Rest",
+            texture: "image/projectile/quarter_rest.png",
+            lifetime: 0.716,
+        ),
+        "half_rest": Projectile(
+            name: "Half Rest",
+            texture: "image/projectile/half_rest.png",
+            lifetime: 0.9,
+        ),
+        "whole_rest": Projectile(
+            name: "Whole Rest",
+            texture: "image/projectile/whole_rest.png",
+            lifetime: 1.05,
+        ),
         "eighth_note": Projectile(
             name: "Eighth Note",
 

@@ -74,6 +74,7 @@ impl Config for ProjectileConfig {
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Projectile {
     pub name: String,
 
@@ -88,12 +89,16 @@ pub struct Projectile {
     #[serde(default = "one")]
     pub spawn_sfx_volume: f64,
 
-    /// Lifetime in seconds, not beats.
+    /// Lifetime in seconds (not beats).
     pub lifetime: f32,
     /// Hitbox radius.
+    #[serde(default)]
     pub radius: f32,
+    #[serde(default)]
     pub speed: f32,
+    #[serde(default)]
     pub damage: f32,
+    #[serde(default)]
     pub knockback: f32,
     #[serde(default)]
     pub pierce: usize,
@@ -168,7 +173,14 @@ pub fn projectile(
                 (
                     RigidBody::Kinematic,
                     Collider::circle(projectile.radius),
-                    CollisionLayers::new(GameLayer::Projectile, target_layers),
+                    CollisionLayers::new(
+                        if projectile.radius == 0.0 {
+                            LayerMask::NONE
+                        } else {
+                            GameLayer::Projectile.into()
+                        },
+                        target_layers,
+                    ),
                     Sensor,
                     LockedAxes::ROTATION_LOCKED,
                     LinearVelocity(projectile.speed * force),

@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::game::actor::attack::Attack;
+use crate::game::actor::attack::AttackController;
 use crate::game::actor::health::Health;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::player::IsPlayer;
@@ -93,9 +94,18 @@ impl FromWorld for CardActionMap {
                         |In((entity, modifier)): In<(Entity, CardActionModifier)>,
                          world: &mut World| {
                             let mut entity = r!(world.get_entity_mut(entity));
+
                             let mut health = r!(entity.get_mut::<Health>());
                             health.current += modifier.heal_flat;
                             health.current += modifier.heal_percent / 100.0 * health.max;
+
+                            let mut attack_controller = r!(entity.get_mut::<AttackController>());
+                            attack_controller.aim = Vec2::Y;
+                            attack_controller.fire = true;
+
+                            let mut attack = r!(entity.get_mut::<Attack>());
+                            attack.projectile_key = modifier.attack.projectile_key.clone();
+                            attack.offset = modifier.attack.offset;
 
                             // Player actor has extra benefits:
                             if entity.contains::<IsPlayer>() {
