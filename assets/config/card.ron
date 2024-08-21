@@ -366,7 +366,7 @@
             action_modifier: CardActionModifier(
                 heal_percent_missing: 50,
                 immunity: 0.65,
-                attack: Attack(projectile: Some("whole_rest"), offset: 8.0),
+                attack: Attack(projectile: Some("whole_rest"), offset: 7.0),
             ),
         ),
     }
