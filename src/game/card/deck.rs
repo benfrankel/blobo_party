@@ -35,13 +35,6 @@ impl Configure for Deck {
 }
 
 impl Deck {
-    pub fn new(card_keys: impl Into<Vec<String>>) -> Self {
-        Self {
-            card_keys: card_keys.into(),
-            active: -1,
-        }
-    }
-
     pub fn advance(&mut self, step: isize) -> Option<&String> {
         if self.card_keys.is_empty() {
             return None;
