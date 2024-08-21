@@ -10,7 +10,6 @@ pub(super) fn plugin(app: &mut App) {
             NodeBundle {
                 style: Style {
                     position_type: PositionType::Absolute,
-                    max_width: Vw(40.0),
                     padding: UiRect::all(Px(8.0)),
                     ..default()
                 },
