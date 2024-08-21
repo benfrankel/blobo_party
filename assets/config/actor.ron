@@ -11,14 +11,14 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 8),
                     SpriteAnimationFrame(index: 1, beats: 8),
+                    SpriteAnimationFrame(index: 0, beats: 8),
                 ],
             ),
 
             attack: Attack(color: Srgba(Srgba(red: 0.855, green: 0.576, blue: 0.800, alpha: 1.000))),
             health: Health(max: 100, current: 100),
-            deck: Deck(cards: ["step", "pair", "half_rest"]),
+            deck: Deck(cards: ["eighth_rest", "quarter_rest", "half_rest", "whole_rest"]),
         ),
     },
 
@@ -36,8 +36,8 @@
             ),
             sprite_animation: SpriteAnimation(
                 frames: [
-                    SpriteAnimationFrame(index: 0, beats: 8),
                     SpriteAnimationFrame(index: 1, beats: 8),
+                    SpriteAnimationFrame(index: 0, beats: 8),
                 ],
             ),
 

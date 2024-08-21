@@ -68,6 +68,10 @@
     },
     // TODO: "contact damage" -> something more thematic?
     card_map: {
+        /********/
+        /* Move */
+        /********/
+
         "step": Card(
             name: "Simple Step",
             description: "Step forwards for 8 contact damage.\n\n\"fancy footwork starts here\"",
@@ -158,6 +162,10 @@
                 immunity: 0.9,
             ),
         ),
+
+        /**********/
+        /* Attack */
+        /**********/
 
         "eighth_note": Card(
             name: "Eighth Note",
@@ -296,23 +304,27 @@
             ),
         ),
 
+        /********/
+        /* Heal */
+        /********/
+
         "eighth_rest": Card(
             name: "Eighth Rest",
-            description: "Heal a little bit.",
+            description: "Restore 5 health.",
             background: "green",
             icon: "eighth_rest",
             max_level: 4,
 
             action: Heal,
             action_modifier: CardActionModifier(
-                heal_flat: 10,
-                immunity: 0.5,
+                heal_flat: 5,
+                immunity: 0.15,
                 attack: Attack(projectile: Some("eighth_rest"), offset: 8.0),
             ),
         ),
         "quarter_rest": Card(
             name: "Quarter Rest",
-            description: "Heal a good amount.",
+            description: "Restore 10 health.",
             background: "green",
             icon: "quarter_rest",
             min_level: 4,
@@ -321,14 +333,14 @@
 
             action: Heal,
             action_modifier: CardActionModifier(
-                heal_flat: 30,
-                immunity: 0.666,
+                heal_flat: 10,
+                immunity: 0.25,
                 attack: Attack(projectile: Some("quarter_rest"), offset: 8.0),
             ),
         ),
         "half_rest": Card(
             name: "Half Rest",
-            description: "Heal for 25%.",
+            description: "Restore 25% of missing health.",
             background: "green",
             icon: "half_rest",
             min_level: 6,
@@ -337,14 +349,14 @@
 
             action: Heal,
             action_modifier: CardActionModifier(
-                heal_percent: 25,
-                immunity: 0.833,
+                heal_percent_missing: 25,
+                immunity: 0.4,
                 attack: Attack(projectile: Some("half_rest"), offset: 8.0),
             ),
         ),
         "whole_rest": Card(
             name: "Whole Rest",
-            description: "Heal for 50%.",
+            description: "Restore 50% of missing health.",
             background: "green",
             icon: "whole_rest",
             min_level: 8,
@@ -352,8 +364,8 @@
 
             action: Heal,
             action_modifier: CardActionModifier(
-                heal_percent: 50,
-                immunity: 1.0,
+                heal_percent_missing: 50,
+                immunity: 0.65,
                 attack: Attack(projectile: Some("whole_rest"), offset: 8.0),
             ),
         ),

@@ -96,8 +96,10 @@ impl FromWorld for CardActionMap {
                             let mut entity = r!(world.get_entity_mut(entity));
 
                             let mut health = r!(entity.get_mut::<Health>());
+                            health.current += modifier.heal_percent_missing / 100.0
+                                * (health.max - health.current).max(0.0);
+                            health.current += modifier.heal_percent_max / 100.0 * health.max;
                             health.current += modifier.heal_flat;
-                            health.current += modifier.heal_percent / 100.0 * health.max;
 
                             let mut attack_controller = r!(entity.get_mut::<AttackController>());
                             attack_controller.aim = Vec2::Y;
@@ -153,18 +155,22 @@ impl Default for CardAction {
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone)]
-#[serde(default)]
+#[serde(deny_unknown_fields, default)]
 pub struct CardActionModifier {
     /// Remove component after this many eighth-beats.
     remove_on_beat: usize,
     /// Remove component when this timer finishes.
     remove_on_timer: Timer,
+
+    movement: Movement,
+
     attack: Attack,
     attack_on_beat: usize,
-    movement: Movement,
     contact_damage: f32,
     contact_beats: usize,
-    heal_percent: f32,
+
+    heal_percent_max: f32,
+    heal_percent_missing: f32,
     heal_flat: f32,
     immunity: f32,
 }
@@ -174,12 +180,16 @@ impl Default for CardActionModifier {
         Self {
             remove_on_beat: 0,
             remove_on_timer: Timer::default(),
+
+            movement: Movement::default(),
+
             attack: Attack::default(),
             attack_on_beat: 4,
-            movement: Movement::default(),
             contact_damage: 0.0,
             contact_beats: 0,
-            heal_percent: 0.0,
+
+            heal_percent_max: 0.0,
+            heal_percent_missing: 0.0,
             heal_flat: 0.0,
             immunity: 0.0,
         }
