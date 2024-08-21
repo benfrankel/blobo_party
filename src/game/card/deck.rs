@@ -40,7 +40,7 @@ impl Deck {
             return None;
         }
 
-        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
+        self.active = (self.active.max(0) + step).rem_euclid(self.card_keys.len() as isize);
 
         Some(&self.card_keys[self.active as usize])
     }
@@ -51,7 +51,7 @@ impl Deck {
         }
 
         let old = self.active as usize;
-        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
+        self.active = (self.active.max(0) + step).rem_euclid(self.card_keys.len() as isize);
 
         if old < self.card_keys.len() {
             self.card_keys.swap(old, self.active as usize);
@@ -63,14 +63,16 @@ impl Deck {
             return;
         }
 
-        self.card_keys.remove(self.active as usize);
-        if self.active as usize >= self.card_keys.len() {
+        let idx = self.active.max(0) as usize;
+        self.card_keys.remove(idx);
+        if idx >= self.card_keys.len() {
             self.active = 0;
         }
     }
 
     pub fn add(&mut self, card_key: impl Into<String>) {
-        self.card_keys.insert(self.active as usize, card_key.into());
+        let idx = self.active.max(0) as usize;
+        self.card_keys.insert(idx, card_key.into());
     }
 }
 

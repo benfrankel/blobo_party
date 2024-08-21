@@ -172,7 +172,7 @@
             description: "Sing an eighth note.",
             background: "pink",
             icon: "eighth_note",
-            max_level: 2,
+            max_level: 1,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -185,7 +185,7 @@
             description: "Sing a quarter note.",
             background: "pink",
             icon: "quarter_note",
-            max_level: 4,
+            max_level: 3,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -198,7 +198,7 @@
             description: "Sing a half note.",
             background: "pink",
             icon: "half_note",
-            min_level: 2,
+            min_level: 3,
             max_level: 6,
 
             action: Attack,
@@ -212,7 +212,8 @@
             description: "Sing a whole note.",
             background: "pink",
             icon: "whole_note",
-            min_level: 4,
+            min_level: 5,
+            max_level: 8,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -225,7 +226,7 @@
             description: "Sing a pair of eighth notes.\n\n\"two beats, rapid fire!\"",
             background: "pink",
             icon: "pair",
-            max_level: 4,
+            max_level: 2,
             weight: 0.5,
 
             action: Attack,
@@ -239,8 +240,8 @@
             description: "Sing a triplet of eighth notes.\n\n\"...three beats, rapid fire!\"",
             background: "pink",
             icon: "triplet",
-            max_level: 4,
-            weight: 0.1,
+            max_level: 3,
+            weight: 0.4,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -255,9 +256,9 @@
             // vscode-ron syntax highlighting breaks without this: '
             background: "pink",
             icon: "cacophony",
-            min_level: 4,
-            max_level: 7,
-            weight: 0.1,
+            min_level: 3,
+            max_level: 8,
+            weight: 0.25,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -291,8 +292,8 @@
             // vscode-ron syntax highlighting breaks without this: '
             background: "pink",
             icon: "cluster",
-            min_level: 8,
-            weight: 0.7,
+            min_level: 6,
+            weight: 0.8,
 
             action: Attack,
             action_modifier: CardActionModifier(
@@ -327,8 +328,8 @@
             description: "Restore 10 health.",
             background: "green",
             icon: "quarter_rest",
-            min_level: 4,
-            max_level: 8,
+            min_level: 3,
+            max_level: 7,
             weight: 0.7,
 
             action: Heal,
@@ -343,7 +344,7 @@
             description: "Restore 25% of missing health.",
             background: "green",
             icon: "half_rest",
-            min_level: 6,
+            min_level: 5,
             max_level: 9,
             weight: 0.6,
 
