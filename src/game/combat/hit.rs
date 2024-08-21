@@ -8,7 +8,7 @@ use crate::game::cleanup::RemoveOnTimer;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(Hitbox, Hurtbox, OnHit, HurtSfx, Immune)>();
+    app.configure::<(Hitbox, Hurtbox, Immune, OnHit, HurtSfx)>();
 }
 
 #[derive(Component, Reflect)]
@@ -23,21 +23,21 @@ impl Configure for Hitbox {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Immune;
+pub struct Hurtbox;
 
-impl Configure for Immune {
+impl Configure for Hurtbox {
     fn configure(app: &mut App) {
-        app.configure::<RemoveOnTimer<Self>>();
         app.register_type::<Self>();
     }
 }
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct Hurtbox;
+pub struct Immune;
 
-impl Configure for Hurtbox {
+impl Configure for Immune {
     fn configure(app: &mut App) {
+        app.configure::<RemoveOnTimer<Self>>();
         app.register_type::<Self>();
     }
 }

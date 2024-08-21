@@ -6,6 +6,7 @@ pub mod health;
 pub mod level;
 pub mod movement;
 pub mod player;
+mod shield;
 
 use avian2d::prelude::*;
 use bevy::ecs::system::EntityCommand;
@@ -17,6 +18,7 @@ use bevy::utils::HashMap;
 use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
+use shield::IsShield;
 
 use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
@@ -33,6 +35,7 @@ use crate::game::audio::music::Beat;
 use crate::game::card::deck::Deck;
 use crate::game::combat::hit::Hurtbox;
 use crate::game::sprite::SpriteAnimation;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -47,6 +50,7 @@ pub(super) fn plugin(app: &mut App) {
         level::plugin,
         movement::plugin,
         player::plugin,
+        shield::plugin,
     ));
 }
 
@@ -130,6 +134,7 @@ fn one() -> f64 {
 impl EntityCommand for Actor {
     fn apply(mut self, id: Entity, world: &mut World) {
         self.deck.active += world.resource::<Beat>().total as isize - 1;
+        let bubble_texture = world.resource::<PlayingAssets>().bubble.clone();
 
         world
             .entity_mut(id)
@@ -174,6 +179,18 @@ impl EntityCommand for Actor {
                         size: vec2(8.0, 1.0),
                     })
                     .insert(Transform::from_translation(vec3(0.0, -4.5, 1.0)));
+                children
+                    .spawn((
+                        Name::new("Shield"),
+                        SpriteBundle {
+                            transform: Transform::default(),
+                            texture: bubble_texture,
+                            visibility: Visibility::Hidden,
+                            ..default()
+                        },
+                        IsShield,
+                    ))
+                    .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
             });
     }
 }
