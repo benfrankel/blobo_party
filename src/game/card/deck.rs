@@ -4,8 +4,8 @@ use serde::Serialize;
 
 use crate::core::UpdateSet;
 use crate::game::audio::music::on_full_beat;
-use crate::game::card::card;
 use crate::game::card::OnPlayCard;
+use crate::game::card::card;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

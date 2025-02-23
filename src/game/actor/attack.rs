@@ -8,8 +8,8 @@ use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::faction::Faction;
 use crate::game::combat::projectile::projectile;

@@ -2,11 +2,11 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::game::audio::AudioConfig;
-use crate::screen::playing::PlayingAssets;
 use crate::screen::Screen;
+use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

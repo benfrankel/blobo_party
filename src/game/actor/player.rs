@@ -7,18 +7,18 @@ use bevy::prelude::*;
 
 use crate::core::camera::CameraRoot;
 use crate::core::camera::SmoothFollow;
+use crate::game::GameLayer;
+use crate::game::GameRoot;
+use crate::game::actor::ActorConfig;
 use crate::game::actor::attack::input::attack_action;
 use crate::game::actor::facing::FaceCursor;
 use crate::game::actor::facing::FacingIndicator;
 use crate::game::actor::faction::Faction;
 use crate::game::actor::movement::input::movement_action;
-use crate::game::actor::ActorConfig;
 use crate::game::combat::death::DeathSfx;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::hit::HurtSfx;
 use crate::game::combat::knockback::HitboxKnockback;
-use crate::game::GameLayer;
-use crate::game::GameRoot;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 

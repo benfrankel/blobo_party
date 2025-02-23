@@ -4,8 +4,8 @@ use crate::core::UpdateSet;
 use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
-use crate::game::audio::music::on_beat;
 use crate::game::audio::music::Beat;
+use crate::game::audio::music::on_beat;
 use crate::game::cleanup::RemoveOnBeat;
 use crate::util::prelude::*;
 

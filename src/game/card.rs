@@ -87,11 +87,11 @@ impl Config for CardConfig {
                 .into();
         }
         for card in self.card_map.values() {
-            progress += (!card
+            progress += card
                 .play_sfx
                 .as_ref()
-                .is_some_and(|x| !asset_server.is_loaded_with_dependencies(x)))
-            .into();
+                .is_none_or(|x| asset_server.is_loaded_with_dependencies(x))
+                .into();
         }
 
         progress
