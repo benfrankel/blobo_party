@@ -86,12 +86,13 @@ fn root(name: impl Into<Cow<'static, str>>) -> impl EntityCommand<World> {
     let name = name.into();
 
     move |mut entity: EntityWorldMut| {
-        entity.insert((Name::new(name), SpatialBundle::default()));
+        entity.insert((Name::new(name), Transform::default(), Visibility::default()));
     }
 }
 
-#[derive(PhysicsLayer)]
+#[derive(PhysicsLayer, Default)]
 pub enum GameLayer {
+    #[default]
     Player,
     Enemy,
     Projectile,

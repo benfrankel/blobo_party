@@ -1,10 +1,9 @@
 use bevy::prelude::*;
-use bevy_mod_picking::prelude::*;
 use pyri_state::prelude::*;
 
+use crate::screen::Screen;
 use crate::screen::fade_in;
 use crate::screen::fade_out;
-use crate::screen::Screen;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
@@ -19,7 +18,7 @@ fn enter_title(mut commands: Commands, ui_root: Res<UiRoot>) {
 
 fn title_screen(mut entity: EntityWorldMut) {
     entity
-        .add(Style::COLUMN_MID.div())
+        .queue(Node::COLUMN_MID.div())
         .insert(Name::new("TitleScreen"))
         .with_children(|children| {
             children.spawn_with(header);
@@ -32,19 +31,14 @@ const HEADER: &str = "Blobo Party!";
 fn header(mut entity: EntityWorldMut) {
     entity.insert((
         Name::new("Header"),
-        TextBundle::from_section(
-            HEADER,
-            TextStyle {
-                font: BOLD_FONT_HANDLE,
-                ..default()
-            },
-        )
-        .with_style(Style {
+        Text::new(HEADER),
+        TextFont::from_font(BOLD_FONT_HANDLE),
+        DynamicFontSize::new(Vw(5.0)).with_step(8.0),
+        ThemeColor::BodyText.target::<TextColor>(),
+        Node {
             margin: UiRect::vertical(Vw(5.0)),
             ..default()
-        }),
-        DynamicFontSize::new(Vw(5.0)).with_step(8.0),
-        ThemeColorForText(vec![ThemeColor::BodyText]),
+        },
     ));
 }
 
@@ -52,15 +46,12 @@ fn button_container(mut entity: EntityWorldMut) {
     entity
         .insert((
             Name::new("ButtonContainer"),
-            NodeBundle {
-                style: Style {
-                    width: Percent(100.0),
-                    align_items: AlignItems::Center,
-                    flex_direction: FlexDirection::Column,
-                    margin: UiRect::vertical(VMin(9.0)),
-                    row_gap: Vw(2.5),
-                    ..default()
-                },
+            Node {
+                width: Percent(100.0),
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
+                margin: UiRect::vertical(VMin(9.0)),
+                row_gap: Vw(2.5),
                 ..default()
             },
         ))
@@ -71,20 +62,20 @@ fn button_container(mut entity: EntityWorldMut) {
 }
 
 fn play_button(mut entity: EntityWorldMut) {
-    entity
-        .add(widget::menu_button("Play"))
-        .insert(On::<Pointer<Click>>::run(|mut commands: Commands| {
+    entity.queue(widget::menu_button("Play")).observe(
+        |_: Trigger<Pointer<Click>>, mut commands: Commands| {
             commands.spawn_with(fade_out(Screen::Intro));
-        }));
+        },
+    );
 }
 
 fn quit_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Quit")).insert((
-        #[cfg(feature = "web")]
-        IsDisabled(true),
-        #[cfg(not(feature = "web"))]
-        On::<Pointer<Click>>::run(|mut app_exit: EventWriter<_>| {
-            app_exit.send(bevy::app::AppExit::Success);
-        }),
-    ));
+    entity.queue(widget::menu_button("Quit"));
+
+    #[cfg(feature = "web")]
+    entity.insert(IsDisabled(true));
+    #[cfg(not(feature = "web"))]
+    entity.observe(|_: Trigger<Pointer<Click>>, mut app_exit: EventWriter<_>| {
+        app_exit.send(bevy::app::AppExit::Success);
+    });
 }

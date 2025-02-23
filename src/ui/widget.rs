@@ -1,30 +1,17 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
 use bevy::ui::FocusPolicy;
-use bevy_mod_picking::prelude::*;
 
 use crate::animation::backup::Backup;
 use crate::animation::offset::Offset;
 use crate::ui::prelude::*;
 
 pub fn overlay(mut entity: EntityWorldMut) {
-    entity.insert((
-        NodeBundle {
-            style: Style::ABS_FILL,
-            z_index: ZIndex::Global(1000),
-            ..default()
-        },
-        Pickable::IGNORE,
-    ));
+    entity.insert((Node::ABS_FILL, GlobalZIndex(1000), PickingBehavior::IGNORE));
 }
 
 pub fn blocking_overlay(mut entity: EntityWorldMut) {
-    entity.insert(NodeBundle {
-        style: Style::ABS_FILL,
-        focus_policy: FocusPolicy::Block,
-        z_index: ZIndex::Global(1000),
-        ..default()
-    });
+    entity.insert((Node::ABS_FILL, FocusPolicy::Block, GlobalZIndex(1000)));
 }
 
 pub fn menu_button(text: impl Into<String>) -> impl EntityCommand<World> {
@@ -40,17 +27,15 @@ pub fn menu_button_with_font_size(
         entity
             .insert((
                 Name::new(format!("Button(\"{}\")", text)),
-                ButtonBundle {
-                    style: Style {
-                        height: Vw(11.0),
-                        width: Vw(38.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        ..default()
-                    },
-                    border_radius: BorderRadius::MAX,
+                Button,
+                Node {
+                    height: Vw(11.0),
+                    width: Vw(38.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
                     ..default()
                 },
+                BorderRadius::MAX,
                 ThemeColor::default().target::<BackgroundColor>(),
                 InteractionTable {
                     normal: ThemeColor::Primary.target::<BackgroundColor>(),
@@ -70,15 +55,10 @@ pub fn menu_button_with_font_size(
             .with_children(|parent| {
                 parent.spawn((
                     Name::new("ButtonText"),
-                    TextBundle::from_section(
-                        text,
-                        TextStyle {
-                            font: FONT_HANDLE,
-                            ..default()
-                        },
-                    ),
+                    Text::new(text),
+                    TextFont::from_font(FONT_HANDLE),
                     DynamicFontSize::new(font_size).with_step(8.0),
-                    ThemeColorForText(vec![ThemeColor::PrimaryText]),
+                    ThemeColor::PrimaryText.target::<TextColor>(),
                 ));
             });
     }

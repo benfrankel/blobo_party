@@ -3,10 +3,10 @@ use std::marker::PhantomData;
 use bevy::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::core::camera::CameraRoot;
-use crate::core::pause::Pause;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
+use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
 use crate::game::audio::music::on_beat;
 use crate::game::combat::hit::OnHit;
 use crate::util::prelude::*;
@@ -22,7 +22,7 @@ pub struct DespawnOnHit(pub usize);
 impl Configure for DespawnOnHit {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(apply_despawn_on_hit);
+        app.add_observer(apply_despawn_on_hit);
     }
 }
 

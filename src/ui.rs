@@ -13,25 +13,22 @@ pub mod prelude {
     pub use bevy::ui::Val::*;
     pub use pyri_tooltip::prelude::*;
 
-    pub use super::div::StyleExtDiv as _;
-    pub use super::font::parse_rich;
-    pub use super::font::parse_rich_custom;
-    pub use super::font::DynamicFontSize;
+    pub use super::UiRoot;
+    pub use super::div::NodeExtDiv as _;
     pub use super::font::BOLD_FONT_HANDLE;
+    pub use super::font::DynamicFontSize;
     pub use super::font::FONT_HANDLE;
     pub use super::font::THICK_FONT_HANDLE;
+    pub use super::font::parse_rich;
+    pub use super::font::parse_rich_custom;
     pub use super::interaction::InteractionSfx;
     pub use super::interaction::InteractionTable;
     pub use super::interaction::IsDisabled;
     pub use super::widget;
-    pub use super::UiRoot;
     pub use crate::core::theme::ThemeColor;
-    pub use crate::core::theme::ThemeColorFor;
-    pub use crate::core::theme::ThemeColorForText;
 }
 
 use bevy::prelude::*;
-use bevy_mod_picking::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::screen::Screen;
@@ -62,14 +59,7 @@ impl FromWorld for UiRoot {
     fn from_world(world: &mut World) -> Self {
         Self {
             body: world
-                .spawn((
-                    Name::new("Ui"),
-                    NodeBundle {
-                        style: Style::COLUMN_MID,
-                        ..default()
-                    },
-                    Pickable::IGNORE,
-                ))
+                .spawn((Name::new("Ui"), Node::COLUMN_MID, PickingBehavior::IGNORE))
                 .id(),
         }
     }

@@ -11,6 +11,8 @@ use iyes_progress::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::game::GameLayer;
+use crate::game::GameRoot;
 use crate::game::actor::attack::Attack;
 use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
@@ -23,8 +25,6 @@ use crate::game::cleanup::DespawnRadiusSq;
 use crate::game::combat::damage::HitboxDamage;
 use crate::game::combat::hit::Hitbox;
 use crate::game::combat::knockback::HitboxKnockback;
-use crate::game::GameLayer;
-use crate::game::GameRoot;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -150,9 +150,9 @@ pub fn projectile(
                 Name::new(projectile.name.replace(' ', "")),
                 // Appearance:
                 (
-                    SpriteBundle {
-                        sprite: Sprite { color, ..default() },
-                        texture: projectile.texture.clone(),
+                    Sprite {
+                        image: projectile.texture.clone(),
+                        color,
                         ..default()
                     },
                     Animator::new(
@@ -160,7 +160,7 @@ pub fn projectile(
                             (projectile.lifetime - FADE_SECS).max(0.001),
                         ))
                         .then(Tween::new(
-                            EaseMethod::Linear,
+                            EaseFunction::Linear,
                             Duration::from_secs_f32(projectile.lifetime.clamp(0.001, FADE_SECS)),
                             lens::SpriteColorLens {
                                 start: color,

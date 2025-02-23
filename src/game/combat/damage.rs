@@ -19,7 +19,7 @@ impl Configure for HitboxDamage {
     fn configure(app: &mut App) {
         app.configure::<RemoveOnBeat<Self>>();
         app.register_type::<Self>();
-        app.observe(apply_hitbox_damage);
+        app.add_observer(apply_hitbox_damage);
     }
 }
 

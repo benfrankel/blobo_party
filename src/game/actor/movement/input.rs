@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::game::actor::movement::MovementController;
 use crate::util::prelude::*;
 
@@ -51,6 +51,6 @@ pub fn movement_action(mut entity: EntityWorldMut) {
     entity.insert(InputManagerBundle::with_map(
         InputMap::default()
             .with_dual_axis(MovementAction::Move, GamepadStick::LEFT)
-            .with_dual_axis(MovementAction::Move, KeyboardVirtualDPad::WASD),
+            .with_dual_axis(MovementAction::Move, VirtualDPad::wasd()),
     ));
 }

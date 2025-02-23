@@ -7,8 +7,8 @@ use pyri_state::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -66,7 +66,7 @@ fn apply_movement(
     time: Res<Time>,
     mut movement_query: Query<(&Movement, &MovementController, &mut LinearVelocity)>,
 ) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
 
     for (movement, controller, mut velocity) in &mut movement_query {
         if controller.0 == Vec2::ZERO || velocity.0.length_squared() >= movement.speed.powi(2) {

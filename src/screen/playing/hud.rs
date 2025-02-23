@@ -1,11 +1,12 @@
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
+use bevy::ui::widget::NodeImageMode;
 
+use crate::game::actor::level::IsLevelDisplayCurrent;
 use crate::game::actor::level::xp::IsXpBarFill;
-use crate::game::actor::level::IsLevelDisplay;
-use crate::game::card::deck::IsDeckDisplay;
 use crate::game::card::CardConfig;
+use crate::game::card::deck::IsDeckDisplay;
 use crate::screen::playing::PlayingAssets;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -15,14 +16,11 @@ pub(super) fn playing_hud(player: Entity) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("PlayingScreen"),
-                NodeBundle {
-                    style: Style {
-                        width: Percent(100.0),
-                        height: Percent(100.0),
-                        justify_content: JustifyContent::SpaceBetween,
-                        flex_direction: FlexDirection::Column,
-                        ..default()
-                    },
+                Node {
+                    width: Percent(100.0),
+                    height: Percent(100.0),
+                    justify_content: JustifyContent::SpaceBetween,
+                    flex_direction: FlexDirection::Column,
                     ..default()
                 },
             ))
@@ -39,18 +37,15 @@ fn upper_hud(player: Entity) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("UpperHud"),
-                NodeBundle {
-                    style: Style {
-                        width: Percent(100.0),
-                        align_items: AlignItems::Center,
-                        justify_content: default(),
-                        padding: UiRect::all(Px(16.0)),
-                        column_gap: Px(16.0),
-                        ..default()
-                    },
-                    z_index: ZIndex::Global(2),
+                Node {
+                    width: Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: default(),
+                    padding: UiRect::all(Px(16.0)),
+                    column_gap: Px(16.0),
                     ..default()
                 },
+                GlobalZIndex(2),
             ))
             .with_children(|children| {
                 children.spawn_with(level_display(player));
@@ -60,29 +55,47 @@ fn upper_hud(player: Entity) -> impl EntityCommand<World> {
 }
 
 fn level_display(player: Entity) -> impl EntityCommand<World> {
-    const TEXT_STYLE: TextStyle = TextStyle {
-        font: FONT_HANDLE,
-        font_size: 32.0,
-        color: Color::WHITE,
-    };
-
     move |mut entity: EntityWorldMut| {
-        entity.insert((
-            Name::new("LevelDisplay"),
-            TextBundle::from_sections([
-                TextSection::new("Level ", TEXT_STYLE),
-                TextSection::new("", TEXT_STYLE),
-                TextSection::new("/10", TEXT_STYLE),
-            ])
-            .with_no_wrap()
-            .with_style(Style {
-                margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-4.0), Val::ZERO),
-                ..default()
-            }),
-            ThemeColorForText(vec![ThemeColor::Indicator; 3]),
-            IsLevelDisplay,
-            Selection(player),
-        ));
+        entity
+            .insert((
+                Name::new("LevelDisplay"),
+                Text::new("Level "),
+                TextFont {
+                    font: FONT_HANDLE,
+                    font_size: 32.0,
+                    ..default()
+                },
+                ThemeColor::Indicator.target::<TextColor>(),
+                TextLayout::new_with_no_wrap(),
+                Node {
+                    margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-4.0), Val::ZERO),
+                    ..default()
+                },
+            ))
+            .with_children(|parent| {
+                parent.spawn((
+                    Name::new("LevelDisplayCurrent"),
+                    TextSpan::default(),
+                    TextFont {
+                        font: FONT_HANDLE,
+                        font_size: 32.0,
+                        ..default()
+                    },
+                    ThemeColor::Indicator.target::<TextColor>(),
+                    IsLevelDisplayCurrent,
+                    Selection(player),
+                ));
+                parent.spawn((
+                    Name::new("LevelDisplayVictory"),
+                    TextSpan::new("/10"),
+                    TextFont {
+                        font: FONT_HANDLE,
+                        font_size: 32.0,
+                        ..default()
+                    },
+                    ThemeColor::Indicator.target::<TextColor>(),
+                ));
+            });
     }
 }
 
@@ -97,36 +110,29 @@ fn xp_bar(player: Entity) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("XpBar"),
-                ImageBundle {
-                    style: Style {
-                        width: Percent(100.0),
-                        height: Px(28.0),
-                        //padding: UiRect::all(Px(8.0)),
-                        // TODO: Why is this needed? Bevy layouting bug?
-                        margin: UiRect::right(Px(4.0)),
-                        ..default()
-                    },
-                    image: UiImage::new(texture),
-                    ..default()
-                },
-                ImageScaleMode::Sliced(TextureSlicer {
+                ImageNode::from(texture).with_mode(NodeImageMode::Sliced(TextureSlicer {
                     border: BorderRect::square(8.0),
                     ..default()
-                }),
-                ThemeColor::Indicator.target::<UiImage>(),
+                })),
+                ThemeColor::Indicator.target::<ImageNode>(),
+                Node {
+                    width: Percent(100.0),
+                    height: Px(28.0),
+                    //padding: UiRect::all(Px(8.0)),
+                    // TODO: Why is this needed? Bevy layouting bug?
+                    margin: UiRect::right(Px(4.0)),
+                    ..default()
+                },
             ))
             .with_children(|children| {
                 // TODO: Workaround for padding not working in UI images.
                 children
                     .spawn((
                         Name::new("XpBarPaddingWorkaround"),
-                        NodeBundle {
-                            style: Style {
-                                width: Percent(100.0),
-                                height: Percent(100.0),
-                                padding: UiRect::all(Px(8.0)),
-                                ..default()
-                            },
+                        Node {
+                            width: Percent(100.0),
+                            height: Percent(100.0),
+                            padding: UiRect::all(Px(8.0)),
                             ..default()
                         },
                     ))
@@ -141,11 +147,8 @@ fn xp_bar_fill(player: Entity) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
         entity.insert((
             Name::new("XpBarFill"),
-            NodeBundle {
-                style: Style {
-                    height: Percent(100.0),
-                    ..default()
-                },
+            Node {
+                height: Percent(100.0),
                 ..default()
             },
             ThemeColor::Indicator.target::<BackgroundColor>(),
@@ -157,7 +160,7 @@ fn xp_bar_fill(player: Entity) -> impl EntityCommand<World> {
 
 fn middle_hud(mut entity: EntityWorldMut) {
     entity
-        .add(Style::ROW_TOP.div())
+        .queue(Node::ROW_TOP.div())
         .insert(Name::new("MiddleHud"));
 }
 
@@ -166,16 +169,13 @@ fn lower_hud(player: Entity) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("LowerHud"),
-                NodeBundle {
-                    style: Style {
-                        width: Percent(100.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        ..default()
-                    },
-                    z_index: ZIndex::Global(2),
+                Node {
+                    width: Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
                     ..default()
                 },
+                GlobalZIndex(2),
             ))
             .with_children(|children| {
                 children.spawn_with(arrow);
@@ -193,11 +193,8 @@ fn deck_display(player: Entity) -> impl EntityCommand {
 
         world.entity_mut(entity).insert((
             Name::new("DeckDisplay"),
-            NodeBundle {
-                style: Style {
-                    column_gap,
-                    ..default()
-                },
+            Node {
+                column_gap,
                 ..default()
             },
             IsDeckDisplay,
@@ -215,15 +212,12 @@ fn arrow(entity: Entity, world: &mut World) {
 
     world.entity_mut(entity).insert((
         Name::new("Arrow"),
-        ImageBundle {
-            style: Style {
-                height,
-                margin: UiRect::horizontal(margin),
-                ..default()
-            },
-            image: UiImage::new(texture),
+        ImageNode::from(texture),
+        ThemeColor::Indicator.target::<ImageNode>(),
+        Node {
+            height,
+            margin: UiRect::horizontal(margin),
             ..default()
         },
-        ThemeColor::Indicator.target::<UiImage>(),
     ));
 }

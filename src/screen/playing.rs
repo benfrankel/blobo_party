@@ -13,18 +13,18 @@ use pyri_state::prelude::*;
 use pyri_state::schedule::ResolveStateSet;
 
 use crate::core::pause::Pause;
+use crate::game::GameRoot;
 use crate::game::actor::player::player;
+use crate::game::audio::music::Beat;
 use crate::game::audio::music::start_music;
 use crate::game::audio::music::stop_music;
-use crate::game::audio::music::Beat;
 use crate::game::ground::ground;
 use crate::game::spotlight::spotlight_lamp_spawner;
 use crate::game::stats::Stats;
 use crate::game::wave::wave;
-use crate::game::GameRoot;
+use crate::screen::Screen;
 use crate::screen::fade_in;
 use crate::screen::playing::hud::playing_hud;
-use crate::screen::Screen;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
 
@@ -137,7 +137,7 @@ impl Configure for PlayingAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
-                .with(Self::TogglePause, GamepadButtonType::Start)
+                .with(Self::TogglePause, GamepadButton::Start)
                 .with(Self::TogglePause, KeyCode::Escape)
                 .with(Self::TogglePause, KeyCode::Tab)
                 .with(Self::TogglePause, KeyCode::KeyP),
@@ -152,9 +152,9 @@ impl Configure for PlayingAction {
                     .in_set(ResolveStateSet::<PlayingMenu>::Compute)
                     .run_if(
                         PlayingMenu::is_disabled
-                            .or_else(PlayingMenu::Pause.will_exit())
-                            .and_then(Screen::Playing.will_enter())
-                            .and_then(action_just_pressed(Self::TogglePause)),
+                            .or(PlayingMenu::Pause.will_exit())
+                            .and(Screen::Playing.will_enter())
+                            .and(action_just_pressed(Self::TogglePause)),
                     ),
             ),
         );
@@ -162,7 +162,7 @@ impl Configure for PlayingAction {
 }
 
 #[derive(State, Eq, PartialEq, Clone, Debug, Reflect)]
-#[state(after(Screen), before(Pause), entity_scope, log_flush)]
+#[state(after(Screen), before(Pause), react, log_flush)]
 #[reflect(Resource)]
 pub enum PlayingMenu {
     Pause,

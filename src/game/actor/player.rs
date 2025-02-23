@@ -62,7 +62,7 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
 
         world
             .entity_mut(entity)
-            .add(actor)
+            .queue(actor)
             .insert((
                 IsPlayer,
                 Faction::Player,
@@ -88,8 +88,8 @@ pub fn player(key: impl Into<String>) -> impl EntityCommand {
         #[cfg(feature = "dev")]
         world
             .entity_mut(entity)
-            .add(movement_action)
-            .add(attack_action);
+            .queue(movement_action)
+            .queue(attack_action);
 
         r!(world.entity_mut(camera).get_mut::<SmoothFollow>()).target = entity;
     }

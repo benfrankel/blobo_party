@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use leafwing_input_manager::prelude::*;
 use pyri_state::prelude::*;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::game::actor::attack::AttackController;
 use crate::util::prelude::*;
 
@@ -54,8 +54,8 @@ pub fn attack_action(mut entity: EntityWorldMut) {
     entity.insert(InputManagerBundle::with_map(
         InputMap::default()
             .with_dual_axis(AttackAction::Aim, GamepadStick::RIGHT)
-            .with_dual_axis(AttackAction::Aim, KeyboardVirtualDPad::ARROW_KEYS)
-            .with(AttackAction::Fire, GamepadButtonType::East)
+            .with_dual_axis(AttackAction::Aim, VirtualDPad::arrow_keys())
+            .with(AttackAction::Fire, GamepadButton::East)
             .with(AttackAction::Fire, MouseButton::Left),
     ));
 }

@@ -3,13 +3,13 @@ use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 
-use crate::game::actor::facing::FacePlayer;
-use crate::game::actor::faction::Faction;
-use crate::game::actor::ActorConfig;
-use crate::game::combat::death::DeathSfx;
-use crate::game::combat::death::DespawnOnDeath;
 use crate::game::GameLayer;
 use crate::game::GameRoot;
+use crate::game::actor::ActorConfig;
+use crate::game::actor::facing::FacePlayer;
+use crate::game::actor::faction::Faction;
+use crate::game::combat::death::DeathSfx;
+use crate::game::combat::death::DespawnOnDeath;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
@@ -44,7 +44,7 @@ pub fn enemy(key: impl Into<String>) -> impl EntityCommand {
 
         world
             .entity_mut(entity)
-            .add(actor)
+            .queue(actor)
             .insert((
                 IsEnemy,
                 Faction::Enemy,

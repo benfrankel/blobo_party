@@ -37,7 +37,7 @@ fn apply_fade_in(
     mut despawn: ResMut<LateDespawn>,
     mut fade_query: Query<(Entity, &mut FadeIn, &mut BackgroundColor)>,
 ) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     for (entity, mut fade, mut color) in &mut fade_query {
         // TODO: Non-linear alpha?
         color.0.set_alpha((fade.remaining / fade.duration).max(0.0));
@@ -79,7 +79,7 @@ fn apply_fade_out(
     mut screen: NextMut<Screen>,
     mut fade_query: Query<(Entity, &mut FadeOut, &mut BackgroundColor)>,
 ) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     for (entity, mut fade, mut color) in &mut fade_query {
         // TODO: Non-linear alpha?
         color

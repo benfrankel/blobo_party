@@ -3,20 +3,20 @@ use bevy::reflect::TypePath;
 use bevy::render::render_resource::AsBindGroup;
 use bevy::render::render_resource::ShaderRef;
 use bevy::render::render_resource::ShaderType;
+use bevy::sprite::AlphaMode2d;
 use bevy::sprite::Material2d;
 use bevy::sprite::Material2dPlugin;
-use bevy::sprite::MaterialMesh2dBundle;
 use bevy::time::Stopwatch;
 use pyri_state::prelude::*;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
+use crate::core::pause::Pause;
 use crate::game::audio::music::on_full_beat;
 use crate::screen::Screen;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<Ground>();
+    app.configure::<(Ground, IsGround)>();
 }
 
 const GROUND_Z_INDEX: f32 = -10.0;
@@ -84,30 +84,42 @@ impl Material2d for GroundMaterial {
     fn fragment_shader() -> ShaderRef {
         "shaders/ground.wgsl".into()
     }
+
+    fn alpha_mode(&self) -> AlphaMode2d {
+        AlphaMode2d::Blend
+    }
+}
+
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct IsGround;
+
+impl Configure for IsGround {
+    fn configure(app: &mut App) {
+        app.register_type::<Self>();
+    }
 }
 
 pub fn ground(mut entity: EntityWorldMut) {
     let ground = r!(entity.world().get_resource::<Ground>());
-    let material = ground.material.clone();
     let mesh = ground.mesh.clone();
+    let material = ground.material.clone();
 
     entity.insert((
         Name::new("Background"),
-        MaterialMesh2dBundle {
-            mesh: mesh.into(),
-            transform: Transform::from_translation(Vec2::ZERO.extend(GROUND_Z_INDEX))
-                .with_scale(Vec3::splat(GROUND_MESH_SIZE)),
-            material,
-            ..default()
-        },
+        Transform::from_translation(Vec2::ZERO.extend(GROUND_Z_INDEX))
+            .with_scale(Vec3::splat(GROUND_MESH_SIZE)),
+        Mesh2d(mesh),
+        MeshMaterial2d(material),
+        IsGround,
     ));
 }
 
 fn update_background(
     mut ground_material: ResMut<Assets<GroundMaterial>>,
     mut ground: ResMut<Ground>,
-    camera_query: Query<&Transform, (With<IsDefaultUiCamera>, Without<Handle<GroundMaterial>>)>,
-    mut ground_query: Query<&mut Transform, With<Handle<GroundMaterial>>>,
+    camera_query: Query<&Transform, (With<IsDefaultUiCamera>, Without<IsGround>)>,
+    mut ground_query: Query<&mut Transform, With<IsGround>>,
     time: Res<Time>,
 ) {
     for (_, material) in ground_material.iter_mut() {

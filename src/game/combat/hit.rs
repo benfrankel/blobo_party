@@ -74,7 +74,7 @@ pub struct HurtSfx(pub Handle<AudioSource>, pub f64);
 impl Configure for HurtSfx {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(play_hurt_sfx);
+        app.add_observer(play_hurt_sfx);
     }
 }
 

@@ -2,9 +2,10 @@ use bevy::asset::load_internal_binary_asset;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 use lazy_regex::regex;
+use pyri_tooltip::prelude::*;
 
-use crate::core::window::WindowRoot;
 use crate::core::UpdateSet;
+use crate::core::window::WindowRoot;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -48,7 +49,13 @@ pub struct DynamicFontSize {
 impl Configure for DynamicFontSize {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, apply_dynamic_font_size.in_set(UpdateSet::SyncLate));
+        app.add_systems(
+            Update,
+            (
+                apply_dynamic_font_size_to_text.in_set(UpdateSet::SyncLate),
+                apply_dynamic_font_size_to_text_span.in_set(UpdateSet::SyncLate),
+            ),
+        );
     }
 }
 
@@ -71,32 +78,54 @@ impl DynamicFontSize {
         self.minimum = minimum;
         self
     }
+
+    pub fn resolve(
+        &self,
+        parent_size: f32,
+        viewport_size: Vec2,
+    ) -> Result<f32, ValArithmeticError> {
+        // Compute font size.
+        let size = self.size.resolve(parent_size, viewport_size)?;
+
+        // Apply step.
+        let resolved = if self.step > 0.0 {
+            (size / self.step).floor() * self.step
+        } else {
+            size
+        };
+
+        // Apply minimum.
+        let size = resolved.max(self.minimum);
+
+        Ok(size)
+    }
 }
 
-fn apply_dynamic_font_size(
+fn apply_dynamic_font_size_to_text(
     window_root: Res<WindowRoot>,
     window_query: Query<&Window>,
-    mut text_query: Query<(&DynamicFontSize, &Node, &mut Text)>,
+    mut text_query: Query<(&mut TextFont, &DynamicFontSize, &ComputedNode), With<Text>>,
 ) {
     let window = rq!(window_query.get(window_root.primary));
     let viewport_size = window.resolution.size();
 
-    for (font_size, node, mut text) in &mut text_query {
-        // Compute font size.
-        let size = c!(font_size.size.resolve(node.size().x, viewport_size));
+    for (mut font, font_size, computed_node) in &mut text_query {
+        font.font_size = c!(font_size.resolve(computed_node.size().x, viewport_size));
+    }
+}
 
-        // Round font size to nearest multiple of step.
-        let resolved = if font_size.step > 0.0 {
-            (size / font_size.step).floor() * font_size.step
-        } else {
-            size
-        };
-        // Clamp font size above minimum.
-        let size = resolved.max(font_size.minimum);
+fn apply_dynamic_font_size_to_text_span(
+    window_root: Res<WindowRoot>,
+    window_query: Query<&Window>,
+    computed_node_query: Query<&ComputedNode>,
+    mut text_span_query: Query<(&mut TextFont, &DynamicFontSize, &Parent), With<TextSpan>>,
+) {
+    let window = rq!(window_query.get(window_root.primary));
+    let viewport_size = window.resolution.size();
 
-        for section in &mut text.sections {
-            section.style.font_size = size;
-        }
+    for (mut font, font_size, parent) in &mut text_span_query {
+        let computed_node = c!(computed_node_query.get(parent.get()));
+        font.font_size = c!(font_size.resolve(computed_node.size().x, viewport_size));
     }
 }
 

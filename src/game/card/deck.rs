@@ -40,18 +40,18 @@ impl Deck {
             return None;
         }
 
-        self.active = (self.active.max(0) + step).rem_euclid(self.card_keys.len() as isize);
+        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
 
         Some(&self.card_keys[self.active as usize])
     }
 
     pub fn swap(&mut self, step: isize) {
-        if self.card_keys.is_empty() {
+        if self.card_keys.is_empty() || self.active < 0 {
             return;
         }
 
         let old = self.active as usize;
-        self.active = (self.active.max(0) + step).rem_euclid(self.card_keys.len() as isize);
+        self.active = (self.active + step).rem_euclid(self.card_keys.len() as isize);
 
         if old < self.card_keys.len() {
             self.card_keys.swap(old, self.active as usize);
@@ -59,11 +59,11 @@ impl Deck {
     }
 
     pub fn discard(&mut self) {
-        if self.card_keys.len() <= 1 {
+        if self.card_keys.len() <= 1 || self.active < 0 {
             return;
         }
 
-        let idx = self.active.max(0) as usize;
+        let idx = self.active as usize;
         self.card_keys.remove(idx);
         if idx >= self.card_keys.len() {
             self.active = 0;

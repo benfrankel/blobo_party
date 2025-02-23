@@ -2,21 +2,19 @@ use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
-use bevy_mod_picking::prelude::*;
 use leafwing_input_manager::common_conditions::action_just_pressed;
 use leafwing_input_manager::prelude::*;
-use pyri_state::extra::entity_scope::StateScope;
 use pyri_state::prelude::*;
 use rand::prelude::*;
 
-use crate::core::pause::Pause;
 use crate::core::UpdateSet;
-use crate::game::actor::level::up::LevelUp;
+use crate::core::pause::Pause;
 use crate::game::actor::level::Level;
+use crate::game::actor::level::up::LevelUp;
+use crate::game::card::CardConfig;
 use crate::game::card::card;
 use crate::game::card::deck::Deck;
 use crate::game::card::deck::IsDeckDisplay;
-use crate::game::card::CardConfig;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
 use crate::ui::prelude::*;
@@ -33,7 +31,7 @@ pub(super) fn plugin(app: &mut App) {
         PlayingMenu::LevelUp
             .enter()
             .in_set(UpdateSet::SyncLate)
-            .run_if(on_event::<LevelUp>()),
+            .run_if(on_event::<LevelUp>),
     );
 
     app.configure::<(LevelUpMenuAction, ToggleDisplay)>();
@@ -47,37 +45,34 @@ fn open_level_up_menu(mut commands: Commands, ui_root: Res<UiRoot>) {
 }
 
 fn level_up_overlay(mut entity: EntityWorldMut) {
-    entity.add(widget::blocking_overlay).insert((
+    entity.queue(widget::blocking_overlay).insert((
         Name::new("LevelUpOverlay"),
-        ZIndex::Global(1),
+        GlobalZIndex(1),
         ThemeColor::Overlay.target::<BackgroundColor>(),
-        StateScope::<PlayingMenu>::default(),
+        DespawnOnExit::<PlayingMenu>::default(),
     ));
 }
 
 fn level_up_menu(mut entity: EntityWorldMut) {
     entity
-        .add(Style::ABS_COLUMN_CENTER.div())
+        .queue(Node::ABS_COLUMN_CENTER.div())
         .insert((
             Name::new("LevelUpMenuContainer"),
-            StateScope::<PlayingMenu>::default(),
+            DespawnOnExit::<PlayingMenu>::default(),
         ))
         .with_children(|children| {
             children
                 .spawn((
                     Name::new("LevelUpMenu"),
-                    NodeBundle {
-                        style: Style {
-                            height: VMin(63.0),
-                            top: Vw(-1.7),
-                            align_items: AlignItems::Center,
-                            justify_content: JustifyContent::SpaceBetween,
-                            flex_direction: FlexDirection::Column,
-                            ..default()
-                        },
-                        z_index: ZIndex::Global(2),
+                    Node {
+                        height: VMin(63.0),
+                        top: Vw(-1.7),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::SpaceBetween,
+                        flex_direction: FlexDirection::Column,
                         ..default()
                     },
+                    GlobalZIndex(2),
                 ))
                 .with_children(|children| {
                     children.spawn_with(header);
@@ -93,15 +88,10 @@ const HEADER: &str = "Level up!";
 fn header(mut entity: EntityWorldMut) {
     entity.insert((
         Name::new("Header"),
-        TextBundle::from_section(
-            HEADER,
-            TextStyle {
-                font: BOLD_FONT_HANDLE,
-                ..default()
-            },
-        ),
+        Text::new(HEADER),
+        TextFont::from_font(BOLD_FONT_HANDLE),
         DynamicFontSize::new(Vw(4.0)).with_step(8.0),
-        ThemeColorForText(vec![ThemeColor::BodyText]),
+        ThemeColor::BodyText.target::<TextColor>(),
     ));
 }
 
@@ -109,13 +99,10 @@ fn instructions_container(mut entity: EntityWorldMut) {
     entity
         .insert((
             Name::new("InstructionsContainer"),
-            NodeBundle {
-                style: Style {
-                    display: Display::None,
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Vh(2.3),
-                    ..default()
-                },
+            Node {
+                display: Display::None,
+                flex_direction: FlexDirection::Column,
+                row_gap: Vh(2.3),
                 ..default()
             },
             ToggleDisplay(Display::Flex),
@@ -123,60 +110,59 @@ fn instructions_container(mut entity: EntityWorldMut) {
         .with_children(|children| {
             children.spawn((
                 Name::new("FirstLine"),
-                TextBundle::from_sections(parse_rich("You can sort your cards during a level up:")),
+                Text::new("You can sort your cards during a level up:"),
+                TextFont::from_font(FONT_HANDLE),
                 DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                ThemeColorForText(vec![ThemeColor::BodyText]),
+                ThemeColor::BodyText.target::<TextColor>(),
             ));
 
             children.spawn((
                 Name::new("Blank"),
-                TextBundle::from_sections(parse_rich("")),
+                Text::default(),
+                TextFont::from_font(FONT_HANDLE),
                 DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                ThemeColorForText(vec![ThemeColor::BodyText]),
+                ThemeColor::BodyText.target::<TextColor>(),
             ));
 
             children
                 .spawn((
                     Name::new("InstructionsGrid"),
-                    NodeBundle {
-                        style: Style {
-                            display: Display::Grid,
-                            grid_template_columns: RepeatedGridTrack::auto(2),
-                            row_gap: Vw(1.2),
-                            column_gap: Vw(2.5),
-                            ..default()
-                        },
+                    Node {
+                        display: Display::Grid,
+                        grid_template_columns: RepeatedGridTrack::auto(2),
+                        row_gap: Vw(1.2),
+                        column_gap: Vw(2.5),
                         ..default()
                     },
                 ))
                 .with_children(|children| {
                     for (i, text) in [
-                        "[b]Select",
+                        "Select",
                         "A/D (or Arrow Keys)",
-                        "[b]Move",
+                        "Move",
                         "Shift + A/D (or Arrow Keys)",
-                        "[b]Discard",
+                        "Discard",
                         "Delete",
                     ]
                     .into_iter()
                     .enumerate()
                     {
+                        let (font, theme_color, justify_self) = if i % 2 == 0 {
+                            (BOLD_FONT_HANDLE, ThemeColor::Indicator, JustifySelf::End)
+                        } else {
+                            (FONT_HANDLE, ThemeColor::BodyText, JustifySelf::Start)
+                        };
+
                         children.spawn((
                             Name::new(format!("Span{}", i)),
-                            TextBundle::from_sections(parse_rich(text)).with_style(Style {
-                                justify_self: if i % 2 == 0 {
-                                    JustifySelf::End
-                                } else {
-                                    JustifySelf::Start
-                                },
-                                ..default()
-                            }),
+                            Text::new(text),
+                            TextFont::from_font(font),
+                            theme_color.target::<TextColor>(),
                             DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                            ThemeColorForText(vec![if i % 2 == 0 {
-                                ThemeColor::Indicator
-                            } else {
-                                ThemeColor::BodyText
-                            }]),
+                            Node {
+                                justify_self,
+                                ..default()
+                            },
                         ));
                     }
                 });
@@ -208,14 +194,11 @@ fn card_options_container(entity: Entity, world: &mut World) {
         .entity_mut(entity)
         .insert((
             Name::new("CardOptionsContainer"),
-            NodeBundle {
-                style: Style {
-                    width: Vw(55.0),
-                    top: Vw(-1.5),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::SpaceBetween,
-                    ..default()
-                },
+            Node {
+                width: Vw(55.0),
+                top: Vw(-1.5),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::SpaceBetween,
                 ..default()
             },
             ToggleDisplay(Display::Flex),
@@ -234,12 +217,9 @@ fn card_option(key: impl Into<String>) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("CardOption"),
-                NodeBundle {
-                    style: Style {
-                        align_items: AlignItems::Center,
-                        flex_direction: FlexDirection::Column,
-                        ..default()
-                    },
+                Node {
+                    align_items: AlignItems::Center,
+                    flex_direction: FlexDirection::Column,
                     ..default()
                 },
             ))
@@ -254,26 +234,27 @@ fn card_button(key: impl Into<String>) -> impl EntityCommand<World> {
     let key = key.into();
 
     move |mut entity: EntityWorldMut| {
-        entity.add(card(key.clone(), None)).insert((
-            Interaction::default(),
-            On::<Pointer<Click>>::run(
-                move |deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
+        entity
+            .queue(card(key.clone(), None))
+            .insert((Interaction::default(),))
+            .observe(
+                move |_: Trigger<Pointer<Click>>,
+                      deck_display_query: Query<&Selection, With<IsDeckDisplay>>,
                       mut deck_query: Query<&mut Deck>,
-                      mut toggle_query: Query<(&mut Style, &ToggleDisplay)>| {
+                      mut toggle_query: Query<(&mut Node, &ToggleDisplay)>| {
                     for selection in &deck_display_query {
                         let mut deck = c!(deck_query.get_mut(selection.0));
                         // TODO: What if deck is at capacity?
                         deck.add(key.clone());
                     }
-                    for (mut style, display) in &mut toggle_query {
-                        style.display = match style.display {
+                    for (mut node, display) in &mut toggle_query {
+                        node.display = match node.display {
                             Display::None => display.0,
                             _ => Display::None,
                         };
                     }
                 },
-            ),
-        ));
+            );
     }
 }
 
@@ -289,32 +270,24 @@ fn card_label(key: impl Into<String>) -> impl EntityCommand {
 
         world.entity_mut(entity).insert((
             Name::new("CardLabel"),
-            TextBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    top,
-                    width: Vw(20.0),
-                    ..default()
-                },
-                text: Text::from_section(
-                    text,
-                    TextStyle {
-                        font: FONT_HANDLE,
-                        ..default()
-                    },
-                )
-                .with_justify(JustifyText::Center),
+            Text::new(text),
+            TextFont::from_font(FONT_HANDLE),
+            TextLayout::new_with_justify(JustifyText::Center),
+            DynamicFontSize::new(Vw(2.0)).with_step(8.0),
+            ThemeColor::BodyText.target::<TextColor>(),
+            Node {
+                position_type: PositionType::Absolute,
+                top,
+                width: Vw(20.0),
                 ..default()
             },
-            DynamicFontSize::new(Vw(2.0)).with_step(8.0),
-            ThemeColorForText(vec![ThemeColor::BodyText]),
         ));
     }
 }
 
 fn button_container(mut entity: EntityWorldMut) {
     entity
-        .insert((Name::new("ButtonContainer"), NodeBundle::default()))
+        .insert((Name::new("ButtonContainer"), Node::default()))
         .with_children(|children| {
             children.spawn_with(skip_button);
             children.spawn_with(ready_button);
@@ -322,41 +295,46 @@ fn button_container(mut entity: EntityWorldMut) {
 }
 
 fn skip_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Skip")).insert((
-        On::<Pointer<Click>>::run(
-            move |mut toggle_query: Query<(&mut Style, &ToggleDisplay)>| {
-                for (mut style, display) in &mut toggle_query {
-                    style.display = match style.display {
+    entity
+        .queue(widget::menu_button("Skip"))
+        .insert((
+            Node {
+                height: Vw(8.5),
+                width: Vw(25.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ToggleDisplay(Display::Flex),
+        ))
+        .observe(
+            move |_: Trigger<Pointer<Click>>,
+                  mut toggle_query: Query<(&mut Node, &ToggleDisplay)>| {
+                for (mut node, display) in &mut toggle_query {
+                    node.display = match node.display {
                         Display::None => display.0,
                         _ => Display::None,
                     };
                 }
             },
-        ),
-        Style {
-            height: Vw(8.5),
-            width: Vw(25.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..default()
-        },
-        ToggleDisplay(Display::Flex),
-    ));
+        );
 }
 
 fn ready_button(mut entity: EntityWorldMut) {
-    entity.add(widget::menu_button("Ready")).insert((
-        On::<Pointer<Click>>::run(PlayingMenu::disable),
-        Style {
-            display: Display::None,
-            height: Vw(8.5),
-            width: Vw(25.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..default()
-        },
-        ToggleDisplay(Display::Flex),
-    ));
+    entity
+        .queue(widget::menu_button("Ready"))
+        .insert((
+            Node {
+                display: Display::None,
+                height: Vw(8.5),
+                width: Vw(25.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
+                ..default()
+            },
+            ToggleDisplay(Display::Flex),
+        ))
+        .observe(|_: Trigger<Pointer<Click>>, mut menu: NextMut<PlayingMenu>| menu.disable());
 }
 
 #[derive(Actionlike, Eq, PartialEq, Hash, Copy, Clone, Reflect, Debug)]
@@ -373,24 +351,24 @@ impl Configure for LevelUpMenuAction {
         app.init_resource::<ActionState<Self>>();
         app.insert_resource(
             InputMap::default()
-                .with(Self::SelectLeft, GamepadButtonType::DPadLeft)
-                .with(Self::SelectLeft, GamepadButtonType::LeftTrigger)
+                .with(Self::SelectLeft, GamepadButton::DPadLeft)
+                .with(Self::SelectLeft, GamepadButton::LeftTrigger)
                 .with(Self::SelectLeft, KeyCode::KeyA)
                 .with(Self::SelectLeft, KeyCode::ArrowLeft)
-                .with(Self::SelectRight, GamepadButtonType::DPadRight)
-                .with(Self::SelectRight, GamepadButtonType::RightTrigger)
+                .with(Self::SelectRight, GamepadButton::DPadRight)
+                .with(Self::SelectRight, GamepadButton::RightTrigger)
                 .with(Self::SelectRight, KeyCode::KeyD)
                 .with(Self::SelectRight, KeyCode::ArrowRight)
-                .with(Self::SwapLeft, GamepadButtonType::LeftTrigger2)
+                .with(Self::SwapLeft, GamepadButton::LeftTrigger2)
                 .with(Self::SwapLeft, ModifierKey::Shift.with(KeyCode::KeyA))
                 .with(Self::SwapLeft, ModifierKey::Shift.with(KeyCode::ArrowLeft))
-                .with(Self::SwapRight, GamepadButtonType::RightTrigger2)
+                .with(Self::SwapRight, GamepadButton::RightTrigger2)
                 .with(Self::SwapRight, ModifierKey::Shift.with(KeyCode::KeyD))
                 .with(
                     Self::SwapRight,
                     ModifierKey::Shift.with(KeyCode::ArrowRight),
                 )
-                .with(Self::Discard, GamepadButtonType::West)
+                .with(Self::Discard, GamepadButton::West)
                 .with(Self::Discard, KeyCode::Backspace)
                 .with(Self::Discard, KeyCode::Delete),
         );

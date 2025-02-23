@@ -16,7 +16,7 @@ pub struct HitboxKnockback(pub f32, pub bool);
 impl Configure for HitboxKnockback {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(apply_hitbox_knockback);
+        app.add_observer(apply_hitbox_knockback);
     }
 }
 

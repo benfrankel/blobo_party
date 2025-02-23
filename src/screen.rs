@@ -4,8 +4,10 @@ pub mod playing;
 mod splash;
 mod title;
 
+use bevy::ecs::schedule::SystemConfigs;
 use bevy::ecs::system::EntityCommand;
 use bevy::prelude::*;
+use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::animation::transition::FadeIn;
@@ -28,7 +30,7 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(State, Copy, Clone, Eq, PartialEq, Hash, Debug, Reflect, Default)]
-#[state(after(WindowReady), entity_scope, bevy_state, log_flush)]
+#[state(after(WindowReady), react, bevy_state, log_flush)]
 #[reflect(Resource)]
 pub enum Screen {
     #[default]
@@ -43,6 +45,7 @@ impl Configure for Screen {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
         app.add_state::<Self>();
+        app.add_plugins(ProgressPlugin::<BevyState<Self>>::new());
         app.add_systems(
             StateFlush,
             (
@@ -61,7 +64,7 @@ fn reset_camera(camera_root: Res<CameraRoot>, mut camera_query: Query<&mut Trans
 const FADE_IN_SECS: f32 = 0.5;
 
 fn fade_in(mut entity: EntityWorldMut) {
-    entity.add(widget::overlay).insert((
+    entity.queue(widget::overlay).insert((
         Name::new("ScreenFadeIn"),
         ThemeColor::Body.target::<BackgroundColor>(),
         FadeIn::new(FADE_IN_SECS),
@@ -72,10 +75,25 @@ const FADE_OUT_SECS: f32 = 0.2;
 
 fn fade_out(to_screen: Screen) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
-        entity.add(widget::blocking_overlay).insert((
+        entity.queue(widget::blocking_overlay).insert((
             Name::new("ScreenFadeOut"),
             ThemeColor::Body.target::<BackgroundColor>(),
             FadeOut::new(FADE_OUT_SECS, to_screen),
         ));
     }
+}
+
+// TODO: This won't work on screen re-entry with pyri_state.
+//       Rewrite this abstraction.
+pub fn wait(duration: f32) -> SystemConfigs {
+    (move |time: Res<Time>, mut start: Local<f32>| -> Progress {
+        let elapsed = time.elapsed_secs();
+        if *start == 0.0 {
+            *start = elapsed;
+        }
+        let done = elapsed - *start >= duration;
+
+        done.into()
+    })
+    .track_progress::<BevyState<Screen>>()
 }

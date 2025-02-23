@@ -113,43 +113,45 @@ pub struct CardBackground {
 
 impl EntityCommand for CardBackground {
     fn apply(self, id: Entity, world: &mut World) {
-        let atlas_off = TextureAtlas {
-            layout: self.texture_atlas_layout.clone(),
-            index: 0,
-        };
-        let atlas_on = TextureAtlas {
-            layout: self.texture_atlas_layout,
-            index: 1,
-        };
-        let atlas = if matches!(self.active, Some(true)) {
-            &atlas_on
+        let image_off = ImageNode::from_atlas_image(
+            self.texture.clone(),
+            TextureAtlas {
+                layout: self.texture_atlas_layout.clone(),
+                index: 0,
+            },
+        );
+        let image_on = ImageNode::from_atlas_image(
+            self.texture,
+            TextureAtlas {
+                layout: self.texture_atlas_layout,
+                index: 1,
+            },
+        );
+        let image = if matches!(self.active, Some(true)) {
+            &image_on
         } else {
-            &atlas_off
+            &image_off
         }
         .clone();
 
         world.entity_mut(id).insert((
             Name::new("CardBackground"),
-            ImageBundle {
-                image: UiImage::new(self.texture),
-                ..default()
-            },
+            image,
             Outline {
                 width: Vw(0.4),
                 ..default()
             },
             ThemeColor::CardBorder.target::<Outline>(),
-            atlas,
         ));
 
         if self.active.is_none() {
             world.entity_mut(id).insert((
                 Interaction::default(),
                 InteractionTable {
-                    normal: atlas_off.clone(),
-                    hovered: atlas_on.clone(),
-                    pressed: atlas_on,
-                    disabled: atlas_off,
+                    normal: image_off.clone(),
+                    hovered: image_on.clone(),
+                    pressed: image_on,
+                    disabled: image_off,
                 },
                 InteractionSfx,
             ));
@@ -169,11 +171,8 @@ impl EntityCommand for CardIcon {
     fn apply(self, id: Entity, world: &mut World) {
         world.entity_mut(id).insert((
             Name::new("CardIcon"),
-            ImageBundle {
-                image: UiImage::new(self.texture),
-                ..default()
-            },
-            ThemeColor::CardBorder.target::<UiImage>(),
+            ImageNode::from(self.texture),
+            ThemeColor::CardBorder.target::<ImageNode>(),
         ));
     }
 }
@@ -230,24 +229,26 @@ pub fn card(key: impl Into<String>, active: Option<bool>) -> impl EntityCommand 
         let name = format!("Card(\"{}\")", card.name);
         let height = config.card_height;
         let border_width = height / 18.0;
-        let tooltip_text = format!("[b]{}\n\n[r]{}", card.name, card.description);
+        let tooltip_text = format!("[b]{}[r]\n\n{}", card.name, card.description);
+        let mut tooltip_text = parse_rich(tooltip_text);
+        // TODO: Workaround for `DynamicFontSize` not being inherited by `TextSpan`
+        //       child entities of the primary tooltip text entity.
+        for section in &mut tooltip_text {
+            section.style.font_size = 16.0;
+        }
 
         world
             .entity_mut(entity)
             .insert((
                 Name::new(name),
-                NodeBundle {
-                    style: Style {
-                        height,
-                        border: UiRect::all(border_width),
-                        ..default()
-                    },
+                Node {
+                    height,
+                    border: UiRect::all(border_width),
                     ..default()
                 },
                 ThemeColor::CardBorder.target::<BorderColor>(),
                 Interaction::default(),
-                Tooltip::fixed(Anchor::TopCenter, parse_rich(tooltip_text))
-                    .with_justify(JustifyText::Center),
+                Tooltip::fixed(Anchor::TopCenter, tooltip_text).with_justify(JustifyText::Center),
             ))
             .with_children(|children| {
                 children.spawn_with(background).with_children(|children| {
@@ -263,7 +264,7 @@ pub struct OnPlayCard(pub String);
 
 impl Configure for OnPlayCard {
     fn configure(app: &mut App) {
-        app.observe(play_card);
+        app.add_observer(play_card);
     }
 }
 

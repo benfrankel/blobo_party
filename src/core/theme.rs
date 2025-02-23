@@ -16,11 +16,11 @@ pub(super) fn plugin(app: &mut App) {
     app.configure::<(
         ConfigHandle<ThemeConfig>,
         ThemeColorFor<Sprite>,
-        ThemeColorFor<UiImage>,
+        ThemeColorFor<ImageNode>,
         ThemeColorFor<BackgroundColor>,
         ThemeColorFor<BorderColor>,
         ThemeColorFor<Outline>,
-        ThemeColorForText,
+        ThemeColorFor<TextColor>,
     )>();
 }
 
@@ -108,32 +108,6 @@ fn apply_theme_color_for<C: Component + ColorMut>(
     }
 }
 
-#[derive(Component, Reflect, Default)]
-#[reflect(Component)]
-pub struct ThemeColorForText(pub Vec<ThemeColor>);
-
-impl Configure for ThemeColorForText {
-    fn configure(app: &mut App) {
-        app.register_type::<Self>();
-        app.add_systems(
-            Update,
-            apply_theme_color_for_text.in_set(UpdateSet::SyncLate),
-        );
-    }
-}
-
-fn apply_theme_color_for_text(
-    theme: ConfigRef<ThemeConfig>,
-    mut text_query: Query<(&ThemeColorForText, &mut Text)>,
-) {
-    let palette = &r!(theme.get()).colors;
-    for (colors, mut text) in &mut text_query {
-        for (section, &color) in text.sections.iter_mut().zip(&colors.0) {
-            section.style.color = palette[color];
-        }
-    }
-}
-
 pub trait ColorMut {
     fn color_mut(&mut self) -> &mut Color;
 }
@@ -144,7 +118,7 @@ impl ColorMut for Sprite {
     }
 }
 
-impl ColorMut for UiImage {
+impl ColorMut for ImageNode {
     fn color_mut(&mut self) -> &mut Color {
         &mut self.color
     }
@@ -165,5 +139,11 @@ impl ColorMut for BorderColor {
 impl ColorMut for Outline {
     fn color_mut(&mut self) -> &mut Color {
         &mut self.color
+    }
+}
+
+impl ColorMut for TextColor {
+    fn color_mut(&mut self) -> &mut Color {
+        &mut self.0
     }
 }

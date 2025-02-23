@@ -44,7 +44,7 @@ pub struct OnXpReward(pub f32);
 impl Configure for OnXpReward {
     fn configure(app: &mut App) {
         app.add_event::<Self>();
-        app.observe(receive_xp);
+        app.add_observer(receive_xp);
     }
 }
 
@@ -66,7 +66,7 @@ pub struct XpReward(pub f32);
 impl Configure for XpReward {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(apply_xp_reward);
+        app.add_observer(apply_xp_reward);
     }
 }
 
@@ -103,17 +103,17 @@ impl Configure for IsXpBarFill {
 fn update_xp_bar_fill(
     config: ConfigRef<LevelConfig>,
     level_query: Query<(&Level, &Xp)>,
-    mut xp_bar_fill_query: Query<(&mut Style, &Selection), With<IsXpBarFill>>,
+    mut xp_bar_fill_query: Query<(&mut Node, &Selection), With<IsXpBarFill>>,
 ) {
     let config = r!(config.get());
     if config.levels.is_empty() {
         return;
     }
 
-    for (mut style, selection) in &mut xp_bar_fill_query {
+    for (mut node, selection) in &mut xp_bar_fill_query {
         let (level, xp) = r!(level_query.get(selection.0));
         let level_cost = config.level(level.current + level.up).xp_cost;
 
-        style.width = Percent(xp.relative / level_cost * 100.0);
+        node.width = Percent(xp.relative / level_cost * 100.0);
     }
 }

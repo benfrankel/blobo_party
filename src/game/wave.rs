@@ -5,15 +5,15 @@ use rand::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::camera::CameraRoot;
 use crate::core::UpdateSet;
-use crate::game::actor::enemy::enemy;
-use crate::game::actor::enemy::IsEnemy;
-use crate::game::actor::level::Level;
+use crate::core::camera::CameraRoot;
 use crate::game::actor::ActorConfig;
+use crate::game::actor::enemy::IsEnemy;
+use crate::game::actor::enemy::enemy;
+use crate::game::actor::level::Level;
 use crate::game::audio::music::on_full_beat;
-use crate::screen::playing::victory_menu::EndlessMode;
 use crate::screen::Screen;
+use crate::screen::playing::victory_menu::EndlessMode;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {

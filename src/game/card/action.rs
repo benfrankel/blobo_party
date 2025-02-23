@@ -146,7 +146,7 @@ pub enum CardActionKey {
 /// A newtyped `SystemId` with a `Default` impl.
 #[derive(Reflect, Copy, Clone)]
 #[reflect(Default)]
-pub struct CardAction(#[reflect(ignore)] pub SystemId<(Entity, CardActionModifier)>);
+pub struct CardAction(#[reflect(ignore)] pub SystemId<In<(Entity, CardActionModifier)>>);
 
 impl Default for CardAction {
     fn default() -> Self {

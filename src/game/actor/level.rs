@@ -9,7 +9,7 @@ use crate::core::UpdateSet;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.configure::<(ConfigHandle<LevelConfig>, Level, IsLevelDisplay)>();
+    app.configure::<(ConfigHandle<LevelConfig>, Level, IsLevelDisplayCurrent)>();
 
     app.add_plugins((up::plugin, xp::plugin));
 }
@@ -54,24 +54,25 @@ impl Configure for Level {
 
 #[derive(Component, Reflect)]
 #[reflect(Component)]
-pub struct IsLevelDisplay;
+pub struct IsLevelDisplayCurrent;
 
-impl Configure for IsLevelDisplay {
+impl Configure for IsLevelDisplayCurrent {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.add_systems(Update, update_level_indicator.in_set(UpdateSet::SyncLate));
+        app.add_systems(
+            Update,
+            update_level_display_current.in_set(UpdateSet::SyncLate),
+        );
     }
 }
 
-fn update_level_indicator(
-    mut indicator_query: Query<(&mut Text, &Selection), With<IsLevelDisplay>>,
+fn update_level_display_current(
+    mut display_query: Query<(&mut TextSpan, &Selection), With<IsLevelDisplayCurrent>>,
     level_query: Query<&Level>,
 ) {
-    for (mut text, selection) in &mut indicator_query {
+    for (mut text, selection) in &mut display_query {
         let level = c!(level_query.get(selection.0));
         let level = level.current + level.up;
-        let level = level.to_string();
-
-        text.sections[1].value.clone_from(&level);
+        text.0 = level.to_string();
     }
 }

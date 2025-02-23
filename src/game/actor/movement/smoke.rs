@@ -6,10 +6,10 @@ use bevy::prelude::*;
 use bevy_tweening::*;
 
 use crate::core::UpdateSet;
+use crate::game::GameRoot;
 use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::MovementEvent;
 use crate::game::cleanup::DespawnOnTimer;
-use crate::game::GameRoot;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
@@ -67,17 +67,14 @@ fn smoke(movement: Vec2) -> impl EntityCommand<World> {
         entity
             .insert((
                 Name::new("SmokeVfx"),
-                SpriteBundle {
-                    sprite: Sprite {
-                        flip_x,
-                        flip_y,
-                        ..default()
-                    },
-                    texture,
+                Sprite {
+                    image: texture,
+                    flip_x,
+                    flip_y,
                     ..default()
                 },
                 Animator::new(Tween::new(
-                    EaseMethod::Linear,
+                    EaseFunction::Linear,
                     Duration::from_secs_f32(LIFETIME_SECS),
                     lens::SpriteColorLens {
                         start: Color::WHITE,

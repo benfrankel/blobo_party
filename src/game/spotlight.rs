@@ -9,14 +9,14 @@ use rand::Rng as _;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::core::camera::CameraRoot;
-use crate::core::pause::Pause;
 use crate::core::PostColorSet;
 use crate::core::PostTransformSet;
 use crate::core::UpdateSet;
+use crate::core::camera::CameraRoot;
+use crate::core::pause::Pause;
+use crate::game::GameRoot;
 use crate::game::audio::music::on_beat;
 use crate::game::cleanup::DespawnRadiusSq;
-use crate::game::GameRoot;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
 
@@ -69,7 +69,7 @@ impl SpotlightConfig {
         let hi = if lo + 1 < n { lo + 1 } else { 0 };
         let t = t.fract().quadratic_in_out();
 
-        self.color_loop[lo].better_mix(&self.color_loop[hi], t)
+        self.color_loop[lo].mix(&self.color_loop[hi], t)
     }
 }
 
@@ -104,7 +104,7 @@ impl Configure for Spotlight {
 }
 
 fn tick_spotlight(time: Res<Time>, mut spotlight_query: Query<&mut Spotlight>) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     for mut spotlight in &mut spotlight_query {
         spotlight.color_loop_t += spotlight.color_loop_rate * dt;
     }
@@ -124,7 +124,7 @@ fn update_spotlight_rotation(
     time: Res<Time>,
     mut spotlight_query: Query<(&Spotlight, &mut Transform)>,
 ) {
-    let dt = time.delta_seconds();
+    let dt = time.delta_secs();
     for (spotlight, mut transform) in &mut spotlight_query {
         transform.rotate_z(spotlight.rotation_rate * dt);
     }
@@ -141,7 +141,7 @@ impl Configure for IsSpotlightLampSpawner {
             Update,
             spawn_spotlight_lamps
                 .in_set(UpdateSet::Update)
-                .run_if(not(any_with_component::<Spotlight>).or_else(on_beat(4))),
+                .run_if(not(any_with_component::<Spotlight>).or(on_beat(4))),
         );
     }
 }
@@ -214,10 +214,7 @@ fn spotlight_lamp(entity: Entity, world: &mut World) {
         .entity_mut(entity)
         .insert((
             Name::new("SpotlightLamp"),
-            SpriteBundle {
-                texture,
-                ..default()
-            },
+            Sprite::from(texture),
             DespawnRadiusSq::new(despawn_radius),
             IsSpotlightLamp,
         ))
@@ -238,25 +235,22 @@ fn spotlight(entity: Entity, world: &mut World) {
     let mut rng = rand::thread_rng();
 
     let initial_rotation = Quat::from_rotation_z(rng.gen_range(0.0..TAU));
-    let rotation_rate = if rng.gen::<bool>() { -1.0 } else { 1.0 }
+    let rotation_rate = if rng.r#gen::<bool>() { -1.0 } else { 1.0 }
         * rng.gen_range(config.rotation_rate_lo..=config.rotation_rate_hi);
 
     let color_loop_t = rng.gen_range(0.0..1.0);
-    let color_loop_rate = if rng.gen::<bool>() { -1.0 } else { 1.0 }
+    let color_loop_rate = if rng.r#gen::<bool>() { -1.0 } else { 1.0 }
         * rng.gen_range(config.color_loop_rate_lo..=config.color_loop_rate_hi);
 
     world.entity_mut(entity).insert((
         Name::new("Spotlight"),
-        SpriteBundle {
-            sprite: Sprite {
-                color: Oklcha::default().into(),
-                anchor: Anchor::CenterLeft,
-                ..default()
-            },
-            texture,
-            transform: Transform::from_xyz(0.0, 0.0, 10.0).with_rotation(initial_rotation),
+        Sprite {
+            image: texture,
+            color: Oklcha::default().into(),
+            anchor: Anchor::CenterLeft,
             ..default()
         },
+        Transform::from_xyz(0.0, 0.0, 10.0).with_rotation(initial_rotation),
         Spotlight {
             rotation_rate,
             color_loop_rate,

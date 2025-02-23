@@ -21,7 +21,7 @@ pub struct IsDead;
 impl Configure for IsDead {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(is_dead);
+        app.add_observer(is_dead);
     }
 }
 
@@ -36,7 +36,7 @@ pub struct DespawnOnDeath;
 impl Configure for DespawnOnDeath {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(despawn_on_death);
+        app.add_observer(despawn_on_death);
     }
 }
 
@@ -58,7 +58,7 @@ pub struct DeathSfx(pub Handle<AudioSource>, pub f64);
 impl Configure for DeathSfx {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(play_death_sfx);
+        app.add_observer(play_death_sfx);
     }
 }
 

@@ -4,13 +4,13 @@ use pyri_state::prelude::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::health::Health;
-use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::Level;
 use crate::game::actor::level::LevelConfig;
+use crate::game::actor::level::xp::Xp;
 use crate::game::actor::player::IsPlayer;
-use crate::screen::playing::victory_menu::EndlessMode;
 use crate::screen::playing::PlayingAssets;
 use crate::screen::playing::PlayingMenu;
+use crate::screen::playing::victory_menu::EndlessMode;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -29,10 +29,10 @@ impl Configure for LevelUp {
             (
                 heal_on_level_up
                     .in_set(UpdateSet::Update)
-                    .run_if(on_event::<Self>()),
+                    .run_if(on_event::<Self>),
                 play_level_up_sfx
                     .in_set(UpdateSet::Update)
-                    .run_if(on_event::<Self>()),
+                    .run_if(on_event::<Self>),
                 update_level_up_from_xp.in_set(UpdateSet::TriggerLevelUp),
                 trigger_level_up
                     .in_set(UpdateSet::TriggerLevelUp)

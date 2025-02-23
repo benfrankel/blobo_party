@@ -3,12 +3,12 @@ use bevy::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::animation::backup::Backup;
+use crate::core::PostTransformSet;
+use crate::core::UpdateSet;
 use crate::core::camera::CameraRoot;
 use crate::core::pause::Pause;
 use crate::core::theme::ThemeColor;
 use crate::core::window::WindowRoot;
-use crate::core::PostTransformSet;
-use crate::core::UpdateSet;
 use crate::game::actor::player::IsPlayer;
 use crate::screen::playing::PlayingAssets;
 use crate::util::prelude::*;
@@ -97,7 +97,7 @@ fn face_cursor(
     let (camera, camera_gt) = r!(camera_query.get(camera_root.primary));
     let cursor_pos = rq!(window
         .cursor_position()
-        .and_then(|cursor| camera.viewport_to_world_2d(camera_gt, cursor)));
+        .and_then(|cursor| camera.viewport_to_world_2d(camera_gt, cursor).ok()));
 
     for (mut facing, gt) in &mut facing_query {
         let pos = gt.translation().xy();
@@ -139,10 +139,7 @@ impl EntityCommand for FacingIndicator {
 
         world.entity_mut(id).insert((
             Name::new("FacingIndicator"),
-            SpriteBundle {
-                texture,
-                ..default()
-            },
+            Sprite::from(texture),
             ThemeColor::Indicator.target::<Sprite>(),
             Backup::<Transform>::default(),
             self,

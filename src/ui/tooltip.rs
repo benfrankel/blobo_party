@@ -7,16 +7,13 @@ pub(super) fn plugin(app: &mut App) {
         .world_mut()
         .spawn((
             Name::new("PrimaryTooltip"),
-            NodeBundle {
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    padding: UiRect::all(Px(8.0)),
-                    ..default()
-                },
-                visibility: Visibility::Hidden,
-                z_index: ZIndex::Global(999),
+            Node {
+                position_type: PositionType::Absolute,
+                padding: UiRect::all(Px(8.0)),
                 ..default()
             },
+            Visibility::Hidden,
+            GlobalZIndex(999),
             ThemeColor::Popup.target::<BackgroundColor>(),
         ))
         .id();
@@ -24,9 +21,9 @@ pub(super) fn plugin(app: &mut App) {
         .world_mut()
         .spawn((
             Name::new("Text"),
-            TextBundle::default(),
+            RichText::default(),
             DynamicFontSize::new(Px(16.0)),
-            ThemeColorForText(vec![ThemeColor::BodyText]),
+            ThemeColor::BodyText.target::<TextColor>(),
         ))
         .set_parent(container)
         .id();

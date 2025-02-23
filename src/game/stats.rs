@@ -4,11 +4,11 @@ use bevy::prelude::*;
 
 use crate::core::UpdateSet;
 use crate::game::actor::faction::Faction;
-use crate::game::audio::music::on_beat;
 use crate::game::audio::AudioConfig;
-use crate::game::card::action::CardActionKey;
+use crate::game::audio::music::on_beat;
 use crate::game::card::CardConfig;
 use crate::game::card::OnPlayCard;
+use crate::game::card::action::CardActionKey;
 use crate::game::combat::death::OnDeath;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
@@ -35,8 +35,8 @@ impl Configure for Stats {
             Update,
             count_beats.in_set(UpdateSet::Update).run_if(on_beat(1)),
         );
-        app.observe(count_kills);
-        app.observe(count_played_cards);
+        app.add_observer(count_kills);
+        app.add_observer(count_played_cards);
     }
 }
 
@@ -85,19 +85,18 @@ impl EntityCommand for Stats {
         let (audio_config, stats) = system_state.get(world);
         let audio_config = r!(audio_config.get());
         let stats = [
-            format!(
-                "[b]{:.0}",
-                stats.beats as f64 / 8.0 * 60.0 / audio_config.music_bpm
-                    + audio_config.music_zeroth_beat
-            ),
+            (stats.beats as f64 / 8.0 * 60.0 / audio_config.music_bpm
+                + audio_config.music_zeroth_beat)
+                .floor()
+                .to_string(),
             "seconds partied".to_string(),
-            format!("[b]{}", stats.kills),
+            stats.kills.to_string(),
             "blobos impressed".to_string(),
-            format!("[b]{}", stats.played_moves),
+            stats.played_moves.to_string(),
             "dances performed".to_string(),
-            format!("[b]{}", stats.played_attacks),
+            stats.played_attacks.to_string(),
             "notes played".to_string(),
-            format!("[b]{}", stats.played_heals),
+            stats.played_heals.to_string(),
             "rests taken".to_string(),
         ];
 
@@ -105,35 +104,32 @@ impl EntityCommand for Stats {
             .entity_mut(id)
             .insert((
                 Name::new("StatsGrid"),
-                NodeBundle {
-                    style: Style {
-                        display: Display::Grid,
-                        grid_template_columns: RepeatedGridTrack::auto(2),
-                        row_gap: Vw(1.2),
-                        column_gap: Vw(2.5),
-                        ..default()
-                    },
+                Node {
+                    display: Display::Grid,
+                    grid_template_columns: RepeatedGridTrack::auto(2),
+                    row_gap: Vw(1.2),
+                    column_gap: Vw(2.5),
                     ..default()
                 },
             ))
             .with_children(|children| {
                 for (i, text) in stats.into_iter().enumerate() {
+                    let (font, theme_color, justify_self) = if i % 2 == 0 {
+                        (BOLD_FONT_HANDLE, ThemeColor::Indicator, JustifySelf::End)
+                    } else {
+                        (FONT_HANDLE, ThemeColor::BodyText, JustifySelf::Start)
+                    };
+
                     children.spawn((
                         Name::new(format!("StatsSpan{}", i)),
-                        TextBundle::from_sections(parse_rich(&text)).with_style(Style {
-                            justify_self: if i % 2 == 0 {
-                                JustifySelf::End
-                            } else {
-                                JustifySelf::Start
-                            },
-                            ..default()
-                        }),
+                        Text::new(text),
+                        TextFont::from_font(font),
+                        theme_color.target::<TextColor>(),
                         DynamicFontSize::new(Vw(3.0)).with_step(8.0),
-                        ThemeColorForText(vec![if i % 2 == 0 {
-                            ThemeColor::Indicator
-                        } else {
-                            ThemeColor::BodyText
-                        }]),
+                        Node {
+                            justify_self,
+                            ..default()
+                        },
                     ));
                 }
             });

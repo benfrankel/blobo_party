@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use crate::ui::prelude::*;
 
-pub trait StyleExtDiv {
+pub trait NodeExtDiv {
     const FILL: Self;
     const ROW: Self;
     const COLUMN: Self;
@@ -35,144 +35,141 @@ pub trait StyleExtDiv {
     fn div(self) -> impl EntityCommand<World>;
 }
 
-impl StyleExtDiv for Style {
+impl NodeExtDiv for Node {
     const FILL: Self = {
-        let mut style = Self::DEFAULT;
-        style.width = Percent(100.0);
-        style.height = Percent(100.0);
-        style
+        let mut x = Self::DEFAULT;
+        x.width = Percent(100.0);
+        x.height = Percent(100.0);
+        x
     };
 
     const ROW: Self = Self::FILL;
 
     const COLUMN: Self = {
-        let mut style = Self::FILL;
-        style.flex_direction = FlexDirection::Column;
-        style
+        let mut x = Self::FILL;
+        x.flex_direction = FlexDirection::Column;
+        x
     };
 
     const ROW_TOP: Self = {
-        let mut style = Style::ROW;
-        style.align_items = AlignItems::Start;
-        style
+        let mut x = Self::ROW;
+        x.align_items = AlignItems::Start;
+        x
     };
 
     const ROW_MID: Self = {
-        let mut style = Style::ROW;
-        style.align_items = AlignItems::Center;
-        style
+        let mut x = Self::ROW;
+        x.align_items = AlignItems::Center;
+        x
     };
 
     const ROW_BOTTOM: Self = {
-        let mut style = Style::ROW;
-        style.align_items = AlignItems::End;
-        style
+        let mut x = Self::ROW;
+        x.align_items = AlignItems::End;
+        x
     };
 
     const ROW_CENTER: Self = {
-        let mut style = Style::ROW;
-        style.align_items = AlignItems::Center;
-        style.justify_content = JustifyContent::Center;
-        style
+        let mut x = Self::ROW;
+        x.align_items = AlignItems::Center;
+        x.justify_content = JustifyContent::Center;
+        x
     };
 
     const COLUMN_LEFT: Self = {
-        let mut style = Style::COLUMN;
-        style.align_items = AlignItems::Start;
-        style
+        let mut x = Self::COLUMN;
+        x.align_items = AlignItems::Start;
+        x
     };
 
     const COLUMN_MID: Self = {
-        let mut style = Style::COLUMN;
-        style.align_items = AlignItems::Center;
-        style
+        let mut x = Self::COLUMN;
+        x.align_items = AlignItems::Center;
+        x
     };
 
     const COLUMN_RIGHT: Self = {
-        let mut style = Style::COLUMN;
-        style.align_items = AlignItems::End;
-        style
+        let mut x = Self::COLUMN;
+        x.align_items = AlignItems::End;
+        x
     };
 
     const COLUMN_CENTER: Self = {
-        let mut style = Style::COLUMN;
-        style.align_items = AlignItems::Center;
-        style.justify_content = JustifyContent::Center;
-        style
+        let mut x = Self::COLUMN;
+        x.align_items = AlignItems::Center;
+        x.justify_content = JustifyContent::Center;
+        x
     };
 
     const ABS_FILL: Self = {
-        let mut style = Style::FILL;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::FILL;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_ROW: Self = {
-        let mut style = Style::ROW;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::ROW;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_COLUMN: Self = {
-        let mut style = Style::COLUMN;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::COLUMN;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_ROW_TOP: Self = {
-        let mut style = Style::ROW_TOP;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::ROW_TOP;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_ROW_MID: Self = {
-        let mut style = Style::ROW_MID;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::ROW_MID;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_ROW_BOTTOM: Self = {
-        let mut style = Style::ROW_BOTTOM;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::ROW_BOTTOM;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_ROW_CENTER: Self = {
-        let mut style = Style::ROW_CENTER;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::ROW_CENTER;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_COLUMN_LEFT: Self = {
-        let mut style = Style::COLUMN_LEFT;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::COLUMN_LEFT;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_COLUMN_MID: Self = {
-        let mut style = Style::COLUMN_MID;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::COLUMN_MID;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_COLUMN_RIGHT: Self = {
-        let mut style = Style::COLUMN_RIGHT;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::COLUMN_RIGHT;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     const ABS_COLUMN_CENTER: Self = {
-        let mut style = Style::COLUMN_CENTER;
-        style.position_type = PositionType::Absolute;
-        style
+        let mut x = Self::COLUMN_CENTER;
+        x.position_type = PositionType::Absolute;
+        x
     };
 
     fn div(self) -> impl EntityCommand<World> {
         move |mut entity: EntityWorldMut| {
-            entity.insert(NodeBundle {
-                style: self,
-                ..default()
-            });
+            entity.insert(self);
         }
     }
 }

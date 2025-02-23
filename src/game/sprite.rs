@@ -3,8 +3,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::core::UpdateSet;
-use crate::game::audio::music::on_beat;
 use crate::game::audio::music::Beat;
+use crate::game::audio::music::on_beat;
 use crate::util::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -58,9 +58,10 @@ impl SpriteAnimation {
 
 fn update_sprite_animation(
     beat: Res<Beat>,
-    mut anim_query: Query<(&SpriteAnimation, &mut TextureAtlas)>,
+    mut anim_query: Query<(&SpriteAnimation, &mut Sprite)>,
 ) {
-    for (anim, mut atlas) in &mut anim_query {
+    for (anim, mut sprite) in &mut anim_query {
+        let atlas = c!(sprite.texture_atlas.as_mut());
         atlas.index = anim.index(beat.total);
     }
 }

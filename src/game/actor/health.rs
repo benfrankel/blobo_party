@@ -49,7 +49,7 @@ pub struct Health {
 impl Configure for Health {
     fn configure(app: &mut App) {
         app.register_type::<Self>();
-        app.observe(lose_health_on_damage);
+        app.add_observer(lose_health_on_damage);
         app.add_systems(Update, check_health.in_set(UpdateSet::TriggerDeath));
     }
 }
@@ -118,6 +118,6 @@ impl EntityCommand for HealthBar {
     fn apply(self, id: Entity, world: &mut World) {
         world
             .entity_mut(id)
-            .insert((Name::new("HealthBar"), SpriteBundle::default(), self));
+            .insert((Name::new("HealthBar"), Sprite::default(), self));
     }
 }

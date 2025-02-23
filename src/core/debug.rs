@@ -2,6 +2,8 @@
 
 use avian2d::prelude::*;
 use bevy::core::FrameCount;
+// TODO: This will exist in bevy 0.16.
+//use bevy::dev_tools::picking_debug::DebugPickingMode;
 use bevy::diagnostic::EntityCountDiagnosticsPlugin;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::diagnostic::LogDiagnosticsPlugin;
@@ -11,13 +13,12 @@ use bevy::ecs::schedule::ScheduleBuildSettings;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 use bevy_editor_pls::EditorPlugin;
-use bevy_mod_picking::debug::DebugPickingMode;
 use iyes_progress::prelude::*;
 use pyri_state::prelude::*;
 
 use crate::core::window::WindowReady;
 use crate::screen::Screen;
-use crate::util::time::wait;
+use crate::screen::wait;
 
 pub(super) fn plugin(app: &mut App) {
     // TODO: Load from file.
@@ -57,7 +58,9 @@ pub(super) fn plugin(app: &mut App) {
 
     // Debug picking.
     if config.debug_picking {
-        app.add_systems(
+        // TODO: This will exist in bevy 0.16.
+        let _ = 0;
+        /*app.add_systems(
             Update,
             (|mut mode: ResMut<_>| {
                 *mode = match *mode {
@@ -66,7 +69,7 @@ pub(super) fn plugin(app: &mut App) {
                 };
             })
             .run_if(input_just_pressed(DEBUG_TOGGLE_KEY)),
-        );
+        );*/
     }
 
     // Debug physics.
@@ -100,7 +103,8 @@ pub(super) fn plugin(app: &mut App) {
         app.add_systems(
             Update,
             (
-                Screen::Title.on_update((|| Progress::from(false)).track_progress()),
+                Screen::Title
+                    .on_update((|| Progress::from(false)).track_progress::<BevyState<Screen>>()),
                 Screen::Loading.on_update(wait(config.extend_loading_screen)),
             ),
         );

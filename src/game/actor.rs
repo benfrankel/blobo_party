@@ -25,9 +25,9 @@ use crate::game::actor::attack::AttackController;
 use crate::game::actor::facing::Facing;
 use crate::game::actor::health::Health;
 use crate::game::actor::health::HealthBar;
+use crate::game::actor::level::Level;
 use crate::game::actor::level::xp::Xp;
 use crate::game::actor::level::xp::XpReward;
-use crate::game::actor::level::Level;
 use crate::game::actor::movement::Movement;
 use crate::game::actor::movement::MovementController;
 use crate::game::actor::movement::OldMovementController;
@@ -142,14 +142,13 @@ impl EntityCommand for Actor {
                 Name::new(self.name.replace(' ', "")),
                 // Appearance:
                 (
-                    SpriteBundle {
-                        texture: self.texture,
-                        ..default()
-                    },
-                    TextureAtlas {
-                        layout: self.texture_atlas_layout,
-                        index: 0,
-                    },
+                    Sprite::from_atlas_image(
+                        self.texture,
+                        TextureAtlas {
+                            layout: self.texture_atlas_layout,
+                            index: 0,
+                        },
+                    ),
                     self.sprite_animation,
                     Facing::default(),
                 ),
@@ -182,12 +181,8 @@ impl EntityCommand for Actor {
                 children
                     .spawn((
                         Name::new("Shield"),
-                        SpriteBundle {
-                            transform: Transform::default(),
-                            texture: bubble_texture,
-                            visibility: Visibility::Hidden,
-                            ..default()
-                        },
+                        Sprite::from(bubble_texture),
+                        Visibility::Hidden,
                         IsShield,
                     ))
                     .insert(Transform::from_translation(vec3(0.0, -0.5, 2.0)));
