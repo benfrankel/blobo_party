@@ -1,4 +1,4 @@
-//! Adapted from https://github.com/bevyengine/bevy/blob/main/examples/games/stepping.rs
+//! Adapted from <https://github.com/bevyengine/bevy/blob/main/examples/games/stepping.rs>.
 
 use bevy::app::MainScheduleOrder;
 use bevy::ecs::schedule::*;
@@ -115,7 +115,7 @@ fn is_stepping_initialized(ctx: Res<SteppingContext>) -> bool {
 }
 
 /// Returns true if a system should be ignored by stepping and always run.
-fn should_always_run(system: &Box<dyn System<In = (), Out = ()>>) -> bool {
+fn should_always_run(system: &dyn System<In = (), Out = ()>) -> bool {
     let name = system.name();
     name.starts_with("bevy") || name.starts_with("Pipe") || name.starts_with("avian2d")
 }
@@ -146,7 +146,7 @@ fn build_stepping_ui(
         ));
 
         for (node_id, system) in cq!(schedules.get(label).and_then(|x| x.systems().ok())) {
-            if should_always_run(system) {
+            if should_always_run(system.as_ref()) {
                 always_run.push((label, node_id));
                 continue;
             }
