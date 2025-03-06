@@ -1,3 +1,8 @@
+pub mod action;
+pub mod attack;
+pub mod deck;
+pub mod movement;
+
 use bevy::ecs::system::EntityCommand;
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
@@ -15,11 +20,6 @@ use crate::game::card::action::CardActionMap;
 use crate::game::card::action::CardActionModifier;
 use crate::ui::prelude::*;
 use crate::util::prelude::*;
-
-pub mod action;
-pub mod attack;
-pub mod deck;
-pub mod movement;
 
 pub(super) fn plugin(app: &mut App) {
     app.configure::<(ConfigHandle<CardConfig>, OnPlayCard)>();

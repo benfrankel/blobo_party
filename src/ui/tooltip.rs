@@ -12,9 +12,9 @@ pub(super) fn plugin(app: &mut App) {
                 padding: UiRect::all(Px(8.0)),
                 ..default()
             },
+            ThemeColor::Popup.target::<BackgroundColor>(),
             Visibility::Hidden,
             GlobalZIndex(999),
-            ThemeColor::Popup.target::<BackgroundColor>(),
         ))
         .id();
     let text = app

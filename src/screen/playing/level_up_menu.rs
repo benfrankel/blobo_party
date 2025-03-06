@@ -236,7 +236,7 @@ fn card_button(key: impl Into<String>) -> impl EntityCommand<World> {
     move |mut entity: EntityWorldMut| {
         entity
             .queue(card(key.clone(), None))
-            .insert((Interaction::default(),))
+            .insert(Interaction::default())
             .observe(
                 move |_: Trigger<Pointer<Click>>,
                       deck_display_query: Query<&Selection, With<IsDeckDisplay>>,

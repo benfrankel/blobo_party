@@ -83,13 +83,13 @@ fn button_container(mut entity: EntityWorldMut) {
 fn continue_button(mut entity: EntityWorldMut) {
     entity
         .queue(widget::menu_button("Continue"))
-        .insert((Node {
+        .insert(Node {
             height: Vw(9.0),
             width: Vw(38.0),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             ..default()
-        },))
+        })
         .observe(|_: Trigger<Pointer<Click>>, mut menu: NextMut<PlayingMenu>| menu.disable());
 }
 

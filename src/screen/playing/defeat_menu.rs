@@ -149,13 +149,13 @@ fn dance_on_button(mut entity: EntityWorldMut) {
 fn restart_button(mut entity: EntityWorldMut) {
     entity
         .queue(widget::menu_button_with_font_size("Restart", Vw(3.5)))
-        .insert((Node {
+        .insert(Node {
             height: Vw(9.0),
             width: Vw(28.0),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             ..default()
-        },))
+        })
         .observe(
             |_: Trigger<Pointer<Click>>,
              mut commands: Commands,
@@ -170,13 +170,13 @@ fn restart_button(mut entity: EntityWorldMut) {
 fn quit_button(mut entity: EntityWorldMut) {
     entity
         .queue(widget::menu_button_with_font_size("Quit", Vw(3.5)))
-        .insert((Node {
+        .insert(Node {
             height: Vw(9.0),
             width: Vw(28.0),
             align_items: AlignItems::Center,
             justify_content: JustifyContent::Center,
             ..default()
-        },))
+        })
         .observe(|_: Trigger<Pointer<Click>>, mut commands: Commands| {
             commands.spawn_with(fade_out(Screen::Title));
         });
