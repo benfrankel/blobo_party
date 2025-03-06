@@ -1,7 +1,11 @@
 //! Debugging tools for dev builds.
 
+mod stepping;
+
 use avian2d::prelude::*;
 use bevy::core::FrameCount;
+use bevy::dev_tools::ui_debug_overlay::DebugUiPlugin;
+use bevy::dev_tools::ui_debug_overlay::UiDebugOptions;
 // TODO: This will exist in bevy 0.16.
 //use bevy::dev_tools::picking_debug::DebugPickingMode;
 use bevy::diagnostic::EntityCountDiagnosticsPlugin;
@@ -56,20 +60,43 @@ pub(super) fn plugin(app: &mut App) {
         ..default()
     });
 
+    // Set up system stepping.
+    if config.system_stepping {
+        app.add_plugins(
+            stepping::SteppingPlugin::default()
+                .add_schedule(PreUpdate)
+                .add_schedule(PostUpdate),
+        );
+    }
+
     // Debug picking.
     if config.debug_picking {
         // TODO: This will exist in bevy 0.16.
         let _ = 0;
         /*app.add_systems(
             Update,
-            (|mut mode: ResMut<_>| {
-                *mode = match *mode {
-                    DebugPickingMode::Disabled => DebugPickingMode::Normal,
-                    _ => DebugPickingMode::Disabled,
-                };
-            })
-            .run_if(input_just_pressed(DEBUG_TOGGLE_KEY)),
-        );*/
+            toggle_debug_picking.run_if(input_just_pressed(DEBUG_TOGGLE_KEY)),
+        );
+
+        fn toggle_debug_picking(mut mode: ResMut<DebugPickingMode>) {
+            *mode = match *mode {
+                DebugPickingMode::Disabled => DebugPickingMode::Normal,
+                _ => DebugPickingMode::Disabled,
+            };
+        }*/
+    }
+
+    // Debug UI.
+    if config.debug_ui {
+        app.add_plugins(DebugUiPlugin);
+        app.add_systems(
+            Update,
+            toggle_debug_ui.run_if(input_just_pressed(DEBUG_TOGGLE_KEY)),
+        );
+
+        fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>) {
+            options.toggle();
+        }
     }
 
     // Debug physics.
@@ -132,9 +159,11 @@ pub struct DebugConfig {
     pub log_ambiguity_detection: bool,
     pub log_state_flush: bool,
 
-    // 3rd-party debug tools
+    // Debug tools
     pub debug_picking: bool,
+    pub debug_ui: bool,
     pub debug_physics: bool,
+    pub system_stepping: bool,
     pub editor: bool,
 
     // Screen settings
@@ -154,7 +183,9 @@ impl Default for DebugConfig {
             log_state_flush: true,
 
             debug_picking: true,
+            debug_ui: true,
             debug_physics: true,
+            system_stepping: false,
             editor: true,
 
             extend_loading_screen: 0.0,

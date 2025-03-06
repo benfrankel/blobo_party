@@ -41,6 +41,7 @@ bevy_kira_audio = "0.22"
 bevy_mod_debugdump = { version = "0.12", optional = true }
 bevy_state = "0.15"
 bevy_tweening = "0.12"
+disqualified = { version = "1", optional = true }
 interpolation = "0.3"
 iyes_progress = "0.13"
 lazy-regex = { version = "3", features = ["lite"] }
@@ -78,8 +79,11 @@ transform-gizmo-bevy = { git = "https://github.com/ActuallyHappening/transform-g
 default = ["native_dev"]
 dev = [
     "dep:bevy_editor_pls",
+    "dep:disqualified",
     "avian2d/debug-plugin",
+    "bevy/bevy_debug_stepping",
     "bevy/bevy_dev_tools",
+    "bevy/default_font",
     "bevy/dynamic_linking",
     "bevy/sysinfo_plugin",
     "pyri_state/debug",
