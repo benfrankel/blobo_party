@@ -66,7 +66,7 @@ fn level_up_menu(mut entity: EntityWorldMut) {
                     Name::new("LevelUpMenu"),
                     Node {
                         height: VMin(63.0),
-                        top: Vw(-1.7),
+                        top: Vw(-2.1),
                         align_items: AlignItems::Center,
                         justify_content: JustifyContent::SpaceBetween,
                         flex_direction: FlexDirection::Column,
@@ -102,7 +102,7 @@ fn instructions_container(mut entity: EntityWorldMut) {
             Node {
                 display: Display::None,
                 flex_direction: FlexDirection::Column,
-                row_gap: Vh(2.3),
+                row_gap: Vh(2.0),
                 ..default()
             },
             ToggleDisplay(Display::Flex),
@@ -130,7 +130,7 @@ fn instructions_container(mut entity: EntityWorldMut) {
                     Node {
                         display: Display::Grid,
                         grid_template_columns: RepeatedGridTrack::auto(2),
-                        row_gap: Vw(1.2),
+                        row_gap: Vw(0.7),
                         column_gap: Vw(2.5),
                         ..default()
                     },
@@ -287,7 +287,13 @@ fn card_label(key: impl Into<String>) -> impl EntityCommand {
 
 fn button_container(mut entity: EntityWorldMut) {
     entity
-        .insert((Name::new("ButtonContainer"), Node::default()))
+        .insert((
+            Name::new("ButtonContainer"),
+            Node {
+                top: Vh(0.7),
+                ..default()
+            },
+        ))
         .with_children(|children| {
             children.spawn_with(skip_button);
             children.spawn_with(ready_button);

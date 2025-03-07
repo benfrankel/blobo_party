@@ -63,7 +63,7 @@ fn header(mut entity: EntityWorldMut) {
         DynamicFontSize::new(Vw(5.0)).with_step(8.0),
         ThemeColor::BodyText.target::<TextColor>(),
         Node {
-            margin: UiRect::vertical(Vw(5.0)),
+            margin: UiRect::top(Vw(4.5)).with_bottom(Vw(4.2)),
             ..default()
         },
     ));
@@ -76,7 +76,7 @@ fn body(mut entity: EntityWorldMut) {
             Node {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
-                row_gap: Vw(1.4),
+                row_gap: Vw(0.8),
                 ..default()
             },
         ))
@@ -127,7 +127,7 @@ fn button_container(mut entity: EntityWorldMut) {
                 width: Percent(100.0),
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
-                margin: UiRect::vertical(VMin(9.0)),
+                margin: UiRect::vertical(VMin(8.5)),
                 row_gap: Vw(2.5),
                 ..default()
             },

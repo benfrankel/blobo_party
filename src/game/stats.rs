@@ -107,7 +107,7 @@ impl EntityCommand for Stats {
                 Node {
                     display: Display::Grid,
                     grid_template_columns: RepeatedGridTrack::auto(2),
-                    row_gap: Vw(1.2),
+                    row_gap: Vw(0.7),
                     column_gap: Vw(2.5),
                     ..default()
                 },

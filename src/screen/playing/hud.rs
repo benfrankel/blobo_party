@@ -41,7 +41,7 @@ fn upper_hud(player: Entity) -> impl EntityCommand<World> {
                     width: Percent(100.0),
                     align_items: AlignItems::Center,
                     justify_content: default(),
-                    padding: UiRect::all(Px(16.0)),
+                    padding: UiRect::all(Px(16.0)).with_top(Px(13.0)),
                     column_gap: Px(16.0),
                     ..default()
                 },
@@ -68,7 +68,7 @@ fn level_display(player: Entity) -> impl EntityCommand<World> {
                 ThemeColor::Indicator.target::<TextColor>(),
                 TextLayout::new_with_no_wrap(),
                 Node {
-                    margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-4.0), Val::ZERO),
+                    margin: UiRect::new(Val::ZERO, Px(-4.0), Px(-3.0), Val::ZERO),
                     ..default()
                 },
             ))
